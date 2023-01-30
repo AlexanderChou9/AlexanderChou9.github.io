@@ -1,45 +1,64 @@
-<?xml-stylesheet type="text/xsl" href="http://localhost:1313/sitemap.xsl"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>http://localhost:1313/about/</loc>
+    <lastmod>2023-01-29T22:34:58+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
     <loc>http://localhost:1313/categories/</loc>
-    <lastmod>2023-01-29T11:29:25+08:00</lastmod>
+    <lastmod>2023-01-29T13:06:25+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>http://localhost:1313/</loc>
-    <lastmod>2023-01-29T11:29:25+08:00</lastmod>
+    <lastmod>2023-01-29T13:06:25+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
-  </url>
-  
-  <url>
+  </url><url>
+    <loc>http://localhost:1313/categories/cpu_security/</loc>
+    <lastmod>2023-01-29T13:06:25+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>http://localhost:1313/post/</loc>
+    <lastmod>2023-01-29T13:06:25+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>http://localhost:1313/post/transient-execution-attacks/</loc>
+    <lastmod>2023-01-29T13:06:25+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>http://localhost:1313/post/spectre/</loc>
+    <lastmod>2023-01-29T13:01:25+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>http://localhost:1313/post/meltdown/</loc>
+    <lastmod>2023-01-29T13:00:25+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>http://localhost:1313/post/finding-and-exploiting-cpu-features-using-msr-templating/</loc>
+    <lastmod>2023-01-29T12:29:25+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
     <loc>http://localhost:1313/post/first-article/</loc>
     <lastmod>2023-01-29T11:29:25+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>http://localhost:1313/categories/hugo/</loc>
     <lastmod>2023-01-29T11:29:25+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>http://localhost:1313/post/</loc>
-    <lastmod>2023-01-29T11:29:25+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>http://localhost:1313/tags/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
-  
 </urlset>

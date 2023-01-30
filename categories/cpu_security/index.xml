@@ -1,0 +1,784 @@
+
+
+
+
+
+
+
+
+
+
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    
+    <atom:link href="http://localhost:1313/categories/cpu_security/index.xml" rel="self" type="application/rss+xml"/>
+    
+    
+    <description>cpu_security · Cheese - A wonderful world for you</description>
+    
+    <language>zh-cn</language>
+    
+    
+    <lastBuildDate>Sun, 29 Jan 2023 13:06:25 +0800</lastBuildDate>
+    
+    <link>http://localhost:1313/categories/cpu_security/</link>
+    
+    
+    <title>cpu_security · Cheese - A wonderful world for you</title>
+    
+    
+    
+    <item>
+      
+      
+      <description><![CDATA[<h2 id="摘要">摘要</h2>
+<p>以往，研究人员有一个共识：处理器架构以下的信息是无法被观测到的。但是，缓存侧信道攻击的出现，表示微架构层次的部分数据可以被提取出来。</p>
+<p>随之而来，出现了利用推测执行机制和乱序执行的攻击方法，我们称它为瞬态攻击，因为这些攻击都利用了一个事实：处理器执行了一些操作之后，再将其<strong>撤销</strong>，仿佛这些操作没有执行过。但是，这里的“撤销”并不干净，微架构层次下，攻击者可以获得这些操作曾经执行过的一些痕迹。</p>
+<p>本文主要介绍瞬态执行攻击的发展历史，从系统的角度来分析这种攻击的过程，促进该类攻击的一些变种的发现。</p>
+<h2 id="1-引言">1 引言</h2>
+<p>现代处理器，处于相同的架构，比如同一个定义好的interface，同一个指令集，方便同一个二进制程序能够在不同的处理器上运行。因此，处理器的制造者往往更关注，一个架构层次的行为，从底层的具体实现上如何优化，提高效率。这里介绍了两个优化机制：<strong>缓存</strong>、<strong>分支预测</strong>。</p>
+<p>从安全角度来看，很长一段时间，处理器架构以下的信息是无法被观测到的，处理器没有提供给用户一个interface来查看某部分是否处于缓存。Kocher提出，通过测试内存访问的延迟，可以获取cache的部分信息，相当于实现一个interface，可以让攻击者看到一些微架构层次的信息。不过这里的信息，主要是某部分处于缓存，某部分不在缓存中，这些meta-information。当时出现了一些有力的 crytographic 和 non-cryptographic 攻击，因此，安全人员认为应该合理设计代码，是的secret不会影响这些 meta-information。比如， no secret-dependent memory accesses。</p>
+<p>2018年，幽灵攻击和熔断攻击被提出来。当时，人们预计会发现更多的Spectre的变种，Meltdown则被认为是唯一的。</p>
+<p>但是，Foreshadow的出现表明类似Meltdown的漏洞依然存在。它扩展了 user-to-kernel 类型的攻击方法，能够从任意物理地址泄露信息。某种意义上，它预示着该领域的进一步发展，目前发现了许多不同的熔断型攻击。</p>
+<p>随着瞬态执行攻击方式的发展，相应的缓解措施也不断发展，在工业界得到了应用。</p>
+<p>本文介绍了瞬态执行攻击的发展历程，使用 6 个通用的阶段来标准化这种攻击。从微架构的错误预测角度，描述幽灵攻击的所有已知变种。针对现有的熔断类型攻击，本文从系统角度强调了它们之间的相似点。我们认为，基于本文从系统角度得出的观点，未来将会出现很多新的瞬态攻击变种。</p>
+<p><strong>Outline:</strong></p>
+<h2 id="2-背景">2 背景</h2>
+<h3 id="21-推测执行和乱序执行">2.1 推测执行和乱序执行</h3>
+<p>推测执行，就是对于暂时没法确定结果的branch，处理器猜测出一个值，先继续执行着</p>
+<p>乱序执行，就是遇到异常之后，异常代码之后的代码可能已经执行过了。</p>
+<h3 id="22-缓存攻击">2.2 缓存攻击</h3>
+<p>缓存攻击逐渐成为瞬态执行攻击的一个必备模块，它关注直接访问内存和访问缓存中数据的时间差异。目前出现的方法有很多，比如：Flush+Reload, Prime+Probe, Flush+Flush, Evict+Time。总体来说，&lt; font color=&quot;#dd0000&quot;&gt;<strong>缓存攻击都包含以下三个阶段</strong></font>：</p>
+<ol>
+<li>攻击者将微架构<strong>初始化</strong>为一个预先定义好的状态。</li>
+<li>攻击者诱使victim执行一个操作。</li>
+<li>攻击者基于微架构状态的变化，推测出victim的行为信息。</li>
+</ol>
+<p>隐蔽信道构建，是缓存攻击的一个特殊情形，sender 和 receiver 都由攻击者掌握，主要是为了绕过一些架构层次的限制。</p>
+<h3 id="23-store-to-load-forwarding">2.3 Store-to-Load Forwarding</h3>
+<p>针对分支预测单元中的memory disambiguation predictor，进行攻击。</p>
+<p>store buffer</p>
+<p>该过程就是，将存储在 store buffer，并且还没有被写回缓存的数据，直接传递到使用相同地址的 load操作。针对load操作的地址，可能出现四种情形：</p>
+<ul>
+<li>True positive match</li>
+<li>True negative match</li>
+<li>False negative match。</li>
+<li>False positive match。</li>
+</ul>
+<h2 id="3-瞬态执行的概述">3 瞬态执行的概述</h2>
+<p>对于瞬态执行攻击过程的一般化，前人也有一些工作，本文在这里提出，&lt; font color=&quot;#dd0000&quot;&gt;瞬态执行攻击的 6 个 阶段</font>：</p>
+<ol>
+<li>
+<p>攻击的<strong>准备阶段</strong>，包含两部分。</p>
+<ol>
+<li>准备微架构，确保一个<strong>瞬态执行的窗口</strong>，保证瞬态执行的第一条指令到最后一条指令都有足够的时间</li>
+<li>准备微架构传输通道，以便恢复数据</li>
+</ol>
+</li>
+<li>
+<p>使用触发指令，<strong>触发瞬态执行</strong>。</p>
+<ol>
+<li>幽灵攻击类型，可能是victim域内的任何分支</li>
+<li>熔断攻击类型，可能是attacker域内任何形式的中止指令</li>
+<li>LVI攻击类型，可能是victim域内任何形式的中止指令</li>
+</ol>
+</li>
+<li>
+<p><strong>瞬态指令执行</strong>，准备微架构传输通道传输的数据</p>
+</li>
+<li>
+<p>攻击者对先前准备的数据进行<strong>编码</strong>，比如存入缓存</p>
+</li>
+<li>
+<p>CPU意识到错误，<strong>回退</strong>，执行正确的指令。</p>
+</li>
+<li>
+<p><strong>恢复数据</strong>，攻击者将编码数据从微架构级别提取到架构级别。由于数据通常编码在缓存中，攻击者使用缓存侧通道，如Flush+Reload，来执行此任务。</p>
+</li>
+</ol>
+<h2 id="4-瞬态执行攻击">4 瞬态执行攻击</h2>
+<h3 id="41-spectre类型的攻击">4.1 Spectre类型的攻击</h3>
+<p>Spectre类型的攻击，主要依赖于错误预测下的瞬态执行。也就是，CPU按照以往的行为，预测出一个错误的执行路径。CPU中负责预测的元件是，Branch Predict Unit(BPU)，它包含多种预测器，分别用来预测不同类型的分支。Spectre类型的攻击，归根究底是利用gadget，攻击BPU器件的，并且因为攻击的具体预测器不同，可以分为不同类型。</p>
+<ul>
+<li>Pattern History Table(PHT)，猜测一下直接分支的结果，比如 if（该不该跳转）</li>
+<li>Branch Target Buffer(BTB)，猜测一下间接分支的target，（跳转到哪里）</li>
+<li>Return Stack Buffer(RSB)，函数调用会在栈顶存放返回地址，加快跳转</li>
+<li>memory disambiguator&mdash;&gt;store-to-load forward
+<ul>
+<li>This predictor tries to predict whether a load operation overlaps with a previous store operation</li>
+</ul>
+</li>
+</ul>
+<p><strong>Spectre-PHT.</strong></p>
+<p>pattern历史表，这种攻击通过<strong>不断地重复</strong>，对PHT<strong>错误训练</strong>，从而误导它暂时跳过边界检查，使得CPU走向一个错误的条件路径。Schwarz证明，这种攻击在网络环境中也是可以实现的。</p>
+<p>代表：Spectre V1</p>
+<p><strong>Spectre-BTB.</strong></p>
+<p>分支target缓存，在同一个程序里面，使用某个跳转地址，不断训练BTB，从而误导CPU，使其重定向到该程序虚拟地址空间内的任何位置。</p>
+<blockquote>
+<p>Similarly to return-oriented pro- gramming (ROP), the attacker can chain multiple jump targets together to achieve arbitrary transient execution as far as the tran- sient window allows</p>
+</blockquote>
+<p>代表：Spectre V2</p>
+<p><strong>Spectre-RSB.</strong></p>
+<p>返回栈Buffer，攻击者使用恶意构造的目标地址，污染RSB，误导其暂时返回到一个恶意地址。</p>
+<p><strong>Spectre-STL.</strong></p>
+<p>基于 store-to-load攻击</p>
+<h3 id="42-meltdown类型的攻击">4.2 Meltdown类型的攻击</h3>
+<p>Canella 提出一个典型的Meltdown类型攻击的命名机制。主要分为两步：</p>
+<ol>
+<li>the <strong>type</strong> of the fault or the assist that causes transient execution</li>
+<li>different <strong>reason</strong>s for the fault or assist and from which buffer they leak from</li>
+</ol>
+<p>本文将Meltdown类型的攻击分为三组，重点介绍每一组中的共同点：</p>
+<p><strong>Deferred Permission Check.</strong>    推迟 Permission 检查</p>
+<blockquote>
+<p>this category show architecturally correct behavior but with a lack of permission checks,</p>
+</blockquote>
+<p>就是说它使用的攻击代码，单纯执行的话，普通用户无法执行，但是带权限用户可以顺利执行。而只要我们将权限检查稍微推迟，就可以获得一个短暂的瞬时执行的窗口。</p>
+<p>代表：Meltdown，Meltdown-PK，Meltdown-BND，Meltdown-MPX，Meltdown-GP</p>
+<p><strong>Incorrect Use of Intermediate Values.</strong>    利用中间值</p>
+<p>该种攻击利用 中间值 来恢复数据。具体的话，就是构造一些无效的、无意义的（和是否为特权用户无关）行为，然后截取一部分中间数据，重新翻译。</p>
+<p>在架构层面，处理器认为，不实际存在的页表条目可以包含任何位置的数据，如果程序尝试将此数据解释为物理地址，一般都是错误的。</p>
+<p>但是，我们可以将此数据中途拦截下来，进行翻译，得到 secret。</p>
+<p>代表：Foreshadow</p>
+<p><strong>Use-After-Free.</strong></p>
+<p>最近出现一些新的 meltdown 类型攻击，类似于软件漏洞中常用的 use-after-free 漏洞攻击手法，对一些失效的对象成功再次使用。</p>
+<p>代表：ZombieLoad, RIDL, Fallout</p>
+<p><img src="src/spectre-meltdown-foreshadow.png" alt="spectre-meltdown-type list"></p>
+<h3 id="43-lvi类型的攻击load-value-injection">4.3 LVI类型的攻击——Load Value Injection</h3>
+<p><a href="https://lviattack.eu/">lvi</a> 介绍说：</p>
+<blockquote>
+<p>LVI <strong>turns previous data extraction attacks around</strong>, like <a href="https://meltdownattack.com/">Meltdown</a>, <a href="https://foreshadowattack.eu/">Foreshadow</a>, <a href="https://zombieloadattack.com/">ZombieLoad</a>, <a href="https://mdsattacks.com/">RIDL and Fallout</a>, and <strong>defeats all existing mitigations.</strong></p>
+<p>Instead of directly leaking data from the victim to the attacker, we proceed in the opposite direction:</p>
+<p>we smuggle — &ldquo;inject&rdquo; — the attacker&rsquo;s data through <strong>hidden processor buffers</strong> into a victim program and hijack transient execution to acquire sensitive information, such as the victim’s fingerprints or passwords.</p>
+<p>Crucially, LVI is much <strong>harder to mitigate</strong> than previous attacks, as it can affect virtually any access to memory.</p>
+<p>Unlike all previous Meltdown-type attacks, LVI cannot be transparently mitigated in existing processors and necessitates expensive <strong>software patches</strong>, which may slow down Intel SGX enclave computations 2 up to 19 times.</p>
+</blockquote>
+<p><a href="https://www.intel.cn/content/www/cn/zh/developer/articles/technical/software-security-guidance/technical-documentation/load-value-injection.html">intel 对 LVI 的介绍</a></p>
+<p>Spectre，构造或者在 victim 程序中找到一些 gadget。</p>
+<p>Meltdown，使用攻击者程序引发异常，从缓冲区中窃取数据。</p>
+<p>LVI，更像是前两者的结合。</p>
+<blockquote>
+<p>we combine Spectre-style <strong>code gadgets</strong> in the victim application with Meltdown-type illegal data flow from faulting or assisted <strong>memory load instructions</strong> to bypass existing defenses and <strong>inject</strong> attacker-controlled data into a victim&rsquo;s transient execution.</p>
+</blockquote>
+<p>LVI的实现有四个步骤：</p>
+<ol>
+<li>用攻击者的 data 去<strong>污染</strong>一个隐藏的处理器<strong>缓冲区</strong></li>
+<li>在 victim 程序中引发故障或辅助负载</li>
+<li>攻击者的 data 在 victim 程序的错误、负载之后，被瞬时地注入到代码 gadget 中。</li>
+<li>在处理器检测到错误并回滚所有操作之前，侧通道可能会留下秘密相关的痕迹。</li>
+</ol>
+<p><img src="src/LVI.png" alt="The different LVI attacks relying on a deferred permission check and what event they require to enter transient execution"></p>
+<h2 id="5-结论">5 结论</h2>
+<p>以往，人们认为这些很安全</p>
+<p>现在，侧信道攻击说明能泄露 meta-data</p>
+<p>瞬时执行攻击，说明能够泄露更多信息。</p>
+<p>本文展示了一下顺势执行攻击时如何发展的，希望能够促进新的瞬时执行攻击的发现。</p>
+<h2 id="6-相关材料">6 相关材料</h2>
+<p>Meltdown:</p>
+<ul>
+<li><a href="https://meltdownattack.com/">MeltdownAttack</a></li>
+<li><a href="https://github.com/IAIK/meltdown">MeltdownGithub</a></li>
+</ul>
+<p>Spectre:</p>
+<ul>
+<li><a href="https://spectreattack.com/">SpectreAttack</a></li>
+<li><a href="https://gist.github.com/anonymous/99a72c9c1003f8ae0707b4927ec1bd8a">SpectreV1Github</a></li>
+<li><a href="https://github.com/speed47/spectre-meltdown-checker">Spectre-meltdown-checker</a></li>
+</ul>
+<p>LVI:</p>
+<ul>
+<li><a href="https://lviattack.eu/">LVIattack</a></li>
+<li><a href="https://www.intel.cn/content/www/cn/zh/developer/articles/technical/software-security-guidance/technical-documentation/load-value-injection.html">LVIintel</a></li>
+</ul>
+<p>Foreshadow:    <a href="https://foreshadowattack.eu/">ForeshadowAttack</a></p>
+<p>MDS:    <a href="https://mdsattacks.com/">Mds</a></p>
+<p>ZombieLoad:    <a href="https://zombieloadattack.com/">ZombieLoadAttack</a></p>
+]]></description>
+      
+      
+      <guid>http://localhost:1313/post/transient-execution-attacks/</guid>
+      <link>http://localhost:1313/post/transient-execution-attacks/</link>
+      
+      
+      <pubDate>Sun, 29 Jan 2023 13:06:25 +0800</pubDate>
+      
+      
+      <title>The Evolution of Transient-Execution Attacks</title>
+      
+    </item>
+    
+    <item>
+      
+      
+      <description><![CDATA[<p>幽灵攻击：利用“推测执行”</p>
+<h2 id="摘要">摘要</h2>
+<p>当代处理器使用分支预测和推测执行来提高性能。例如，如果某个分支的目标取决于将要读取的某个内存中的值，处理器会猜测这个值，尝试提前执行运算。内存中的实际值达到以后，处理器再决定是直接提交推测后执行的结果，还是把这个结果丢弃。推测逻辑，不为执行方式负责，因此可以被利用，来访问受害者的内存和寄存器，执行一些具有可掌控的副作用的操作。</p>
+<p>幽灵攻击，就是诱导受害者的处理器，推测性地执行正确的程序执行期间不会执行的操作，通过侧信道将受害者的机密信息泄露给攻击者。</p>
+<p>本文描述的实际攻击，结合了侧信道攻击、故障攻击和面向返回编程的攻击方法，从受害者的进程中读取任意内存。</p>
+<p>该论文表明，推测执行，严重违反了众多软件安全体制的安全假设，比如操作系统进程分离、容器化、即时编程、针对缓存&mdash;计时攻击的对策。</p>
+<p>合理的解决方案：</p>
+<h2 id="intro">Intro</h2>
+<p>关于侧信道攻击，进行一些介绍。</p>
+<p>关于处理器的推测执行，进行一些介绍。</p>
+<h3 id="a-本论文的成果">A. 本论文的成果</h3>
+<blockquote>
+<p>transient 指令：瞬态指令，暂时执行，但之后会被恢复，也就是根据实际结果再处理。</p>
+</blockquote>
+<p>分析了一下“推测执行”的安全性，提出一种“幽灵攻击”。通过影响推测执行的那些transient指令，攻击者能够从受害者的内存空间泄露信息。作者通过下面的两个例子，对幽灵攻击的危害，进行描述。</p>
+<h4 id="使用本地非特权代码攻击进程间的隔离边界">使用本地非特权代码，攻击进程间的隔离边界</h4>
+<p>POC中，作者准备了一个victim程序，包含一个secret数据在它的内存地址空间内。然后，在victim程序编译后的二进制序列和引用的共享库中，寻找一些<strong>满足特殊条件的指令</strong>。作者准备一个attacker程序，利用处理器“预测执行”的特征，将前面找到的<strong>特殊指令</strong>作为transient指令执行。具体如何利用这些特殊指令，实现对victim的非法内存访问，之后会讲解。</p>
+<h4 id="使用javascript和ebpf来攻击沙箱技术">使用JavaScript和eBPF来攻击沙箱技术</h4>
+<p>通过可安装的JavaScript代码可以实现幽灵攻击。</p>
+<p>实验证明，我们提供的JavaScript程序能够读取运行它的浏览器进程地址空间的数据。同时，attack能够充分利用Linux的eBPF和JIT。</p>
+<h3 id="b-具体技术">B. 具体技术</h3>
+<p>为了发起 Spectre 攻击，</p>
+<ol>
+<li>
+<p>攻击者首先在进程地址空间中<strong>定位或引入一系列指令</strong>，这些指令在执行时充当秘密通道发送器，泄漏受害者的内存或寄存器内容。</p>
+</li>
+<li>
+<p>然后，攻击者<strong>诱使 CPU 推测性地错误执行</strong>该指令序列，从而通过隐蔽通道泄露受害者的信息。</p>
+</li>
+<li>
+<p>最后，攻击者通过隐蔽通道<strong>接收</strong>到受害者的信息。</p>
+</li>
+</ol>
+<p>虽然由于这种错误的推测性执行而导致的标称 CPU 状态的更改最终会被恢复，但之前泄露的信息或对 CPU 的其他微体系结构状态（例如缓存内容）的更改可以在标称状态恢复后幸存下来。</p>
+<p>上面是，一些general的描述，具体来说，我们需要找到一种诱导错误推测执行的方法、一种微体系结构下的隐蔽通道。</p>
+<p><strong>关于隐蔽通道：</strong></p>
+<p>本文使用的是基于缓存的方式，Flush+Reload 和 Evict+Reload。</p>
+<h4 id="关于诱导错误执行的方法">关于诱导错误执行的方法</h4>
+<p>在这里介绍两种：</p>
+<h5 id="v1-利用条件分支">v1: 利用条件分支</h5>
+<p>在这种幽灵攻击中，攻击者<strong>对CPU的分支预测单元进行误导训练，使得它错误预测分支的方向</strong>，从而执行原本不会执行的代码，导致CPU暂时违背程序的原始语义。在之后的展示中，幽灵攻击使得攻击者能够读取存储在程序地址空间中的秘密信息。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;</span> <span class="n">array1_size</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">y</span> <span class="o">=</span> <span class="n">array2</span><span class="p">[</span><span class="n">array1</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">*</span> <span class="mi">4096</span><span class="p">];</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>攻击者提供x的值，这里有一个 if 语句，判定 x 是否在数组array1的合法下标范围内。下面展示，攻击者怎么绕过这个 if 语句。</p>
+<p>首先，攻击者使用合法的x值，调用该指令，一次又一次地训练CPU的分支预测单元，让它倾向于认为这个 if 分支始终为真。</p>
+<p>然后，攻击者用一个超出合理范围的 x，调用该指令，CPU的分支预测单元猜测它为真，根据 x 获取 array1[x]的值，然后访问array2的对应位置的数据，将其保存在cache。</p>
+<p>边界检查的真正结果出来之后，CPU发现预测结果出错，将CPU的微架构状态回退到之前的状态，却不会进行cache的清除。</p>
+<p>那么，attacker就可以分析cache，得到 array1[x] 的值。</p>
+<h5 id="v2-利用间接分支">v2: 利用间接分支</h5>
+<p>基于ROP，攻击者选取victim地址空间内的一个gadget，影响victim去推测性地执行这个gadget。与纯粹的ROP不同，攻击者不依赖victim程序中的软件漏洞，而是对Branch Target Buffer（BTB）进行误导训练，使其对某一个<strong>间接分支指令</strong>错误地预测为gadget的地址，使得victim程序执行gadget。</p>
+<p>然后，CPU发现预测结果出错，将CPU的微架构状态回退到之前的状态，却不会进行cache的清除。那么，gadget就可以通过缓存侧信道泄露信息。</p>
+<p>除此以外，我们会展示如何通过精确的gadget选择，读取victim进程的任意内存。</p>
+<p><strong>关于如何误导训练BTB</strong></p>
+<p>当然，还有一些其他方法。</p>
+<h3 id="c-目标硬件和漏洞的现状">C. 目标硬件和漏洞的现状</h3>
+<p>目标硬件，范围很广</p>
+<p>目前已经在下列 intel 处理器上验证了幽灵攻击：Ivy Bridge、Haswell、Broadwell、Skylake、Kaby Lake</p>
+<p>以及AMD Ryzen 系列处理器，可以实现幽灵攻击</p>
+<p>关于ARM架构的Samsung处理器和Qualcomm处理器，也存在。</p>
+<p>目前幽灵攻击涉及的漏洞编号为：CVE-2017-5753 和 CVE-2017-5715</p>
+<h3 id="d-meltdown">D. Meltdown</h3>
+<p>Meltdown是基于 out-of-order 执行的微架构攻击，可以用案例泄露 kernel 内存。</p>
+<p>Meltdown 和 Spectre 有两个主要的不同：</p>
+<ol>
+<li>Meltdown没有利用“分支预测”，而是一个 observation：当一条指令造成 trap时，接下来的指令会乱序执行，而不是立即停止整个程序。</li>
+<li>Meltdown利用许多Intel处理器和部分ARM处理器的一个特定的弱点，它们推测性地执行指令，从而绕过内存保护。</li>
+</ol>
+<p>Spectre 攻击适用于范围更广的处理器，包括大多数 AMD 和 ARM 处理器。此外，KAISER 机制已被广泛应用于缓解 Meltdown 攻击，但不能防止 Spectre</p>
+<h2 id="背景">背景</h2>
+<h3 id="a-乱序执行">A. 乱序执行</h3>
+<p>对于当前指令后，那些不需要依赖前面运算结果的指令，会先被执行，然后保存运算结果到某个寄存器，或缓存。</p>
+<h3 id="b-推测执行">B. 推测执行</h3>
+<p>乱序执行时，如果某个指令取决于尚未完成的前面的指令，处理器会先保存当前的寄存器状态，然后推测该指令的结果，按照推测结果进行指令运算。</p>
+<h3 id="c-分支预测">C. 分支预测</h3>
+<p>现代处理有很多针对直接分支、间接分支的预测机制。其中，间接分支指令，能够跳转到任意的目标地址，比如，x86指令能够跳转到寄存器、内存地址、栈。</p>
+<p>相比于直接分支，间接跳转和调用采用了两种不同的预测机制来优化。</p>
+<p>Intel处理器对以下三种情况进行预测：</p>
+<ol>
+<li>直接调用和跳转。</li>
+<li>间接调用和跳转。</li>
+<li>条件分支。</li>
+</ol>
+<h3 id="d内存的层次结构">D.内存的层次结构</h3>
+<h3 id="e微架构侧信道攻击">E.微架构侧信道攻击</h3>
+<p>Flush+Reload 和 Evict+Reload</p>
+<p>攻击者首先从与受害者共享的缓存中逐出缓存行。</p>
+<p>在受害者执行一段时间后，攻击者测量在与被逐出的缓存行对应的地址处执行内存读取所需的时间。</p>
+<p>如果受害者访问被监控的缓存行，数据会在缓存中，访问速度很快。否则，如果受害者没有访问该行，则读取会很慢。</p>
+<p>因此，通过测量访问时间，攻击者可以了解受害者是否在逐出和探测步骤之间访问了受监控的缓存行。</p>
+<h3 id="f-面向返回编程---rop">F. 面向“返回”编程&mdash;ROP</h3>
+<h2 id="攻击概述">攻击概述</h2>
+<ol>
+<li>
+<p>设置阶段，攻击者执行一些误导处理器的操作，以便它啥后做出可利用的错误预测。</p>
+</li>
+<li>
+<p>攻击</p>
+</li>
+<li>
+<p>恢复敏感数据。</p>
+</li>
+</ol>
+<h2 id="v1-利用条件分支的预测失误">v1: 利用条件分支的预测失误</h2>
+<p>In this section, we demonstrate how conditional branch misprediction can be exploited by an attacker to read arbitrary memory from another context, e.g., another process.</p>
+<p>C语言示例，在https://gist.github.com/anonymous/99a72c9c1003f8ae0707b4927ec1bd8a</p>
+<p>x 是攻击者控制的，外界传入的（比如另一个进程）</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;</span> <span class="n">array1_size</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">y</span> <span class="o">=</span> <span class="n">array2</span><span class="p">[</span><span class="n">array1</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">*</span> <span class="mi">4096</span><span class="p">];</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如果没有第1行的边界检查，随意构造的 x 可能引发异常；也可能泄露特定信息，比如构造 x = (secret的地址) - （array1数组的基地址）</p>
+<p>因为，边界检查与推测执行的四种结果。所以，为了效率，处理器采用推测执行；同时也带来了漏洞。</p>
+<p>真正边界检查结果出来以前，处理器会推测性地执行之后的指令。</p>
+<p>边界检查的结果可能无法立即获知的原因有很多，比如：</p>
+<ol>
+<li>之前的缓存，未命中</li>
+<li>边界检查期间，必需的执行单元拥塞</li>
+<li>复杂的算术依赖</li>
+<li>嵌套的预测执行</li>
+</ol>
+<p>然后，代码2 可能先尝试性地执行</p>
+<h3 id="a-实验结果">A. 实验结果</h3>
+<h3 id="b-c代码实现">B. C代码实现</h3>
+<h3 id="c-javascript实现">C. JavaScript实现</h3>
+<h3 id="d-利用ebpf的实现">D. 利用eBPF的实现</h3>
+<h3 id="e-恢复数据的准确度">E. 恢复数据的准确度</h3>
+<h2 id="v2-对间接分支下毒">v2: 对间接分支下毒</h2>
+<p>本节主要展示，间接分支是如何被攻击者下毒的，间接分支的错误预测结果是如何被另一个 context（比如另一个进程）利用来读取任意内存的。</p>
+<p>在几乎所有架构的程序中，间接分支都广泛存在。如果间接分支的目标地址没有及时取得（比如因为缓存未命中），处理器会根据之前执行的代码，推测一个位置，继续执行程序。</p>
+<p>变种2里，攻击者使用一个恶意目标地址，错误训练分支预测器，使得程序在一个攻击者选定的位置继续预测执行。如图2所示，分支预测器在一个context被错误训练，并基于此在另一个context进行预测。具体来说，攻击者能够误导程序在合法执行以外的位置预测执行。预测执行会留下一些可以度量的副产物，这对于攻击者是很有利的，本节介绍的就是一种不同于变种1的内存泄漏方法。</p>
+<p>这里，我们假定攻击者控制了涉及间接分支的两个寄存器，目的是读取 victim 的内存。这个条件在真实的二进制程序中很容易满足。</p>
+<h2 id="其它变种">其它变种</h2>
+<h2 id="缓解方案">缓解方案</h2>
+<h3 id="避免推测执行">避免推测执行</h3>
+<h3 id="避免机密数据的访问">避免机密数据的访问</h3>
+<h3 id="避免数据进入隐蔽信道">避免数据进入隐蔽信道</h3>
+<h3 id="限制从隐蔽信道提取的数据">限制从隐蔽信道提取的数据</h3>
+<h3 id="避免分支中毒">避免分支“中毒”</h3>
+<h2 id="结论">结论</h2>
+<h2 id="附录a对intel-haswell分支预测结构的逆向工程">附录A：对Intel Haswell分支预测结构的逆向工程</h2>
+<h2 id="附录bwindows下对间接分支下毒的poc">附录B：Windows下对间接分支下毒的PoC</h2>
+<h2 id="附录c幽灵攻击的示例">附录C：幽灵攻击的示例</h2>
+]]></description>
+      
+      
+      <guid>http://localhost:1313/post/spectre/</guid>
+      <link>http://localhost:1313/post/spectre/</link>
+      
+      
+      <pubDate>Sun, 29 Jan 2023 13:01:25 +0800</pubDate>
+      
+      
+      <title>Spectre</title>
+      
+    </item>
+    
+    <item>
+      
+      
+      <description><![CDATA[<p>Meltdown: 试图从用户空间读取 kernel 的内存</p>
+<p>CVE-2017-5754</p>
+<h2 id="摘要">摘要</h2>
+<p>计算机系统的安全性，根本上来说，依靠<strong>内存隔离</strong>。比如：kernel地址范围对用户来说，标记为不可访问。</p>
+<p>本文提出了 Meltdown。它利用现代处理器的<strong>无序执行</strong>，读取内存中kernel的任意位置内容，包括个人数据和密码。</p>
+<p><strong>无序执行</strong>，是现代处理器的不可或缺的性能特征，广泛存在。</p>
+<p>Meltdown攻击，不依赖于某个操作系统，也不依赖于某个软件漏洞。它打破了<strong>地址空间隔离</strong>以及<strong>半虚拟化环境</strong>提供的所有安全保障，打破了在此基础上构建的所有安全机制。</p>
+<p>系统中，无需任何权限，Meltdown能够使攻击者随意读取云上其他进程和虚拟机的内存。影响广泛。</p>
+<p>研究表明，针对KASLR的KAISER防御机制，对Meldown攻击有着意料之外的防护作用。因此，我们建议大家部署KAISER，防御Meltdown攻击。</p>
+<h3 id="q">Q：</h3>
+<p>什么是“无序执行”？什么是KASLR？什么是KAISER防御机制？为什么内核被映射到进程的虚拟地址空间？如何映射？</p>
+<h2 id="intro">Intro</h2>
+<p>如今操作系统的一个核心安全特征就是，内存隔离。操作系统确保用户不能访问其他用户的内存和 kernel 内存。也是在这种内存隔离技术的基础上，我们才能够在个人设备上同时运行多个应用程序，在云上同时执行多个用户的进程。</p>
+<p>现代处理器中，kernel 对用户进程的隔离，由处理器的一个<strong>超级位</strong>来实现，该超级位定义内核的内存页是否可以访问。一般来说，这个位只能在输入内核代码时设置，在切换到用户进程时会清除。因为这一个硬件级别的特性，操作系统能够将<strong>kernel 映射</strong>到每个进程的<strong>内存地址空间</strong>。这样的话，如果需要临时从用户态转换为内核态，比如处理中断，内存的映射就可以不发生改变，直接执行相应的 kernel 代码。</p>
+<p>本文中，我们提出了 <strong>Meltdown</strong>。它是一种新型攻击方法，能够帮助任何用户进程以一种简单的方式访问其执行的机器的完整内核内存，甚至所有物理内存，无视内存隔离。它不依赖于任何软件漏洞，可以在所有主流操作系统上实现。它利用了<strong>大多数现代处理器的侧信道信息</strong>，例如自2010年以来的现代英特尔微体系结构，以及其他供应商的其他CPU上的潜在信息。</p>
+<p>通常来说，侧信道攻击的实施，需要目标应用程序的特定知识，并且针对泄露的信息而定制。但是，Meltdown攻击仅仅要求，<strong>用户程序能够在处理器上运行代码</strong>，即可获得<strong>完整 kernel 地址空间的一个dump</strong>，其中包括完整的物理内存。该攻击的强大、便利，根源在于现代处理器的“无序执行”特性。</p>
+<p><strong>无序执行</strong>，是当前处理器的一个非常重要的特性，它可以减少繁忙执行单元（就是一直需要执行）的等待时间。比方说，当一个单元需要等待内存中的数据时，处理器没有和它一起停下来，等待数据从内存中传进来，而是将该后续操作安排到core 的空闲执行单元中。处理器继续执行下一个，也就是“向前看”，或者说无序执行。这提高了效率，但也带来了不好的地方，比如说，时序差可能会从顺序执行和无序执行中泄漏信息（<strong>计时攻击</strong>）。</p>
+<p>从安全的角度来看，这其中有一点很重要。处理器允许非特权进程（用户态程序）执行下列<strong>数据加载操作</strong>：从特权地址（kernel地址或某个物理地址）到临时的CPU寄存器中，CPU基于该寄存器的值进行下一步计算（比如说，基于该寄存器的值访问某个数组）。如果之后，处理器发现这条指令本不应该被执行，那么，简单地丢弃查找出的某块内存的内容（通过<strong>修改该寄存器的状态</strong>），就可以确保程序的正确执行。从架构的角度来看，这种方法没有任何安全问题。</p>
+<p>但是，我们观察到无序的内存查找过程，会影响到 cache，通过<strong>cache侧信道</strong>可以检测到这种影响。因此，通过无序执行流<strong>读取特权内存</strong>，攻击者能够dump出完整的kernel内存，并且通过<strong>微架构隐蔽信道</strong>（如Flush+Reload）将数据传输到外界。在隐蔽信道的接收端，攻击者能够恢复出该寄存器的值。因此，在微架构水平（也就是硬件实现），存在可利用的安全问题。</p>
+<p>Meltdown打破了基于处理器内存隔离功能的所有安全保障。我们评估了针对PC、笔记本和云端服务器的<strong>攻击效果</strong>，Meltdown攻击能够帮助非特权进程（用户态进程）读取kernel地址空间（映射）的所有数据，包括Linux、Android和OS X上的完整物理内存，Windows上的大部分物理内存。其中包括kernel、其他进程的内容，以及半虚拟化下（Docker）的内存。虽然，攻击效果很大程度上取决于机器性能，比如处理器速度等，但是，实验中，我们dump任意内存的速度dadao3.2KB/s~503KB/s。大量系统会受到该攻击的影响。</p>
+<p><strong>KAISER</strong>本来是针对KASLR侧信道攻击的防御措施，本实验中发现，它对Meltdown有不错的防御效果。因此，我们强烈建议所有系统部署KAISER。幸运的是，在一个负责任的窗口期（估计是论文发表前），WIndows、Linux和OS X基于KAISER，开发了对应的补丁。</p>
+<p>Meltdown和幽灵攻击（Spectre）不同，具体来说，等我看了下篇论文再说吧。</p>
+<p><strong>贡献：</strong></p>
+<ol>
+<li>将无序执行流，描述为一个新的、强大的和基于软件的侧信道。</li>
+<li>展示了无序执行和微架构隐蔽信道的结合，将数据秘密传输出去。</li>
+<li>将无序执行和异常处理程序（或TSX）结合，提出一种端到端攻击。在PC、笔记本、移动电话和云主机上无需特权读取任意物理内存。</li>
+<li>评估了Meltdown的性能，和KAISER的防御效果。</li>
+</ol>
+<h2 id="background">Background</h2>
+<h3 id="无序执行">无序执行</h3>
+<p>无序执行，本身是一种优化技术，用于提高处理器的利用率。处理器不是严格按照程序指令的顺序执行，如果当前指令要求的操作单元被占用了，就先运行其他的执行单元。一般来说，只要指令执行的结果符合架构上的定义，处理器就可以并行处理这些指令。</p>
+<p>实际上，支持无序执行功能的处理器，推测性地进行操作。也就是说，一定程度上，在处理器确认某个指令需要执行并且完整提交之前，支持无序执行的处理器会先执行该指令。关于“<strong>推测执行</strong>”，就是在原有指令顺序的基础上增加分支。</p>
+<p>1967年，Tomasulo开发了一个算法来实现指令的动态调度、无序执行。他提出一个统一的“保留站”的概念，使得处理器在计算出一个数据值后可以直接使用它，而不必将其存储到寄存器或内存，再次读取。保留站，通过重命名寄存器，<em><strong>从而？？？</strong></em>，最后得到的效果是解决了写后读、读后写、写后写危害。此外，保留站通过一条数据总线（CDB）连接所有执行单元。如果操作数未获得，保留站会侦听该数据总线（CDB），直到操作数到达，就可以直接执行指令。</p>
+<p>Intel架构中，<strong>流水线</strong>由前端、执行引擎（后端）和内存子系统组成，x86指令由前端从内存中获取，解码为微操作，然后传输给执行引擎。执行引擎中实现“无序执行”。Reorder buffer负责寄存器分配、寄存器重命名和丢弃，同时负责 move elimination和zero idioms的识别。Scheduler（统一的保留站）接收传来的微指令，重新排序，然后传递给Execution Units。Excution Units中的每一个执行单元执行不同的任务，比如ALU、AES、AGU和内存的加载、存储。其中，AGU和内存的加载、存储单元，和内存子系统直接连接。</p>
+<p>CPU通常不运行线性指令流，其中包含<strong>分支预测单元</strong>，对下一条指令是否应该执行生成预测。分支预测单元尝试在指令确定可以执行前，预测出结果。其中，分支上没有任何依赖关系的指令可以提前被执行，这样的话，一旦该指令确实应该被执行，处理器就可以直接使用其结果；否则，就通过清除Reorder buffer和初始化统一的保留站，来回滚到正常状态。</p>
+<p><strong>分支预测的实现，有很多种方法</strong>。比如静态分支预测，基于指令本身对结果进行预测；动态分支预测，在运行时收集统计数据，预测结果；一级分支预测，使用1位或2位的计数器来记录分支的最终结果；现代处理器通常使用两级自适应预测，保留最后n个结果，可以预测定期重复的一些模式；神经分支预测，也是最近被采纳的新方法。</p>
+<h3 id="地址空间">地址空间</h3>
+<p>虚拟地址空间的实现，是通过一个multi-level page translation table，它定义了虚拟地址到物理地址的映射，提供了一些特权检查的保护措施，包括的特权有：可读、可写、可执行、可访问的用户。当前使用的转化表保存在CPU的一个特殊的寄存器内。</p>
+<p>通过系统在table中的可访问权限设置，可以避免应用程序直接访问地址空间中的kernel部分。</p>
+<p>完整的物理内存会被映射到kernel中，不同的操作系统使用不同的映射方式：</p>
+<ul>
+<li>Linux和OS X中，采用直接的物理映射</li>
+<li>Windows中，设置了paged pools、non-pages pools和system cache。三者映射物理内存的不同部分。</li>
+</ul>
+<p>一般来说，利用内存错误的漏洞，都需要提前猜测到特定数据所在的地址。现有的ASLR、金丝雀，或者设置栈中不可执行的安全措施可以一定程度防范此类漏洞。但是，近些年也出现了一些对应的攻击手段，比如侧信道攻击、利用JavaScript使ASLR失效。</p>
+<h3 id="缓存攻击">缓存攻击</h3>
+<p>对于经常使用的数据，CPU和内存间设置了多级缓存，其中，地址空间转换表也会被缓存在这里。</p>
+<p>缓存攻击关注因为引入缓存机制造成的时间上的差异，有很多例子。比如Flush+Reload缓存攻击，通过clflush指令刷新目标内存位置，测量重新加载数据所需要的时间，<em>具体细节省略</em>。</p>
+<p>侧信道攻击的另一个特殊用例是隐蔽通道。</p>
+<h2 id="一个简易例子">一个简易例子</h2>
+<p>本节，介绍一个简单的代码片段，来说明无序执行改变微架构状态的行为会泄露信息。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="n">raise_exception</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// the line below is never reached
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">access</span><span class="p">(</span><span class="n">probe_array</span><span class="p">[</span><span class="n">data</span> <span class="o">*</span> <span class="mi">4096</span><span class="p">]);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>该代码，首先引发一个异常，再访问一个数组。</p>
+<p>关于操作系统对“异常”的处理，引发后，控制流不会继续执行异常后的代码，而是跳转到操作系统的异常处理程序。因此，理论上，该代码中的访问数组操作不会被执行。但是，因为处理器的无序执行特性，CPU可能已经执行了该指令，因为它不依赖于“触发异常”的那条指令。</p>
+<p>宏观来看，处理器的无序执行不会产生任何不好的影响，毕竟处理器会根据异常处理之后，再决定无序执行的指令的操作结果是否保留。但是，微架构层次来看，本代码中的数组已经被加载到了cache中。这样的话，我们就可以通过侧信道攻击获取缓冲中的信息，比如通过Flush+Reload来检测一个特定的内存是否被缓存了。并且，进一步展开攻击。</p>
+<p>具体来说，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">char</span> <span class="n">data</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="mh">0xFFFF8E19</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%c</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">data</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="构建攻击模块">构建攻击模块</h2>
+<p><img src="src/Meltdown%E6%94%BB%E5%87%BB%E6%A8%A1%E5%9D%97.png" alt=""></p>
+<h3 id="41-运行-transient-指令">4.1 运行 transient 指令</h3>
+<p>上面提到的例子中，“异常”之后的指令，被称为 transient 指令。它具有两个特点：1. 无序执行，2. 处理器去处理“异常”了，因此对于 transient指令的副作用，攻击者可以处理并利用。</p>
+<p>transient指令，瞬态指令，因为它虽然暂时被执行了，但是处理器反应过来之后，回对其进行处理。</p>
+<p>访问用户不可访问的页面，会触发“异常”。攻击者对“异常”的处理，一般来说，有两种方案：</p>
+<ul>
+<li>异常处理</li>
+<li>异常抑制</li>
+</ul>
+<h3 id="42-建立隐蔽信道">4.2 建立隐蔽信道</h3>
+<p>隐蔽信道，就是读取 transient 指令执行造成的处理器“微架构”状态改变，从状态中推断出秘密信息，然后传送出去。</p>
+<p>隐蔽信道的发送方，是上面的transient指令，它利用内存中的某个用户程序可访问的地址。该地址被缓存，就相当于发出“1”。隐蔽信道的接收方，试图访问这个位置，可以通过访问时间（Flush+Reload），确定此时该地址是否被缓存。如果发现其被“缓存”，则相当于接收到了“1”这个隐蔽信息。</p>
+<h2 id="meltdown">Meltdown</h2>
+<p>首先，我们讨论攻击设置以强调这种攻击的广泛适用性。</p>
+<p>其次，我们提供了攻击概述，展示了 Meltdown 如何同时安装在个人计算机的 Windows 和 Linux 上、手机上的 Android 系统以及云中。</p>
+<p>最后，我们讨论了 Meltdown 的具体实现，允许以 3.2 KB/s 到 503 KB/s 的速度转储任意内核内存。</p>
+<h4 id="攻击设置">攻击设置</h4>
+<p>攻击环境包括云上的个人计算机和虚拟机</p>
+<p>攻击者拥有普通用户权限，执行非特权代码</p>
+<p>假定系统具有现阶段所有最先进的防御措施，比如ASLR KALSR SMAP SMEP NX PXN</p>
+<p>假定系统没有任何bug，没有任何可利用的软件漏洞</p>
+<p>攻击者的目标是秘密用户数据</p>
+<h3 id="51-攻击描述">5.1 攻击描述</h3>
+<p>Meltdown攻击的核心：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">;rcx = kernel address, rbx = probe array
+</span></span><span class="line"><span class="cl">xor rax rax
+</span></span><span class="line"><span class="cl">retry:
+</span></span><span class="line"><span class="cl">mov al, byte [rcx]
+</span></span><span class="line"><span class="cl">shl rax, 0xc
+</span></span><span class="line"><span class="cl">jz retry
+</span></span><span class="line"><span class="cl">mov rbx, qword [rbx + rax]
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>三个步骤</p>
+<ol>
+<li>加载攻击者无法访问的内存位置的内容（秘密）到寄存器</li>
+<li>transient指令根据寄存器中加载的“秘密”，访问高速缓存，相当于发送“秘密”</li>
+<li>攻击者使用Flush+Reload来访问高速缓存，接收秘密信息</li>
+</ol>
+<h4 id="步骤1读取秘密">步骤1：读取秘密</h4>
+<p>为了从内存中的特权位置，读取秘密到寄存器，用户程序使用虚拟地址来引用内存中的数据。</p>
+<p>每一个kernel的虚拟地址，通过转换都会指向一个实际的物理地址。</p>
+<p>虚拟地址转换为物理地址的同时，处理器还会检查虚拟地址的权限位，确定该地址是用户可访问的，还是只有kernel能够访问。</p>
+<p>用户程序访问kernel地址空间，会引发异常。但是，Meltdown利用处理器的乱序执行，在非法内存访问和引发异常之间的小时间窗口内执行命令。</p>
+<h4 id="步骤2传输秘密">步骤2：传输秘密</h4>
+<p>在内存中分配一个<strong>探测数组</strong>，并确保该数组的任何部分都没有被缓存。</p>
+<p>为了传输秘密，transient指令序列对基于secret值计算的地址，进行间接地址访问。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">shl rax, 0xc
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>左移12位，也就是将secret值乘以4 KB(4096 B)，乘以页面大小。从而防止相邻的内存位置被加载时，影响结果。</p>
+<p>在这里，我们一次读取一个字节，也就是0~255的数。因此，探测数组需要满足256 x 4096B的大小。</p>
+<p>对 0 的噪声优化。</p>
+<p>secret -&gt; L1 cache -&gt; L3 cache</p>
+<h4 id="步骤3接收秘密">步骤3：接收秘密</h4>
+<p>攻击者遍历探测数组的所有 256 页并测量每个第一个缓存行的访问时间（即偏移量) 页面上。包含在缓存的缓存行的<strong>页面编号直接对应于秘密值</strong>。</p>
+<h4 id="dump出完整的物理内存">Dump出完整的物理内存</h4>
+<p>重复 Meltdown 的所有 3 个步骤，攻击者可以通过遍历所有地址来转储整个内存。</p>
+<p>由于所有主要操作系统通常也将整个物理内存映射到内核地址空间，因此，在每个用户进程中，Meltdown 还可以读取目标机器的整个物理内存</p>
+<h3 id="52-优化和限制">5.2 优化和限制</h3>
+<h4 id="对-0-的固有偏差">对 0 的固有偏差</h4>
+<p>在无序执行的数据加载期间，如果值不可用，处理器可能会停止运作，但是也可能猜测出一个值，先继续执行着。</p>
+<p>我们观察到，Meltdown的非法内存加载，secert值经常返回0，原因有两个：</p>
+<ol>
+<li>transient微指令的操作被权限检查操作优先了</li>
+<li>处理器对权限检查的结果的猜测值，可能是1，也可能是0，而且从现有处理器的软硬件配置来说，0的可能性更高。也就是权限不允许。</li>
+</ol>
+<p>因此，在secret值为0的时候，我们的Meltdown攻击会执行一定次数的重复，避免上述两个原因导致的偏差。</p>
+<h4 id="对-0-误差的优化">对 0 误差的优化</h4>
+<h4 id="单比特传输">单比特传输</h4>
+<h4 id="使用intel-tsx的异常抑制">使用Intel TSX的异常抑制</h4>
+<h4 id="突破kaslr">突破KASLR</h4>
+<h2 id="evaluation">Evaluation</h2>
+<h2 id="对策">对策</h2>
+<h2 id="讨论">讨论</h2>
+<h2 id="结论">结论</h2>
+<p>本文介绍了Meltdown，一种新的基于软件的攻击方法。它利用现代处理器的<strong>无序执行</strong>和<strong>测信道</strong>，使得无特权的用户空间程序能够读取任意地址的 kernel 内存。</p>
+<p>Meltdown 不需要某种软件漏洞，也不依赖某种操作系统，能够帮助攻击者以高达 503 KB/s的速率读取云上其他进程和虚拟机中的敏感数据，影响数百万设备。</p>
+<p>我们发现，<strong>KAISER</strong>最初提出的<strong>对抗KASLR侧信道攻击</strong>的对策，无意中也阻碍了Meltdown。</p>
+<p>我们强调，KAISER需要部署在每个操作系统上，作为一种短期的解决方案，直到Meltdown在硬件上得到修复，以防止Meltdon攻击的大规模出现。</p>
+<h2 id="meltdown-in-practice">Meltdown in Practice</h2>
+<h2 id="real-world-meltdown-exploit">Real-world Meltdown Exploit</h2>
+]]></description>
+      
+      
+      <guid>http://localhost:1313/post/meltdown/</guid>
+      <link>http://localhost:1313/post/meltdown/</link>
+      
+      
+      <pubDate>Sun, 29 Jan 2023 13:00:25 +0800</pubDate>
+      
+      
+      <title>Meltdown</title>
+      
+    </item>
+    
+    <item>
+      
+      
+      <description><![CDATA[<h2 id="摘要">摘要</h2>
+<p>在给cpu添加新特性时，cpu制造商引入一个受限的cpu配置手段（model-specific registers&mdash;MSR）来保证处理器的后向兼容。MSR种类繁多，提供很多特性，比如调试、性能监控和一些安全保障。目前来看，许多MSR被document了，但是仍然存在大量的MSR没有被document，或者document的不完全（指该MSR寄存器的某些bit没有被document）。因此，在数以百计的MSR（每个提供多达64比特的配置选项）中，寻找特定的配置项是乏味的。</p>
+<p>我们的研究表明：</p>
+<ol>
+<li>Intel和AMD处理器上，可以自动检测某个MSR和对应的配置比特。我们引入了<strong>一个能够检测特殊比特的框架</strong>&mdash;<strong>MSRevelio</strong>，它能够自动检测影响指令行为的特殊比特，半自动检测BIOS设置中修改的特殊比特。</li>
+<li>一些之前忽视的比特位，可以用来<strong>防御</strong>部分微架构攻击，比如Medusa, CrossTalk和软件预读取攻击</li>
+<li>一个特定的undocumented比特位，能够在运行时关闭AES-NI，强制mbedTLS的AES部分“回退”到一个容易遭受缓存攻击的版本。在一个SGX enclave中利用这个“回退”，我们完整恢复了enclave使用AES密钥。</li>
+<li>在对潜在漏洞进行公开陈述前，我们可以提前检测到用microcode更新的安全措施。</li>
+<li>Xen对MSR的处理存在缺陷，游客能够访问undocumented和unhandled的MSRs，and fingerprint specific Xen versions。</li>
+<li>Xen游客能够访问的一个undocumented的比特位，与CPU的时间戳计数器相关。基于此，我们实现了一种Foreshadow攻击。因此，对于那些和CPU经常交互的特性，透明度是很重要的。</li>
+</ol>
+<h2 id="1-intro">1. Intro</h2>
+<p>前三段，对MSR的用途、基于MSR的攻击、基于MSR的Mitigation的相关工作进行了介绍。</p>
+<p>第四段，介绍一个自动化的检测工具&mdash;<a href="https://github.com/IAIK/msrevelio">MSRevelio</a>，检测MSRs，对其分类为documented, partly documented, undocumented三类，分析检测到的undocumented的MSR，使用概率分析来寻找undocumented MSR和documented MSR之间的相关性。</p>
+<p>第五段，介绍基于 MSRevelio来半自动化检测不同的BIOS版本中，受到BIOS设置影响的MSR。并且给出了6个相关的安全case studies。</p>
+<p>第六段，介绍MSR影响指令行为，可以用来mitigate一些攻击，也会造成一些安全问题。</p>
+<p>第七段，针对不同的CPU microcode版本，作者发现可以提前检测到不同版本间的区别，知道厂商部署了什么安全措施。在漏洞和补丁，公开之前。</p>
+<p>第八段，Xen使用一个block list来避免游客访问部分MSR，允许其访问剩余的所有MSR（已知的+未知的）。这造成两个问题，根据block list，攻击者可以迅速得到Xen的版本号，而且旧版本由于没有禁用新版本增加的MSR，游客使用旧版本的Xen可以潜在地访问host系统的那些安全相关的MSR。</p>
+<p>第九段，MSR会直接影响到系统的安全性。如果用户能够修改某些MSR，那么他们很有可能可以使得一些mitigation失效。当然，使用MSR，也可以对一些软件层面的漏洞进行防御，比如prefetch-based攻击。我们建议对于那些处理器漏洞，应该用配置MSR来作为短期方案，之后在硬件层面进行解决。</p>
+<p>第十段，就是说一下作者的贡献，主要都是摘要里面的“研究表明”部分。</p>
+<h2 id="2-background">2. Background</h2>
+<h3 id="a-model-specific-registermsr">A. Model Specific Register(MSR)</h3>
+<p>MSR寄存器的地址为32位，大小为64位，使用两个特权指令<code>rdmsr</code>和<code>wrmsr</code>来读取和写入。</p>
+<p>Hypervisor（虚拟化技术）通过限制可访问的MSR，避免guest系统控制host系统。</p>
+<h3 id="b-intel-sgx">B. Intel SGX</h3>
+<p>Intel SGX是一个用来提供Intel CPU上的可信执行环境的指令集扩展，假定OS、管理员和特权软件都有可能被欺骗，执行恶意代码。所以，它把所有受信任的代码存储在一个特定的区域&mdash;<strong>enclave</strong>。enclave的程序运行在一个加密、被隔离的区域，从而OS和物理攻击这也没办法访问其内容。Intel认为，enclave出现漏洞，一定是因为enclave开发者本身的问题。或者是类似于条件竞争的软件bug。常规应用程序可以调用enclave，OS能够在任意时间点中断enclave。</p>
+<h3 id="c-micro-op-performance-profiling">C. Micro-op Performance Profiling</h3>
+<p>乱序执行的引入增加了CPU的复杂性，传统方法难以分析正在执行代码的实际行为，CPU厂商引入一些 <strong>Performance Monitor Counters(PMCs)</strong>，用于更精确地检测代码的执行过程，但是因为CPU还会把指令分解为微操作，所以PMC观测到的事件和指令难以进行对应。</p>
+<p><a href="https://github.com/andreas-abel/nanoBench"><strong>NanoBench</strong></a>，可以解决上述问题，寻找到某个指令实际对应的PMCs。它能够<strong>减少外部影响</strong>（噪音），对指定的代码片段进行compile处理，并且<strong>使用一个已知的state来填满 CPU pipeline</strong>，为所有的测试过程提供相同的测试环境。也就是说，可以使用这个工具得到某条指令的实际行为。</p>
+<h3 id="d-transient-execution-attacks">D. Transient-execution Attacks</h3>
+<p>乱序执行和推测执行使得CPU会经历瞬态执行的一个阶段，收集微结构层次的痕迹，就可以泄露秘密信息。</p>
+<h3 id="e-microcode">E. Microcode</h3>
+<p>用于CPU的安全机制更新，是一个抽象层，位于实际的物理硬件和 Instruction Set Architecture之间。</p>
+<h2 id="3-msrevelio">3. MSRevelio</h2>
+<p>该机制的目的是找到影响系统安全性的undocumented MSR的比特位。</p>
+<p>大致的工作流程为，扫描可能的MSR的地址空间（整个32bit的地址空间，两个十六进制数来表示），然后进行不断分类。</p>
+<ol>
+<li>read-only, write-only, read-writable
+<ol>
+<li>就是用rdmsr, wrmsr尝试读和写，看看会不会引发GPF中断错误</li>
+</ol>
+</li>
+<li>documented, <strong>undocumented</strong>, <strong>partly documented</strong>
+<ol>
+<li>下载官方的document（PDF），开发一个PDF解析器，将检测到的MSR和官方文档的MSR进行自动对比</li>
+</ol>
+</li>
+<li>Dynamic, static
+<ol>
+<li>Dynamic。进行cpu压力测试，观察undocument MSR bits和documented bits的相关性</li>
+<li>static。通常为配置项，在相同环境下，反复执行某一个片段，修改其值，观察区别。</li>
+</ol>
+</li>
+</ol>
+<p>然后，修改BIOS的某一项配置，观察MSR的变化</p>
+<h3 id="a-detecting-undocumented-msrs">A. Detecting Undocumented MSRs</h3>
+<p>该阶段对完整的32bit的地址空间进行扫描，完成前两项分类工作。</p>
+<blockquote>
+<p><strong>关于：GPF</strong></p>
+</blockquote>
+<p>一般保护错误，是一种错误或者说是，因为错误而被引发的中断。如果程序（用户程序或内核程序）违反了处理器的保护措施，会引发这个中断。一次的话，会关闭进程，告知用户；如果处理GPF过程中，引发二次GPF，会蓝屏；如果三次，会自动关闭处理器。</p>
+<blockquote>
+<p><strong>关于：SMM 模式</strong></p>
+</blockquote>
+<p>SMM mode，系统管理模式。它是intel引进的，对OS透明，操作系统完全不了解处理器什么时候进入了SMM mode，甚至不清楚处理器曾经进入过SMM mode。intel在CPU上增加一个管脚，其为高电平时，CPU进入PMM模式，屏蔽一切中断，只能在系统管理内存（SMRAM）执行SMM程序（只能由BIOS等硬件实现），只能通过执行RSM指令推出SMM模式。
+在具体实现上，有一些需要注意的细节，作者在这一部分进行了列举。</p>
+<blockquote>
+<p>MSRevelio is implemented as a Linux kernel module with an additional user-space library. It uses the rdmsrl_safe and wrmsrl_safe kernel functions to catch GP faults when reading and writing MSRs.</p>
+</blockquote>
+<h3 id="b-classifying-msrs">B. Classifying MSRs</h3>
+<blockquote>
+<p>见A.设计的第三步</p>
+</blockquote>
+<p>该阶段完成第三项工作、第四项工作的前半部分：</p>
+<ol>
+<li>上面提到的分类工作的最后一项。dynamic, static
+<ol>
+<li>dynamic, 随着CPU，基本上一直在变。比如计数器、传感器的值</li>
+<li>static, 基本上没什么变化，比如一些配置选项</li>
+</ol>
+</li>
+<li>针对undocumented <strong>dynamic</strong> MSR bits，分析 undocumented MSR bit和documented MSR bit 之间的相关性
+<ol>
+<li>执行一个CPU的压力测试，记录这些MSR的<strong>归一化</strong>后的值</li>
+<li>the Spearman and the Pearson coefficient来分析相关性</li>
+</ol>
+</li>
+</ol>
+<hr>
+<p><a href="https://github.com/IAIK/msrevelio"><strong>项目地址</strong></a>，在实现的时候，clone下该仓库以后，进行以下三步：</p>
+<ol>
+<li>Building the tools
+<ol>
+<li>主要在 ./msr_scanner目录下</li>
+<li>用管理员权限加载到kernel一个模块，具体来说，就是在./msr_scanner/<strong>modules</strong> 目录下，make一下，将生成的 <strong>msrs.ko</strong> 插入到 kernel modules 中
+<ol>
+<li><code>.ko</code>(kernel object)，比<code>.o</code>多了个kernel，可以加载到内核中的驱动模块</li>
+</ol>
+</li>
+<li>./msr_scanner/<strong>tools</strong> 目录下，make一下，得到三个可执行文件
+<ol>
+<li><strong>msrs_detect</strong> - this can be used to trigger a scan</li>
+<li><strong>msrs_ls</strong> - prints all found MSRs</li>
+<li><strong>msrs_sample</strong> - can be used to sample MSR values</li>
+</ol>
+</li>
+</ol>
+</li>
+<li>Run MSR detection
+<ol>
+<li>主要在 ./msr_scanner/<strong>tools</strong>/build/bin/ 目录下，运行一下 msrs_detect开始扫描，扫描结束后，使用msrs_ls将扫描结果存储在一个msrs.log文件内。</li>
+</ol>
+</li>
+<li>Analyze MSR list
+<ol>
+<li>主要在 ./scripts/sampling 目录下。</li>
+<li>运行一个sample_all.sh（调用上面生成的msrs_sample工具）</li>
+<li>运行一个msrs_analyze.py，看看哪些MSR是随时间变化的。 绘图，寻找dynamic MSR之间的相关性。</li>
+</ol>
+</li>
+</ol>
+<hr>
+<h3 id="c-impact-on-instruction-behavior">C. Impact on Instruction Behavior</h3>
+<p>该阶段完成第四项工作的后半部分，研究undocumented MSR bits对指令行为的影响（相同测试环境内，运行 a set of instructions），对<strong>undocumented static MSRs</strong>进行处理，因为波动的MSR bits一般不会成为 feature-control bits，<strong>配置选项</strong>。</p>
+<p>但是，存在一个问题，就是我们如何确定，造成指令行为变化的MSR bits，是某一个MSR中单个反转了的bit，还是某个MSR中部分bits共同组成了一个配置选项。</p>
+<blockquote>
+<p>MSR寄存器的地址为32位，大小为64位</p>
+</blockquote>
+<p><strong>一般的方法是</strong>，针对每个MSR中可写的bits，迭代地反转每一个比特，毫无疑问，这样做，得出来的结果更加全面，但是工作量很爆炸。</p>
+<p>因此，作者提出 <strong>optimized flipping masks</strong>（反转掩码，64比特长度，做异或进行反转）。他<strong>只考虑长度不大于 W 的比特组（可能的配置选项）</strong>，采用2^W^次的写入，遍历一遍，看看PMC的变化。当然，这样得出的结果是不全面的，但是具有更高的效率。</p>
+<p>具体原因有两个：一个是工作量；另一个是作者假设，这些配置选项之间不存在相互影响。</p>
+<blockquote>
+<p>It is not beneficial to have one bit for enabling a feature and another for disabling it again.</p>
+</blockquote>
+<p><strong>实现：</strong> MSRevelio是基于nanoBench的，前文提到过，它对代码片段进行compile，杜绝外部影响，在构造的相同的测试环境中多次重复compile后的代码片段。</p>
+<p>面对庞大的搜索空间，nanoBench需要调用的次数是极为频繁的，所以，MSRevelio基于 undocumented bits的行为，对其进行了三个阶段的预筛选。</p>
+<ol>
+<li>Phase 1: Detecting Writable Bits.
+<ol>
+<li>对所有undocumented MSR bits，尝试读出值，然后将反转后的值写入，再尝试读出值，看看反转是否成功。将结果记录下来</li>
+<li>因为MSR bits的修改经常会造成系统故障，还要记录出一个blocklist of such MSRs。</li>
+<li>该过程可以使用一个远程控制的power switch实现自动化（引用文献24）</li>
+</ol>
+</li>
+<li>Phase 2: Initial Recording of the Changed States.
+<ol>
+<li>使用相同的 instruction groups ，测试长度不大于4比特的所有可能区域造成的影响。</li>
+<li>假设：多个undocumented enum MSR fields对指令行为的影响是相互独立的。所以，该阶段作者没有控制变量，每次只测试一个enum MSR field，而是对一个MSR的所有可能enum MSR fields同时测试。
+<ol>
+<li>所以，才会有 i5-4570 中，177个MSR中共3612个undocumented writable bits，第一次测试，逐个MSR进行16次测试，也就是 177 x 16 = 2832次</li>
+<li>找到特定的那个MSR之后，64个bit的空间，对于所有可能的enum MSR field，因为上一步已经测试了一部分（也就是从头到尾恰好16组），剩下的组不交叉的部分也可以同时测试。关于需要进行31 x 16 次数，这里有一个<strong>疑问</strong>。</li>
+</ol>
+</li>
+</ol>
+</li>
+<li>Phase 3: Finding the Origin of the Effects.
+<ol>
+<li>Phase 2后会得到一个对指令行为有明显影响的MSR的候选列表。</li>
+<li>本阶段，针对候选项中的每一个MSR，顺序测试所有bit，从而将PMC观察到的影响和特定的enum字段进行对应。</li>
+</ol>
+</li>
+</ol>
+<p>![IA32_MCi_STATUS MSR](src/IA32_MCi_STATUS MSR.png)</p>
+<hr>
+<p>项目中相对应的<a href="https://github.com/IAIK/msrevelio/tree/master/msr_influences">介绍</a>，</p>
+<hr>
+<h3 id="d-results">D. Results</h3>
+<p>我们在总共5个CPU上对未记录的MSR进行了彻底搜索。这些CPU的总体结果如表1所示。</p>
+<p>我们在AMD和Intel CPU上发现了5890个未记录的MSR，其中大多数发现的MSR（4876）位于AMD CPU上。</p>
+<p>然而，在AMD上发现的静态、可读可写、未记录的MSR中，96.8%在写入时不会引发GP错误，而是忽略写入值，从而限制了进一步的位行为分析。</p>
+<p>我们也观察到54.1%的英特尔MSR有类似的行为。</p>
+<p>我们分析了所有这些未记录的MSR与记录的MSRs的相关性。我们发现53个未记录的MSR暴露了与现有MSR相关的持续变化的值。例如，动态MSR（0x637）公开了一个与记录的计数器相关的单调计数器，我们在第V-F节中进一步探讨了这个计数器。</p>
+<p>对于静态MSR，我们进行了enum字段搜索，以查找影响特定指令的位。我们发现1个未记录的位和6个部分记录的位影响cpuid和预取等指令。第五节分析了这些MSR位的影响。为了确定MSR的具体功能，需要手动分析。</p>
+<h2 id="4-detecting-os-configurable-bios-features">4. Detecting OS-configurable BIOS features</h2>
+<p>本章节研究BIOS的设置会造成哪些 static MSRs发生变化。BIOS主要用于在boot时配置一些CPU的选项，比如采用哪些features，电源管理相关的。一些CPU的配置只能由BIOS在boot时设置，另一些选项能够由操作系统修改。许多BIOS版本仅向用户公开一小部分设置。MSLevelio模板化BIOS版本，以提示用户如何从操作系统重新启用解锁功能。此外，它还可用于分析未记录或描述不佳的BIOS功能是否会影响MSR。</p>
+<h3 id="a-bios-templating">A. BIOS Templating</h3>
+<p>提前准备一个 MSR列表和BIOS设置表，记录static MSR的初始值，尝试修改某一个 BIOS设置，观察这些 static MSR的值是否发生了变化。反复多次。</p>
+<p>这里的static MSR bits包括 documented 和 undocumented。</p>
+<h3 id="b-setup">B. Setup</h3>
+<p>评估了 5 个CPU，结果是发现了一些没有被官方文档记录的BIOS设置选项。</p>
+<p>实现时，将所有BIOS设置为默认值，然后使用 MSRevelio来测试它是否可读、可写，然后更改特定设置，观察MSR的前后差异。</p>
+<h3 id="c-results">C. Results</h3>
+<p>1）Documented Settings</p>
+<p>一些发现，比如其中一个MSR bit可以支持 fast-support string，从而防御 Medusa</p>
+<p>2）Unofficial or Undocumented Settings</p>
+<p>还有一个 0x7a 的MSR，有一个 bit 可以开启 Intel SGX。0x13c的MSR有一个bit可以用来关闭AES-NI</p>
+<h2 id="5-case-studies">5. Case studies</h2>
+<p>本节介绍六个case，证明先前忽略的MSR位的安全影响。</p>
+]]></description>
+      
+      
+      <guid>http://localhost:1313/post/finding-and-exploiting-cpu-features-using-msr-templating/</guid>
+      <link>http://localhost:1313/post/finding-and-exploiting-cpu-features-using-msr-templating/</link>
+      
+      
+      <pubDate>Sun, 29 Jan 2023 12:29:25 +0800</pubDate>
+      
+      
+      <title>MSR security</title>
+      
+    </item>
+    
+  </channel>
+</rss>

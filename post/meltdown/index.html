@@ -1,0 +1,725 @@
+<!doctype html>
+
+
+<html    lang="zh-cn" >
+    <head>
+    
+    <meta charset="utf-8">
+
+
+
+    <meta content="cpu_security" name="keywords">
+
+<meta content="#0d6efd" name="msapplication-TileColor">
+
+<meta content="#0d6efd" name="theme-color">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+<meta property="og:title" content="Meltdown" />
+<meta property="og:description" content="Meltdown: 试图从用户空间读取 kernel 的内存 CVE-2017-5754 摘要 计算机系统的安全性，根本上来说，依靠内存隔离。比如：kernel地址范围对用户来说，标记为不可访问。 本文提" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/post/meltdown/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2023-01-29T13:00:25+08:00" />
+<meta property="article:modified_time" content="2023-01-29T13:00:25+08:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Meltdown"/>
+<meta name="twitter:description" content="Meltdown: 试图从用户空间读取 kernel 的内存 CVE-2017-5754 摘要 计算机系统的安全性，根本上来说，依靠内存隔离。比如：kernel地址范围对用户来说，标记为不可访问。 本文提"/>
+
+
+    <title>Meltdown · Cheese - A wonderful world for you</title>
+    <link href="/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180">
+<link href="/favicon-16x16.png" rel="icon" sizes="16x16" type="image/png">
+<link href="/favicon-32x32.png" rel="icon" sizes="32x32" type="image/png">
+
+<link href="/favicon.png" rel="icon" type="image/png">
+<link href="/favicon.svg" rel="icon" type="image/svg+xml">
+<link color="#0d6efd" href="/safari-pinned-tab.svg" rel="mask-icon">
+<link href="/site.webmanifest" rel="manifest">
+
+
+
+
+
+
+
+
+    
+
+
+<link  crossorigin="anonymous"  href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css" integrity=""  referrerpolicy="no-referrer"  rel="stylesheet">
+
+
+
+
+
+
+
+
+
+    
+    
+    
+
+
+<link  crossorigin="anonymous"  href="/bootstrap.min_11254274094227627370.min.9e0a1d275ddeb92360d4b48d8190962b9d8b1c347856c3931e15d54f308ecfcb.css" integrity="sha256-ngodJ13euSNg1LSNgZCWK52LHDR4VsOTHhXVTzCOz8s="  referrerpolicy="no-referrer"  rel="stylesheet">
+
+
+
+
+    <style>
+body, html {
+    height: 100%;
+}
+
+section[class="paige-content"] {
+    counter-reset: paige-figure;
+    max-width: 100%;
+}
+
+section[class="paige-content"] figure.paige-figure.paige-figure-numbered {
+    counter-increment: paige-figure;
+}
+
+section[class="paige-content"] figure.paige-figure.paige-figure-numbered figcaption:empty::before {
+    content: " " counter(paige-figure);
+}
+
+section[class="paige-content"] figure.paige-figure.paige-figure-numbered figcaption::before {
+    content: " " counter(paige-figure) ": ";
+}
+
+section[class="paige-content"] > blockquote {
+    padding: 0.5rem 1rem;
+    border-left: 0.25rem solid var(--bs-border-color);
+    padding-right: 0.25rem;
+}
+
+section[class="paige-content"] > blockquote p:last-of-type {
+    margin-bottom: 0;
+}
+
+
+
+
+
+.paige-figure .highlight .chroma pre,
+.paige-figure .highlight pre.chroma {
+    margin-bottom: 0;
+}
+
+.highlight .chroma .lnt,
+.highlight .chroma .hl {
+    display: flex;
+}
+
+.paige-figure > div > div[class="highlight"] > pre, .paige-figure > div > :last-child {
+    margin-bottom: 0;
+}
+
+.paige-header-link {
+    margin-left: 0.5ch;
+    opacity: 0;
+    position: absolute;
+    text-decoration: none;
+    transition: color 0.15s ease-in-out, opacity 0.15s ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .paige-header-link {
+        transition: none;
+    }
+}
+
+.paige-header-link:focus, .paige-header-link:hover, :hover > .paige-header-link, :target > .paige-header-link {
+    opacity: 1;
+}
+
+
+    @media (prefers-color-scheme: dark) {
+        /* Background */ .bg { color: #c9d1d9; background-color: var(--bs-body-bg); }
+/* PreWrapper */ .chroma { color: #c9d1d9; background-color: var(--bs-body-bg); }
+/* Other */ .chroma .x {  }
+/* Error */ .chroma .err { color: #f85149 }
+/* CodeLine */ .chroma .cl {  }
+/* LineLink */ .chroma .lnlinks { outline: none; text-decoration: none; color: inherit }
+/* LineTableTD */ .chroma .lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+/* LineTable */ .chroma .lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
+/* LineHighlight */ .chroma .hl { background-color: #ffffcc }
+/* LineNumbersTable */ .chroma .lnt { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #64686c }
+/* LineNumbers */ .chroma .ln { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #6e7681 }
+/* Line */ .chroma .line { display: flex; }
+/* Keyword */ .chroma .k { color: #ff7b72 }
+/* KeywordConstant */ .chroma .kc { color: #79c0ff }
+/* KeywordDeclaration */ .chroma .kd { color: #ff7b72 }
+/* KeywordNamespace */ .chroma .kn { color: #ff7b72 }
+/* KeywordPseudo */ .chroma .kp { color: #79c0ff }
+/* KeywordReserved */ .chroma .kr { color: #ff7b72 }
+/* KeywordType */ .chroma .kt { color: #ff7b72 }
+/* Name */ .chroma .n {  }
+/* NameAttribute */ .chroma .na {  }
+/* NameBuiltin */ .chroma .nb {  }
+/* NameBuiltinPseudo */ .chroma .bp {  }
+/* NameClass */ .chroma .nc { color: #f0883e; font-weight: bold }
+/* NameConstant */ .chroma .no { color: #79c0ff; font-weight: bold }
+/* NameDecorator */ .chroma .nd { color: #d2a8ff; font-weight: bold }
+/* NameEntity */ .chroma .ni { color: #ffa657 }
+/* NameException */ .chroma .ne { color: #f0883e; font-weight: bold }
+/* NameFunction */ .chroma .nf { color: #d2a8ff; font-weight: bold }
+/* NameFunctionMagic */ .chroma .fm {  }
+/* NameLabel */ .chroma .nl { color: #79c0ff; font-weight: bold }
+/* NameNamespace */ .chroma .nn { color: #ff7b72 }
+/* NameOther */ .chroma .nx {  }
+/* NameProperty */ .chroma .py { color: #79c0ff }
+/* NameTag */ .chroma .nt { color: #7ee787 }
+/* NameVariable */ .chroma .nv { color: #79c0ff }
+/* NameVariableClass */ .chroma .vc {  }
+/* NameVariableGlobal */ .chroma .vg {  }
+/* NameVariableInstance */ .chroma .vi {  }
+/* NameVariableMagic */ .chroma .vm {  }
+/* Literal */ .chroma .l { color: #a5d6ff }
+/* LiteralDate */ .chroma .ld { color: #79c0ff }
+/* LiteralString */ .chroma .s { color: #a5d6ff }
+/* LiteralStringAffix */ .chroma .sa { color: #79c0ff }
+/* LiteralStringBacktick */ .chroma .sb { color: #a5d6ff }
+/* LiteralStringChar */ .chroma .sc { color: #a5d6ff }
+/* LiteralStringDelimiter */ .chroma .dl { color: #79c0ff }
+/* LiteralStringDoc */ .chroma .sd { color: #a5d6ff }
+/* LiteralStringDouble */ .chroma .s2 { color: #a5d6ff }
+/* LiteralStringEscape */ .chroma .se { color: #79c0ff }
+/* LiteralStringHeredoc */ .chroma .sh { color: #79c0ff }
+/* LiteralStringInterpol */ .chroma .si { color: #a5d6ff }
+/* LiteralStringOther */ .chroma .sx { color: #a5d6ff }
+/* LiteralStringRegex */ .chroma .sr { color: #79c0ff }
+/* LiteralStringSingle */ .chroma .s1 { color: #a5d6ff }
+/* LiteralStringSymbol */ .chroma .ss { color: #a5d6ff }
+/* LiteralNumber */ .chroma .m { color: #a5d6ff }
+/* LiteralNumberBin */ .chroma .mb { color: #a5d6ff }
+/* LiteralNumberFloat */ .chroma .mf { color: #a5d6ff }
+/* LiteralNumberHex */ .chroma .mh { color: #a5d6ff }
+/* LiteralNumberInteger */ .chroma .mi { color: #a5d6ff }
+/* LiteralNumberIntegerLong */ .chroma .il { color: #a5d6ff }
+/* LiteralNumberOct */ .chroma .mo { color: #a5d6ff }
+/* Operator */ .chroma .o { color: #ff7b72; font-weight: bold }
+/* OperatorWord */ .chroma .ow { color: #ff7b72; font-weight: bold }
+/* Punctuation */ .chroma .p {  }
+/* Comment */ .chroma .c { color: #8b949e; font-style: italic }
+/* CommentHashbang */ .chroma .ch { color: #8b949e; font-style: italic }
+/* CommentMultiline */ .chroma .cm { color: #8b949e; font-style: italic }
+/* CommentSingle */ .chroma .c1 { color: #8b949e; font-style: italic }
+/* CommentSpecial */ .chroma .cs { color: #8b949e; font-weight: bold; font-style: italic }
+/* CommentPreproc */ .chroma .cp { color: #8b949e; font-weight: bold; font-style: italic }
+/* CommentPreprocFile */ .chroma .cpf { color: #8b949e; font-weight: bold; font-style: italic }
+/* Generic */ .chroma .g {  }
+/* GenericDeleted */ .chroma .gd { color: #ffa198; background-color: #490202 }
+/* GenericEmph */ .chroma .ge { font-style: italic }
+/* GenericError */ .chroma .gr { color: #ffa198 }
+/* GenericHeading */ .chroma .gh { color: #79c0ff; font-weight: bold }
+/* GenericInserted */ .chroma .gi { color: #56d364; background-color: #0f5323 }
+/* GenericOutput */ .chroma .go { color: #8b949e }
+/* GenericPrompt */ .chroma .gp { color: #8b949e }
+/* GenericStrong */ .chroma .gs { font-weight: bold }
+/* GenericSubheading */ .chroma .gu { color: #79c0ff }
+/* GenericTraceback */ .chroma .gt { color: #ff7b72 }
+/* GenericUnderline */ .chroma .gl { text-decoration: underline }
+/* TextWhitespace */ .chroma .w { color: #6e7681 }
+
+    }
+
+    @media (prefers-color-scheme: light) {
+        /* Background */ .bg { background-color: #ffffff; }
+/* PreWrapper */ .chroma { background-color: #ffffff; }
+/* Other */ .chroma .x {  }
+/* Error */ .chroma .err { color: #a61717; background-color: #e3d2d2 }
+/* CodeLine */ .chroma .cl {  }
+/* LineLink */ .chroma .lnlinks { outline: none; text-decoration: none; color: inherit }
+/* LineTableTD */ .chroma .lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+/* LineTable */ .chroma .lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
+/* LineHighlight */ .chroma .hl { background-color: #ffffcc }
+/* LineNumbersTable */ .chroma .lnt { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+/* LineNumbers */ .chroma .ln { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+/* Line */ .chroma .line { display: flex; }
+/* Keyword */ .chroma .k { color: #000000; font-weight: bold }
+/* KeywordConstant */ .chroma .kc { color: #000000; font-weight: bold }
+/* KeywordDeclaration */ .chroma .kd { color: #000000; font-weight: bold }
+/* KeywordNamespace */ .chroma .kn { color: #000000; font-weight: bold }
+/* KeywordPseudo */ .chroma .kp { color: #000000; font-weight: bold }
+/* KeywordReserved */ .chroma .kr { color: #000000; font-weight: bold }
+/* KeywordType */ .chroma .kt { color: #445588; font-weight: bold }
+/* Name */ .chroma .n {  }
+/* NameAttribute */ .chroma .na { color: #008080 }
+/* NameBuiltin */ .chroma .nb { color: #0086b3 }
+/* NameBuiltinPseudo */ .chroma .bp { color: #999999 }
+/* NameClass */ .chroma .nc { color: #445588; font-weight: bold }
+/* NameConstant */ .chroma .no { color: #008080 }
+/* NameDecorator */ .chroma .nd { color: #3c5d5d; font-weight: bold }
+/* NameEntity */ .chroma .ni { color: #800080 }
+/* NameException */ .chroma .ne { color: #990000; font-weight: bold }
+/* NameFunction */ .chroma .nf { color: #990000; font-weight: bold }
+/* NameFunctionMagic */ .chroma .fm {  }
+/* NameLabel */ .chroma .nl { color: #990000; font-weight: bold }
+/* NameNamespace */ .chroma .nn { color: #555555 }
+/* NameOther */ .chroma .nx {  }
+/* NameProperty */ .chroma .py {  }
+/* NameTag */ .chroma .nt { color: #000080 }
+/* NameVariable */ .chroma .nv { color: #008080 }
+/* NameVariableClass */ .chroma .vc { color: #008080 }
+/* NameVariableGlobal */ .chroma .vg { color: #008080 }
+/* NameVariableInstance */ .chroma .vi { color: #008080 }
+/* NameVariableMagic */ .chroma .vm {  }
+/* Literal */ .chroma .l {  }
+/* LiteralDate */ .chroma .ld {  }
+/* LiteralString */ .chroma .s { color: #dd1144 }
+/* LiteralStringAffix */ .chroma .sa { color: #dd1144 }
+/* LiteralStringBacktick */ .chroma .sb { color: #dd1144 }
+/* LiteralStringChar */ .chroma .sc { color: #dd1144 }
+/* LiteralStringDelimiter */ .chroma .dl { color: #dd1144 }
+/* LiteralStringDoc */ .chroma .sd { color: #dd1144 }
+/* LiteralStringDouble */ .chroma .s2 { color: #dd1144 }
+/* LiteralStringEscape */ .chroma .se { color: #dd1144 }
+/* LiteralStringHeredoc */ .chroma .sh { color: #dd1144 }
+/* LiteralStringInterpol */ .chroma .si { color: #dd1144 }
+/* LiteralStringOther */ .chroma .sx { color: #dd1144 }
+/* LiteralStringRegex */ .chroma .sr { color: #009926 }
+/* LiteralStringSingle */ .chroma .s1 { color: #dd1144 }
+/* LiteralStringSymbol */ .chroma .ss { color: #990073 }
+/* LiteralNumber */ .chroma .m { color: #009999 }
+/* LiteralNumberBin */ .chroma .mb { color: #009999 }
+/* LiteralNumberFloat */ .chroma .mf { color: #009999 }
+/* LiteralNumberHex */ .chroma .mh { color: #009999 }
+/* LiteralNumberInteger */ .chroma .mi { color: #009999 }
+/* LiteralNumberIntegerLong */ .chroma .il { color: #009999 }
+/* LiteralNumberOct */ .chroma .mo { color: #009999 }
+/* Operator */ .chroma .o { color: #000000; font-weight: bold }
+/* OperatorWord */ .chroma .ow { color: #000000; font-weight: bold }
+/* Punctuation */ .chroma .p {  }
+/* Comment */ .chroma .c { color: #999988; font-style: italic }
+/* CommentHashbang */ .chroma .ch { color: #999988; font-style: italic }
+/* CommentMultiline */ .chroma .cm { color: #999988; font-style: italic }
+/* CommentSingle */ .chroma .c1 { color: #999988; font-style: italic }
+/* CommentSpecial */ .chroma .cs { color: #999999; font-weight: bold; font-style: italic }
+/* CommentPreproc */ .chroma .cp { color: #999999; font-weight: bold; font-style: italic }
+/* CommentPreprocFile */ .chroma .cpf { color: #999999; font-weight: bold; font-style: italic }
+/* Generic */ .chroma .g {  }
+/* GenericDeleted */ .chroma .gd { color: #000000; background-color: #ffdddd }
+/* GenericEmph */ .chroma .ge { color: #000000; font-style: italic }
+/* GenericError */ .chroma .gr { color: #aa0000 }
+/* GenericHeading */ .chroma .gh { color: #999999 }
+/* GenericInserted */ .chroma .gi { color: #000000; background-color: #ddffdd }
+/* GenericOutput */ .chroma .go { color: #888888 }
+/* GenericPrompt */ .chroma .gp { color: #555555 }
+/* GenericStrong */ .chroma .gs { font-weight: bold }
+/* GenericSubheading */ .chroma .gu { color: #aaaaaa }
+/* GenericTraceback */ .chroma .gt { color: #aa0000 }
+/* GenericUnderline */ .chroma .gl { text-decoration: underline }
+/* TextWhitespace */ .chroma .w { color: #bbbbbb }
+
+    }
+
+</style>
+
+    
+</head>
+
+    <body class="d-flex flex-column">
+
+        
+        <div class="container flex-fill">
+            <div class="row">
+                <div class="col">
+                    
+
+
+
+
+    <header>
+        
+        
+            
+
+
+
+
+
+    
+
+
+
+    
+
+
+<nav class="justify-content-center my-3 navbar navbar-expand-sm">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#paige-menu-toggler" aria-controls="paige-menu-toggler" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse justify-content-center mt-3 mt-sm-0 navbar-collapse" id="paige-menu-toggler">
+        <div class="align-items-center flex-column flex-sm-row justify-content-center nav  nav-pills ">
+            
+                
+                
+                
+                <a  class=" nav-link" href="/">Home</a>
+            
+                
+                
+                
+                <a  aria-current="page"  class=" active   nav-link" href="/post/">Archives</a>
+            
+                
+                
+                
+                <a  class=" nav-link" href="/tags/">Tags</a>
+            
+                
+                
+                
+                <a  class=" nav-link" href="/categories/">Categories</a>
+            
+        </div>
+    </div>
+</nav>
+
+        
+        
+    </header>
+
+
+                    <main>
+                        
+                        
+<article>
+    <div class="align-items-center d-flex flex-column mb-0">
+        <section class="paige-metadata w-100">
+    
+    
+    
+
+    <h1 class="display-5 fw-bold text-center">Meltdown</h1>
+
+
+    
+
+    
+
+
+
+
+
+    <p class="text-center text-secondary">
+        <time datetime="2023-01-29">January 29, 2023</time>
+    </p>
+
+
+</section>
+
+        
+
+        
+    
+
+    <section class="paige-content">
+        
+        
+            <p>Meltdown: 试图从用户空间读取 kernel 的内存</p>
+<p>CVE-2017-5754</p>
+<h2 id="摘要">摘要<a aria-label="Link to this section" class="paige-header-link" href="#摘要">#</a></h2>
+<p>计算机系统的安全性，根本上来说，依靠<strong>内存隔离</strong>。比如：kernel地址范围对用户来说，标记为不可访问。</p>
+<p>本文提出了 Meltdown。它利用现代处理器的<strong>无序执行</strong>，读取内存中kernel的任意位置内容，包括个人数据和密码。</p>
+<p><strong>无序执行</strong>，是现代处理器的不可或缺的性能特征，广泛存在。</p>
+<p>Meltdown攻击，不依赖于某个操作系统，也不依赖于某个软件漏洞。它打破了<strong>地址空间隔离</strong>以及<strong>半虚拟化环境</strong>提供的所有安全保障，打破了在此基础上构建的所有安全机制。</p>
+<p>系统中，无需任何权限，Meltdown能够使攻击者随意读取云上其他进程和虚拟机的内存。影响广泛。</p>
+<p>研究表明，针对KASLR的KAISER防御机制，对Meldown攻击有着意料之外的防护作用。因此，我们建议大家部署KAISER，防御Meltdown攻击。</p>
+<h3 id="q">Q：<a aria-label="Link to this section" class="paige-header-link" href="#q">#</a></h3>
+<p>什么是“无序执行”？什么是KASLR？什么是KAISER防御机制？为什么内核被映射到进程的虚拟地址空间？如何映射？</p>
+<h2 id="intro">Intro<a aria-label="Link to this section" class="paige-header-link" href="#intro">#</a></h2>
+<p>如今操作系统的一个核心安全特征就是，内存隔离。操作系统确保用户不能访问其他用户的内存和 kernel 内存。也是在这种内存隔离技术的基础上，我们才能够在个人设备上同时运行多个应用程序，在云上同时执行多个用户的进程。</p>
+<p>现代处理器中，kernel 对用户进程的隔离，由处理器的一个<strong>超级位</strong>来实现，该超级位定义内核的内存页是否可以访问。一般来说，这个位只能在输入内核代码时设置，在切换到用户进程时会清除。因为这一个硬件级别的特性，操作系统能够将<strong>kernel 映射</strong>到每个进程的<strong>内存地址空间</strong>。这样的话，如果需要临时从用户态转换为内核态，比如处理中断，内存的映射就可以不发生改变，直接执行相应的 kernel 代码。</p>
+<p>本文中，我们提出了 <strong>Meltdown</strong>。它是一种新型攻击方法，能够帮助任何用户进程以一种简单的方式访问其执行的机器的完整内核内存，甚至所有物理内存，无视内存隔离。它不依赖于任何软件漏洞，可以在所有主流操作系统上实现。它利用了<strong>大多数现代处理器的侧信道信息</strong>，例如自2010年以来的现代英特尔微体系结构，以及其他供应商的其他CPU上的潜在信息。</p>
+<p>通常来说，侧信道攻击的实施，需要目标应用程序的特定知识，并且针对泄露的信息而定制。但是，Meltdown攻击仅仅要求，<strong>用户程序能够在处理器上运行代码</strong>，即可获得<strong>完整 kernel 地址空间的一个dump</strong>，其中包括完整的物理内存。该攻击的强大、便利，根源在于现代处理器的“无序执行”特性。</p>
+<p><strong>无序执行</strong>，是当前处理器的一个非常重要的特性，它可以减少繁忙执行单元（就是一直需要执行）的等待时间。比方说，当一个单元需要等待内存中的数据时，处理器没有和它一起停下来，等待数据从内存中传进来，而是将该后续操作安排到core 的空闲执行单元中。处理器继续执行下一个，也就是“向前看”，或者说无序执行。这提高了效率，但也带来了不好的地方，比如说，时序差可能会从顺序执行和无序执行中泄漏信息（<strong>计时攻击</strong>）。</p>
+<p>从安全的角度来看，这其中有一点很重要。处理器允许非特权进程（用户态程序）执行下列<strong>数据加载操作</strong>：从特权地址（kernel地址或某个物理地址）到临时的CPU寄存器中，CPU基于该寄存器的值进行下一步计算（比如说，基于该寄存器的值访问某个数组）。如果之后，处理器发现这条指令本不应该被执行，那么，简单地丢弃查找出的某块内存的内容（通过<strong>修改该寄存器的状态</strong>），就可以确保程序的正确执行。从架构的角度来看，这种方法没有任何安全问题。</p>
+<p>但是，我们观察到无序的内存查找过程，会影响到 cache，通过<strong>cache侧信道</strong>可以检测到这种影响。因此，通过无序执行流<strong>读取特权内存</strong>，攻击者能够dump出完整的kernel内存，并且通过<strong>微架构隐蔽信道</strong>（如Flush+Reload）将数据传输到外界。在隐蔽信道的接收端，攻击者能够恢复出该寄存器的值。因此，在微架构水平（也就是硬件实现），存在可利用的安全问题。</p>
+<p>Meltdown打破了基于处理器内存隔离功能的所有安全保障。我们评估了针对PC、笔记本和云端服务器的<strong>攻击效果</strong>，Meltdown攻击能够帮助非特权进程（用户态进程）读取kernel地址空间（映射）的所有数据，包括Linux、Android和OS X上的完整物理内存，Windows上的大部分物理内存。其中包括kernel、其他进程的内容，以及半虚拟化下（Docker）的内存。虽然，攻击效果很大程度上取决于机器性能，比如处理器速度等，但是，实验中，我们dump任意内存的速度dadao3.2KB/s~503KB/s。大量系统会受到该攻击的影响。</p>
+<p><strong>KAISER</strong>本来是针对KASLR侧信道攻击的防御措施，本实验中发现，它对Meltdown有不错的防御效果。因此，我们强烈建议所有系统部署KAISER。幸运的是，在一个负责任的窗口期（估计是论文发表前），WIndows、Linux和OS X基于KAISER，开发了对应的补丁。</p>
+<p>Meltdown和幽灵攻击（Spectre）不同，具体来说，等我看了下篇论文再说吧。</p>
+<p><strong>贡献：</strong></p>
+<ol>
+<li>将无序执行流，描述为一个新的、强大的和基于软件的侧信道。</li>
+<li>展示了无序执行和微架构隐蔽信道的结合，将数据秘密传输出去。</li>
+<li>将无序执行和异常处理程序（或TSX）结合，提出一种端到端攻击。在PC、笔记本、移动电话和云主机上无需特权读取任意物理内存。</li>
+<li>评估了Meltdown的性能，和KAISER的防御效果。</li>
+</ol>
+<h2 id="background">Background<a aria-label="Link to this section" class="paige-header-link" href="#background">#</a></h2>
+<h3 id="无序执行">无序执行<a aria-label="Link to this section" class="paige-header-link" href="#无序执行">#</a></h3>
+<p>无序执行，本身是一种优化技术，用于提高处理器的利用率。处理器不是严格按照程序指令的顺序执行，如果当前指令要求的操作单元被占用了，就先运行其他的执行单元。一般来说，只要指令执行的结果符合架构上的定义，处理器就可以并行处理这些指令。</p>
+<p>实际上，支持无序执行功能的处理器，推测性地进行操作。也就是说，一定程度上，在处理器确认某个指令需要执行并且完整提交之前，支持无序执行的处理器会先执行该指令。关于“<strong>推测执行</strong>”，就是在原有指令顺序的基础上增加分支。</p>
+<p>1967年，Tomasulo开发了一个算法来实现指令的动态调度、无序执行。他提出一个统一的“保留站”的概念，使得处理器在计算出一个数据值后可以直接使用它，而不必将其存储到寄存器或内存，再次读取。保留站，通过重命名寄存器，<em><strong>从而？？？</strong></em>，最后得到的效果是解决了写后读、读后写、写后写危害。此外，保留站通过一条数据总线（CDB）连接所有执行单元。如果操作数未获得，保留站会侦听该数据总线（CDB），直到操作数到达，就可以直接执行指令。</p>
+<p>Intel架构中，<strong>流水线</strong>由前端、执行引擎（后端）和内存子系统组成，x86指令由前端从内存中获取，解码为微操作，然后传输给执行引擎。执行引擎中实现“无序执行”。Reorder buffer负责寄存器分配、寄存器重命名和丢弃，同时负责 move elimination和zero idioms的识别。Scheduler（统一的保留站）接收传来的微指令，重新排序，然后传递给Execution Units。Excution Units中的每一个执行单元执行不同的任务，比如ALU、AES、AGU和内存的加载、存储。其中，AGU和内存的加载、存储单元，和内存子系统直接连接。</p>
+<p>CPU通常不运行线性指令流，其中包含<strong>分支预测单元</strong>，对下一条指令是否应该执行生成预测。分支预测单元尝试在指令确定可以执行前，预测出结果。其中，分支上没有任何依赖关系的指令可以提前被执行，这样的话，一旦该指令确实应该被执行，处理器就可以直接使用其结果；否则，就通过清除Reorder buffer和初始化统一的保留站，来回滚到正常状态。</p>
+<p><strong>分支预测的实现，有很多种方法</strong>。比如静态分支预测，基于指令本身对结果进行预测；动态分支预测，在运行时收集统计数据，预测结果；一级分支预测，使用1位或2位的计数器来记录分支的最终结果；现代处理器通常使用两级自适应预测，保留最后n个结果，可以预测定期重复的一些模式；神经分支预测，也是最近被采纳的新方法。</p>
+<h3 id="地址空间">地址空间<a aria-label="Link to this section" class="paige-header-link" href="#地址空间">#</a></h3>
+<p>虚拟地址空间的实现，是通过一个multi-level page translation table，它定义了虚拟地址到物理地址的映射，提供了一些特权检查的保护措施，包括的特权有：可读、可写、可执行、可访问的用户。当前使用的转化表保存在CPU的一个特殊的寄存器内。</p>
+<p>通过系统在table中的可访问权限设置，可以避免应用程序直接访问地址空间中的kernel部分。</p>
+<p>完整的物理内存会被映射到kernel中，不同的操作系统使用不同的映射方式：</p>
+<ul>
+<li>Linux和OS X中，采用直接的物理映射</li>
+<li>Windows中，设置了paged pools、non-pages pools和system cache。三者映射物理内存的不同部分。</li>
+</ul>
+<p>一般来说，利用内存错误的漏洞，都需要提前猜测到特定数据所在的地址。现有的ASLR、金丝雀，或者设置栈中不可执行的安全措施可以一定程度防范此类漏洞。但是，近些年也出现了一些对应的攻击手段，比如侧信道攻击、利用JavaScript使ASLR失效。</p>
+<h3 id="缓存攻击">缓存攻击<a aria-label="Link to this section" class="paige-header-link" href="#缓存攻击">#</a></h3>
+<p>对于经常使用的数据，CPU和内存间设置了多级缓存，其中，地址空间转换表也会被缓存在这里。</p>
+<p>缓存攻击关注因为引入缓存机制造成的时间上的差异，有很多例子。比如Flush+Reload缓存攻击，通过clflush指令刷新目标内存位置，测量重新加载数据所需要的时间，<em>具体细节省略</em>。</p>
+<p>侧信道攻击的另一个特殊用例是隐蔽通道。</p>
+<h2 id="一个简易例子">一个简易例子<a aria-label="Link to this section" class="paige-header-link" href="#一个简易例子">#</a></h2>
+<p>本节，介绍一个简单的代码片段，来说明无序执行改变微架构状态的行为会泄露信息。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="n">raise_exception</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// the line below is never reached
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">access</span><span class="p">(</span><span class="n">probe_array</span><span class="p">[</span><span class="n">data</span> <span class="o">*</span> <span class="mi">4096</span><span class="p">]);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>该代码，首先引发一个异常，再访问一个数组。</p>
+<p>关于操作系统对“异常”的处理，引发后，控制流不会继续执行异常后的代码，而是跳转到操作系统的异常处理程序。因此，理论上，该代码中的访问数组操作不会被执行。但是，因为处理器的无序执行特性，CPU可能已经执行了该指令，因为它不依赖于“触发异常”的那条指令。</p>
+<p>宏观来看，处理器的无序执行不会产生任何不好的影响，毕竟处理器会根据异常处理之后，再决定无序执行的指令的操作结果是否保留。但是，微架构层次来看，本代码中的数组已经被加载到了cache中。这样的话，我们就可以通过侧信道攻击获取缓冲中的信息，比如通过Flush+Reload来检测一个特定的内存是否被缓存了。并且，进一步展开攻击。</p>
+<p>具体来说，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">char</span> <span class="n">data</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="mh">0xFFFF8E19</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%c</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">data</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="构建攻击模块">构建攻击模块<a aria-label="Link to this section" class="paige-header-link" href="#构建攻击模块">#</a></h2>
+<p><img src="src/Meltdown%E6%94%BB%E5%87%BB%E6%A8%A1%E5%9D%97.png" alt=""></p>
+<h3 id="41-运行-transient-指令">4.1 运行 transient 指令<a aria-label="Link to this section" class="paige-header-link" href="#41-运行-transient-指令">#</a></h3>
+<p>上面提到的例子中，“异常”之后的指令，被称为 transient 指令。它具有两个特点：1. 无序执行，2. 处理器去处理“异常”了，因此对于 transient指令的副作用，攻击者可以处理并利用。</p>
+<p>transient指令，瞬态指令，因为它虽然暂时被执行了，但是处理器反应过来之后，回对其进行处理。</p>
+<p>访问用户不可访问的页面，会触发“异常”。攻击者对“异常”的处理，一般来说，有两种方案：</p>
+<ul>
+<li>异常处理</li>
+<li>异常抑制</li>
+</ul>
+<h3 id="42-建立隐蔽信道">4.2 建立隐蔽信道<a aria-label="Link to this section" class="paige-header-link" href="#42-建立隐蔽信道">#</a></h3>
+<p>隐蔽信道，就是读取 transient 指令执行造成的处理器“微架构”状态改变，从状态中推断出秘密信息，然后传送出去。</p>
+<p>隐蔽信道的发送方，是上面的transient指令，它利用内存中的某个用户程序可访问的地址。该地址被缓存，就相当于发出“1”。隐蔽信道的接收方，试图访问这个位置，可以通过访问时间（Flush+Reload），确定此时该地址是否被缓存。如果发现其被“缓存”，则相当于接收到了“1”这个隐蔽信息。</p>
+<h2 id="meltdown">Meltdown<a aria-label="Link to this section" class="paige-header-link" href="#meltdown">#</a></h2>
+<p>首先，我们讨论攻击设置以强调这种攻击的广泛适用性。</p>
+<p>其次，我们提供了攻击概述，展示了 Meltdown 如何同时安装在个人计算机的 Windows 和 Linux 上、手机上的 Android 系统以及云中。</p>
+<p>最后，我们讨论了 Meltdown 的具体实现，允许以 3.2 KB/s 到 503 KB/s 的速度转储任意内核内存。</p>
+<h4 id="攻击设置">攻击设置<a aria-label="Link to this section" class="paige-header-link" href="#攻击设置">#</a></h4>
+<p>攻击环境包括云上的个人计算机和虚拟机</p>
+<p>攻击者拥有普通用户权限，执行非特权代码</p>
+<p>假定系统具有现阶段所有最先进的防御措施，比如ASLR KALSR SMAP SMEP NX PXN</p>
+<p>假定系统没有任何bug，没有任何可利用的软件漏洞</p>
+<p>攻击者的目标是秘密用户数据</p>
+<h3 id="51-攻击描述">5.1 攻击描述<a aria-label="Link to this section" class="paige-header-link" href="#51-攻击描述">#</a></h3>
+<p>Meltdown攻击的核心：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">;rcx = kernel address, rbx = probe array
+</span></span><span class="line"><span class="cl">xor rax rax
+</span></span><span class="line"><span class="cl">retry:
+</span></span><span class="line"><span class="cl">mov al, byte [rcx]
+</span></span><span class="line"><span class="cl">shl rax, 0xc
+</span></span><span class="line"><span class="cl">jz retry
+</span></span><span class="line"><span class="cl">mov rbx, qword [rbx + rax]
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>三个步骤</p>
+<ol>
+<li>加载攻击者无法访问的内存位置的内容（秘密）到寄存器</li>
+<li>transient指令根据寄存器中加载的“秘密”，访问高速缓存，相当于发送“秘密”</li>
+<li>攻击者使用Flush+Reload来访问高速缓存，接收秘密信息</li>
+</ol>
+<h4 id="步骤1读取秘密">步骤1：读取秘密<a aria-label="Link to this section" class="paige-header-link" href="#步骤1读取秘密">#</a></h4>
+<p>为了从内存中的特权位置，读取秘密到寄存器，用户程序使用虚拟地址来引用内存中的数据。</p>
+<p>每一个kernel的虚拟地址，通过转换都会指向一个实际的物理地址。</p>
+<p>虚拟地址转换为物理地址的同时，处理器还会检查虚拟地址的权限位，确定该地址是用户可访问的，还是只有kernel能够访问。</p>
+<p>用户程序访问kernel地址空间，会引发异常。但是，Meltdown利用处理器的乱序执行，在非法内存访问和引发异常之间的小时间窗口内执行命令。</p>
+<h4 id="步骤2传输秘密">步骤2：传输秘密<a aria-label="Link to this section" class="paige-header-link" href="#步骤2传输秘密">#</a></h4>
+<p>在内存中分配一个<strong>探测数组</strong>，并确保该数组的任何部分都没有被缓存。</p>
+<p>为了传输秘密，transient指令序列对基于secret值计算的地址，进行间接地址访问。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">shl rax, 0xc
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>左移12位，也就是将secret值乘以4 KB(4096 B)，乘以页面大小。从而防止相邻的内存位置被加载时，影响结果。</p>
+<p>在这里，我们一次读取一个字节，也就是0~255的数。因此，探测数组需要满足256 x 4096B的大小。</p>
+<p>对 0 的噪声优化。</p>
+<p>secret -&gt; L1 cache -&gt; L3 cache</p>
+<h4 id="步骤3接收秘密">步骤3：接收秘密<a aria-label="Link to this section" class="paige-header-link" href="#步骤3接收秘密">#</a></h4>
+<p>攻击者遍历探测数组的所有 256 页并测量每个第一个缓存行的访问时间（即偏移量) 页面上。包含在缓存的缓存行的<strong>页面编号直接对应于秘密值</strong>。</p>
+<h4 id="dump出完整的物理内存">Dump出完整的物理内存<a aria-label="Link to this section" class="paige-header-link" href="#dump出完整的物理内存">#</a></h4>
+<p>重复 Meltdown 的所有 3 个步骤，攻击者可以通过遍历所有地址来转储整个内存。</p>
+<p>由于所有主要操作系统通常也将整个物理内存映射到内核地址空间，因此，在每个用户进程中，Meltdown 还可以读取目标机器的整个物理内存</p>
+<h3 id="52-优化和限制">5.2 优化和限制<a aria-label="Link to this section" class="paige-header-link" href="#52-优化和限制">#</a></h3>
+<h4 id="对-0-的固有偏差">对 0 的固有偏差<a aria-label="Link to this section" class="paige-header-link" href="#对-0-的固有偏差">#</a></h4>
+<p>在无序执行的数据加载期间，如果值不可用，处理器可能会停止运作，但是也可能猜测出一个值，先继续执行着。</p>
+<p>我们观察到，Meltdown的非法内存加载，secert值经常返回0，原因有两个：</p>
+<ol>
+<li>transient微指令的操作被权限检查操作优先了</li>
+<li>处理器对权限检查的结果的猜测值，可能是1，也可能是0，而且从现有处理器的软硬件配置来说，0的可能性更高。也就是权限不允许。</li>
+</ol>
+<p>因此，在secret值为0的时候，我们的Meltdown攻击会执行一定次数的重复，避免上述两个原因导致的偏差。</p>
+<h4 id="对-0-误差的优化">对 0 误差的优化<a aria-label="Link to this section" class="paige-header-link" href="#对-0-误差的优化">#</a></h4>
+<h4 id="单比特传输">单比特传输<a aria-label="Link to this section" class="paige-header-link" href="#单比特传输">#</a></h4>
+<h4 id="使用intel-tsx的异常抑制">使用Intel TSX的异常抑制<a aria-label="Link to this section" class="paige-header-link" href="#使用intel-tsx的异常抑制">#</a></h4>
+<h4 id="突破kaslr">突破KASLR<a aria-label="Link to this section" class="paige-header-link" href="#突破kaslr">#</a></h4>
+<h2 id="evaluation">Evaluation<a aria-label="Link to this section" class="paige-header-link" href="#evaluation">#</a></h2>
+<h2 id="对策">对策<a aria-label="Link to this section" class="paige-header-link" href="#对策">#</a></h2>
+<h2 id="讨论">讨论<a aria-label="Link to this section" class="paige-header-link" href="#讨论">#</a></h2>
+<h2 id="结论">结论<a aria-label="Link to this section" class="paige-header-link" href="#结论">#</a></h2>
+<p>本文介绍了Meltdown，一种新的基于软件的攻击方法。它利用现代处理器的<strong>无序执行</strong>和<strong>测信道</strong>，使得无特权的用户空间程序能够读取任意地址的 kernel 内存。</p>
+<p>Meltdown 不需要某种软件漏洞，也不依赖某种操作系统，能够帮助攻击者以高达 503 KB/s的速率读取云上其他进程和虚拟机中的敏感数据，影响数百万设备。</p>
+<p>我们发现，<strong>KAISER</strong>最初提出的<strong>对抗KASLR侧信道攻击</strong>的对策，无意中也阻碍了Meltdown。</p>
+<p>我们强调，KAISER需要部署在每个操作系统上，作为一种短期的解决方案，直到Meltdown在硬件上得到修复，以防止Meltdon攻击的大规模出现。</p>
+<h2 id="meltdown-in-practice">Meltdown in Practice<a aria-label="Link to this section" class="paige-header-link" href="#meltdown-in-practice">#</a></h2>
+<h2 id="real-world-meltdown-exploit">Real-world Meltdown Exploit<a aria-label="Link to this section" class="paige-header-link" href="#real-world-meltdown-exploit">#</a></h2>
+
+        
+        
+    </section>
+
+
+    </div>
+</article>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        
+                    </main>
+                    
+
+
+
+
+
+    <footer>
+        
+        
+            <p class="text-center"><a class="link-secondary text-decoration-none" href="https://github.com/willfaught/paige">Paige Theme</a></p>
+        
+        
+    </footer>
+
+
+                </div>
+            </div>
+        </div>
+        <script>
+function paigeResize() {
+    var e = document.querySelector('section[class="paige-content"]');
+    if (!e) {
+        return;
+    }
+    var mw = getComputedStyle(e).maxWidth;
+    var w;
+    if (mw === "100%") {
+        var e = document.querySelector("body > div.container");
+        var s = getComputedStyle(e);
+        var px = parseFloat(s.paddingLeft) + parseFloat(s.paddingRight);
+        var bx = parseFloat(s.borderLeftWidth) + parseFloat(s.borderRightWidth);
+        w = e.offsetWidth - px - bx;
+    } else {
+        w = parseFloat(mw.substring(0, mw.length - 2));
+    }
+    var es = document.querySelectorAll('section[class="paige-content"] > div');
+    for (var i = 0; i < es.length; i++) {
+        var e = es[i];
+        var iframe = false;
+        for (var j = 0; j < e.children.length; j++) {
+            if (e.children.item(j).tagName.toLowerCase() === "iframe") {
+                iframe = true;
+                break;
+            }
+        }
+        if (iframe && e.style.width !== w) {
+            e.style.width = w + "px";
+        }
+    }
+}
+paigeResize();
+addEventListener("resize", paigeResize);
+
+var paigeQuery = matchMedia("(prefers-color-scheme: dark)");
+if (paigeQuery.matches) {
+    document.documentElement.setAttribute("data-bs-theme", "dark")
+}
+paigeQuery.addEventListener("change", function (e) {
+    if (e.matches) {
+        document.documentElement.setAttribute("data-bs-theme", "dark");
+    } else {
+        document.documentElement.removeAttribute("data-bs-theme");
+    }
+});
+
+</script>
+
+
+
+
+
+
+
+
+
+
+    
+    
+    
+
+
+<script  crossorigin="anonymous"   defer  integrity="sha256-yqyVgS/SWX6RGq388CazJ03XCi9wptdg&#43;EG8X0nYuIo="   referrerpolicy="no-referrer"  src="/bootstrap.bundle.min_16066188465625427804.min.caac95812fd2597e911aadfcf026b3274dd70a2f70a6d760f841bc5f49d8b88a.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<noscript></noscript>
+
+        
+    </body>
+</html>
+
+<!-- Paige theme from https://github.com/willfaught/paige -->
+

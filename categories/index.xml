@@ -1,19 +1,62 @@
+
+
+
+
+
+
+
+
+
+
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Categories on Cheese - A wonderful world for you</title>
-    <link>http://localhost:1313/categories/</link>
-    <description>Recent content in Categories on Cheese - A wonderful world for you</description>
-    <generator>Hugo -- gohugo.io</generator>
+    
+    <atom:link href="http://localhost:1313/categories/index.xml" rel="self" type="application/rss+xml"/>
+    
+    
+    <description>Categories · Cheese - A wonderful world for you</description>
+    
     <language>zh-cn</language>
-    <lastBuildDate>Sun, 29 Jan 2023 11:29:25 +0800</lastBuildDate><atom:link href="http://localhost:1313/categories/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <lastBuildDate>Sun, 29 Jan 2023 13:06:25 +0800</lastBuildDate>
+    
+    <link>http://localhost:1313/categories/</link>
+    
+    
+    <title>Categories · Cheese - A wonderful world for you</title>
+    
+    
+    
     <item>
-      <title>hugo</title>
-      <link>http://localhost:1313/categories/hugo/</link>
-      <pubDate>Sun, 29 Jan 2023 11:29:25 +0800</pubDate>
+      
+      
+      
+      <guid>http://localhost:1313/categories/cpu_security/</guid>
+      <link>http://localhost:1313/categories/cpu_security/</link>
+      
+      
+      <pubDate>Sun, 29 Jan 2023 13:06:25 +0800</pubDate>
+      
+      
+      <title>cpu_security</title>
+      
+    </item>
+    
+    <item>
+      
+      
       
       <guid>http://localhost:1313/categories/hugo/</guid>
-      <description></description>
+      <link>http://localhost:1313/categories/hugo/</link>
+      
+      
+      <pubDate>Sun, 29 Jan 2023 11:29:25 +0800</pubDate>
+      
+      
+      <title>hugo</title>
+      
     </item>
     
   </channel>

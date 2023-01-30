@@ -1,0 +1,710 @@
+<!doctype html>
+
+
+<html    lang="zh-cn" >
+    <head>
+    
+    <meta charset="utf-8">
+
+
+
+    <meta content="cpu_security" name="keywords">
+
+<meta content="#0d6efd" name="msapplication-TileColor">
+
+<meta content="#0d6efd" name="theme-color">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+<meta property="og:title" content="The Evolution of Transient-Execution Attacks" />
+<meta property="og:description" content="摘要 以往，研究人员有一个共识：处理器架构以下的信息是无法被观测到的。但是，缓存侧信道攻击的出现，表示微架构层次的部分数据可以被提取出来。 随之" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/post/transient-execution-attacks/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2023-01-29T13:06:25+08:00" />
+<meta property="article:modified_time" content="2023-01-29T13:06:25+08:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="The Evolution of Transient-Execution Attacks"/>
+<meta name="twitter:description" content="摘要 以往，研究人员有一个共识：处理器架构以下的信息是无法被观测到的。但是，缓存侧信道攻击的出现，表示微架构层次的部分数据可以被提取出来。 随之"/>
+
+
+    <title>The Evolution of Transient-Execution Attacks · Cheese - A wonderful world for you</title>
+    <link href="/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180">
+<link href="/favicon-16x16.png" rel="icon" sizes="16x16" type="image/png">
+<link href="/favicon-32x32.png" rel="icon" sizes="32x32" type="image/png">
+
+<link href="/favicon.png" rel="icon" type="image/png">
+<link href="/favicon.svg" rel="icon" type="image/svg+xml">
+<link color="#0d6efd" href="/safari-pinned-tab.svg" rel="mask-icon">
+<link href="/site.webmanifest" rel="manifest">
+
+
+
+
+
+
+
+
+    
+
+
+<link  crossorigin="anonymous"  href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css" integrity=""  referrerpolicy="no-referrer"  rel="stylesheet">
+
+
+
+
+
+
+
+
+
+    
+    
+    
+
+
+<link  crossorigin="anonymous"  href="/bootstrap.min_11254274094227627370.min.9e0a1d275ddeb92360d4b48d8190962b9d8b1c347856c3931e15d54f308ecfcb.css" integrity="sha256-ngodJ13euSNg1LSNgZCWK52LHDR4VsOTHhXVTzCOz8s="  referrerpolicy="no-referrer"  rel="stylesheet">
+
+
+
+
+    <style>
+body, html {
+    height: 100%;
+}
+
+section[class="paige-content"] {
+    counter-reset: paige-figure;
+    max-width: 100%;
+}
+
+section[class="paige-content"] figure.paige-figure.paige-figure-numbered {
+    counter-increment: paige-figure;
+}
+
+section[class="paige-content"] figure.paige-figure.paige-figure-numbered figcaption:empty::before {
+    content: " " counter(paige-figure);
+}
+
+section[class="paige-content"] figure.paige-figure.paige-figure-numbered figcaption::before {
+    content: " " counter(paige-figure) ": ";
+}
+
+section[class="paige-content"] > blockquote {
+    padding: 0.5rem 1rem;
+    border-left: 0.25rem solid var(--bs-border-color);
+    padding-right: 0.25rem;
+}
+
+section[class="paige-content"] > blockquote p:last-of-type {
+    margin-bottom: 0;
+}
+
+
+
+
+
+.paige-figure .highlight .chroma pre,
+.paige-figure .highlight pre.chroma {
+    margin-bottom: 0;
+}
+
+.highlight .chroma .lnt,
+.highlight .chroma .hl {
+    display: flex;
+}
+
+.paige-figure > div > div[class="highlight"] > pre, .paige-figure > div > :last-child {
+    margin-bottom: 0;
+}
+
+.paige-header-link {
+    margin-left: 0.5ch;
+    opacity: 0;
+    position: absolute;
+    text-decoration: none;
+    transition: color 0.15s ease-in-out, opacity 0.15s ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .paige-header-link {
+        transition: none;
+    }
+}
+
+.paige-header-link:focus, .paige-header-link:hover, :hover > .paige-header-link, :target > .paige-header-link {
+    opacity: 1;
+}
+
+
+    @media (prefers-color-scheme: dark) {
+        /* Background */ .bg { color: #c9d1d9; background-color: var(--bs-body-bg); }
+/* PreWrapper */ .chroma { color: #c9d1d9; background-color: var(--bs-body-bg); }
+/* Other */ .chroma .x {  }
+/* Error */ .chroma .err { color: #f85149 }
+/* CodeLine */ .chroma .cl {  }
+/* LineLink */ .chroma .lnlinks { outline: none; text-decoration: none; color: inherit }
+/* LineTableTD */ .chroma .lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+/* LineTable */ .chroma .lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
+/* LineHighlight */ .chroma .hl { background-color: #ffffcc }
+/* LineNumbersTable */ .chroma .lnt { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #64686c }
+/* LineNumbers */ .chroma .ln { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #6e7681 }
+/* Line */ .chroma .line { display: flex; }
+/* Keyword */ .chroma .k { color: #ff7b72 }
+/* KeywordConstant */ .chroma .kc { color: #79c0ff }
+/* KeywordDeclaration */ .chroma .kd { color: #ff7b72 }
+/* KeywordNamespace */ .chroma .kn { color: #ff7b72 }
+/* KeywordPseudo */ .chroma .kp { color: #79c0ff }
+/* KeywordReserved */ .chroma .kr { color: #ff7b72 }
+/* KeywordType */ .chroma .kt { color: #ff7b72 }
+/* Name */ .chroma .n {  }
+/* NameAttribute */ .chroma .na {  }
+/* NameBuiltin */ .chroma .nb {  }
+/* NameBuiltinPseudo */ .chroma .bp {  }
+/* NameClass */ .chroma .nc { color: #f0883e; font-weight: bold }
+/* NameConstant */ .chroma .no { color: #79c0ff; font-weight: bold }
+/* NameDecorator */ .chroma .nd { color: #d2a8ff; font-weight: bold }
+/* NameEntity */ .chroma .ni { color: #ffa657 }
+/* NameException */ .chroma .ne { color: #f0883e; font-weight: bold }
+/* NameFunction */ .chroma .nf { color: #d2a8ff; font-weight: bold }
+/* NameFunctionMagic */ .chroma .fm {  }
+/* NameLabel */ .chroma .nl { color: #79c0ff; font-weight: bold }
+/* NameNamespace */ .chroma .nn { color: #ff7b72 }
+/* NameOther */ .chroma .nx {  }
+/* NameProperty */ .chroma .py { color: #79c0ff }
+/* NameTag */ .chroma .nt { color: #7ee787 }
+/* NameVariable */ .chroma .nv { color: #79c0ff }
+/* NameVariableClass */ .chroma .vc {  }
+/* NameVariableGlobal */ .chroma .vg {  }
+/* NameVariableInstance */ .chroma .vi {  }
+/* NameVariableMagic */ .chroma .vm {  }
+/* Literal */ .chroma .l { color: #a5d6ff }
+/* LiteralDate */ .chroma .ld { color: #79c0ff }
+/* LiteralString */ .chroma .s { color: #a5d6ff }
+/* LiteralStringAffix */ .chroma .sa { color: #79c0ff }
+/* LiteralStringBacktick */ .chroma .sb { color: #a5d6ff }
+/* LiteralStringChar */ .chroma .sc { color: #a5d6ff }
+/* LiteralStringDelimiter */ .chroma .dl { color: #79c0ff }
+/* LiteralStringDoc */ .chroma .sd { color: #a5d6ff }
+/* LiteralStringDouble */ .chroma .s2 { color: #a5d6ff }
+/* LiteralStringEscape */ .chroma .se { color: #79c0ff }
+/* LiteralStringHeredoc */ .chroma .sh { color: #79c0ff }
+/* LiteralStringInterpol */ .chroma .si { color: #a5d6ff }
+/* LiteralStringOther */ .chroma .sx { color: #a5d6ff }
+/* LiteralStringRegex */ .chroma .sr { color: #79c0ff }
+/* LiteralStringSingle */ .chroma .s1 { color: #a5d6ff }
+/* LiteralStringSymbol */ .chroma .ss { color: #a5d6ff }
+/* LiteralNumber */ .chroma .m { color: #a5d6ff }
+/* LiteralNumberBin */ .chroma .mb { color: #a5d6ff }
+/* LiteralNumberFloat */ .chroma .mf { color: #a5d6ff }
+/* LiteralNumberHex */ .chroma .mh { color: #a5d6ff }
+/* LiteralNumberInteger */ .chroma .mi { color: #a5d6ff }
+/* LiteralNumberIntegerLong */ .chroma .il { color: #a5d6ff }
+/* LiteralNumberOct */ .chroma .mo { color: #a5d6ff }
+/* Operator */ .chroma .o { color: #ff7b72; font-weight: bold }
+/* OperatorWord */ .chroma .ow { color: #ff7b72; font-weight: bold }
+/* Punctuation */ .chroma .p {  }
+/* Comment */ .chroma .c { color: #8b949e; font-style: italic }
+/* CommentHashbang */ .chroma .ch { color: #8b949e; font-style: italic }
+/* CommentMultiline */ .chroma .cm { color: #8b949e; font-style: italic }
+/* CommentSingle */ .chroma .c1 { color: #8b949e; font-style: italic }
+/* CommentSpecial */ .chroma .cs { color: #8b949e; font-weight: bold; font-style: italic }
+/* CommentPreproc */ .chroma .cp { color: #8b949e; font-weight: bold; font-style: italic }
+/* CommentPreprocFile */ .chroma .cpf { color: #8b949e; font-weight: bold; font-style: italic }
+/* Generic */ .chroma .g {  }
+/* GenericDeleted */ .chroma .gd { color: #ffa198; background-color: #490202 }
+/* GenericEmph */ .chroma .ge { font-style: italic }
+/* GenericError */ .chroma .gr { color: #ffa198 }
+/* GenericHeading */ .chroma .gh { color: #79c0ff; font-weight: bold }
+/* GenericInserted */ .chroma .gi { color: #56d364; background-color: #0f5323 }
+/* GenericOutput */ .chroma .go { color: #8b949e }
+/* GenericPrompt */ .chroma .gp { color: #8b949e }
+/* GenericStrong */ .chroma .gs { font-weight: bold }
+/* GenericSubheading */ .chroma .gu { color: #79c0ff }
+/* GenericTraceback */ .chroma .gt { color: #ff7b72 }
+/* GenericUnderline */ .chroma .gl { text-decoration: underline }
+/* TextWhitespace */ .chroma .w { color: #6e7681 }
+
+    }
+
+    @media (prefers-color-scheme: light) {
+        /* Background */ .bg { background-color: #ffffff; }
+/* PreWrapper */ .chroma { background-color: #ffffff; }
+/* Other */ .chroma .x {  }
+/* Error */ .chroma .err { color: #a61717; background-color: #e3d2d2 }
+/* CodeLine */ .chroma .cl {  }
+/* LineLink */ .chroma .lnlinks { outline: none; text-decoration: none; color: inherit }
+/* LineTableTD */ .chroma .lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+/* LineTable */ .chroma .lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
+/* LineHighlight */ .chroma .hl { background-color: #ffffcc }
+/* LineNumbersTable */ .chroma .lnt { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+/* LineNumbers */ .chroma .ln { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+/* Line */ .chroma .line { display: flex; }
+/* Keyword */ .chroma .k { color: #000000; font-weight: bold }
+/* KeywordConstant */ .chroma .kc { color: #000000; font-weight: bold }
+/* KeywordDeclaration */ .chroma .kd { color: #000000; font-weight: bold }
+/* KeywordNamespace */ .chroma .kn { color: #000000; font-weight: bold }
+/* KeywordPseudo */ .chroma .kp { color: #000000; font-weight: bold }
+/* KeywordReserved */ .chroma .kr { color: #000000; font-weight: bold }
+/* KeywordType */ .chroma .kt { color: #445588; font-weight: bold }
+/* Name */ .chroma .n {  }
+/* NameAttribute */ .chroma .na { color: #008080 }
+/* NameBuiltin */ .chroma .nb { color: #0086b3 }
+/* NameBuiltinPseudo */ .chroma .bp { color: #999999 }
+/* NameClass */ .chroma .nc { color: #445588; font-weight: bold }
+/* NameConstant */ .chroma .no { color: #008080 }
+/* NameDecorator */ .chroma .nd { color: #3c5d5d; font-weight: bold }
+/* NameEntity */ .chroma .ni { color: #800080 }
+/* NameException */ .chroma .ne { color: #990000; font-weight: bold }
+/* NameFunction */ .chroma .nf { color: #990000; font-weight: bold }
+/* NameFunctionMagic */ .chroma .fm {  }
+/* NameLabel */ .chroma .nl { color: #990000; font-weight: bold }
+/* NameNamespace */ .chroma .nn { color: #555555 }
+/* NameOther */ .chroma .nx {  }
+/* NameProperty */ .chroma .py {  }
+/* NameTag */ .chroma .nt { color: #000080 }
+/* NameVariable */ .chroma .nv { color: #008080 }
+/* NameVariableClass */ .chroma .vc { color: #008080 }
+/* NameVariableGlobal */ .chroma .vg { color: #008080 }
+/* NameVariableInstance */ .chroma .vi { color: #008080 }
+/* NameVariableMagic */ .chroma .vm {  }
+/* Literal */ .chroma .l {  }
+/* LiteralDate */ .chroma .ld {  }
+/* LiteralString */ .chroma .s { color: #dd1144 }
+/* LiteralStringAffix */ .chroma .sa { color: #dd1144 }
+/* LiteralStringBacktick */ .chroma .sb { color: #dd1144 }
+/* LiteralStringChar */ .chroma .sc { color: #dd1144 }
+/* LiteralStringDelimiter */ .chroma .dl { color: #dd1144 }
+/* LiteralStringDoc */ .chroma .sd { color: #dd1144 }
+/* LiteralStringDouble */ .chroma .s2 { color: #dd1144 }
+/* LiteralStringEscape */ .chroma .se { color: #dd1144 }
+/* LiteralStringHeredoc */ .chroma .sh { color: #dd1144 }
+/* LiteralStringInterpol */ .chroma .si { color: #dd1144 }
+/* LiteralStringOther */ .chroma .sx { color: #dd1144 }
+/* LiteralStringRegex */ .chroma .sr { color: #009926 }
+/* LiteralStringSingle */ .chroma .s1 { color: #dd1144 }
+/* LiteralStringSymbol */ .chroma .ss { color: #990073 }
+/* LiteralNumber */ .chroma .m { color: #009999 }
+/* LiteralNumberBin */ .chroma .mb { color: #009999 }
+/* LiteralNumberFloat */ .chroma .mf { color: #009999 }
+/* LiteralNumberHex */ .chroma .mh { color: #009999 }
+/* LiteralNumberInteger */ .chroma .mi { color: #009999 }
+/* LiteralNumberIntegerLong */ .chroma .il { color: #009999 }
+/* LiteralNumberOct */ .chroma .mo { color: #009999 }
+/* Operator */ .chroma .o { color: #000000; font-weight: bold }
+/* OperatorWord */ .chroma .ow { color: #000000; font-weight: bold }
+/* Punctuation */ .chroma .p {  }
+/* Comment */ .chroma .c { color: #999988; font-style: italic }
+/* CommentHashbang */ .chroma .ch { color: #999988; font-style: italic }
+/* CommentMultiline */ .chroma .cm { color: #999988; font-style: italic }
+/* CommentSingle */ .chroma .c1 { color: #999988; font-style: italic }
+/* CommentSpecial */ .chroma .cs { color: #999999; font-weight: bold; font-style: italic }
+/* CommentPreproc */ .chroma .cp { color: #999999; font-weight: bold; font-style: italic }
+/* CommentPreprocFile */ .chroma .cpf { color: #999999; font-weight: bold; font-style: italic }
+/* Generic */ .chroma .g {  }
+/* GenericDeleted */ .chroma .gd { color: #000000; background-color: #ffdddd }
+/* GenericEmph */ .chroma .ge { color: #000000; font-style: italic }
+/* GenericError */ .chroma .gr { color: #aa0000 }
+/* GenericHeading */ .chroma .gh { color: #999999 }
+/* GenericInserted */ .chroma .gi { color: #000000; background-color: #ddffdd }
+/* GenericOutput */ .chroma .go { color: #888888 }
+/* GenericPrompt */ .chroma .gp { color: #555555 }
+/* GenericStrong */ .chroma .gs { font-weight: bold }
+/* GenericSubheading */ .chroma .gu { color: #aaaaaa }
+/* GenericTraceback */ .chroma .gt { color: #aa0000 }
+/* GenericUnderline */ .chroma .gl { text-decoration: underline }
+/* TextWhitespace */ .chroma .w { color: #bbbbbb }
+
+    }
+
+</style>
+
+    
+</head>
+
+    <body class="d-flex flex-column">
+
+        
+        <div class="container flex-fill">
+            <div class="row">
+                <div class="col">
+                    
+
+
+
+
+    <header>
+        
+        
+            
+
+
+
+
+
+    
+
+
+
+    
+
+
+<nav class="justify-content-center my-3 navbar navbar-expand-sm">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#paige-menu-toggler" aria-controls="paige-menu-toggler" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse justify-content-center mt-3 mt-sm-0 navbar-collapse" id="paige-menu-toggler">
+        <div class="align-items-center flex-column flex-sm-row justify-content-center nav  nav-pills ">
+            
+                
+                
+                
+                <a  class=" nav-link" href="/">Home</a>
+            
+                
+                
+                
+                <a  aria-current="page"  class=" active   nav-link" href="/post/">Archives</a>
+            
+                
+                
+                
+                <a  class=" nav-link" href="/tags/">Tags</a>
+            
+                
+                
+                
+                <a  class=" nav-link" href="/categories/">Categories</a>
+            
+        </div>
+    </div>
+</nav>
+
+        
+        
+    </header>
+
+
+                    <main>
+                        
+                        
+<article>
+    <div class="align-items-center d-flex flex-column mb-0">
+        <section class="paige-metadata w-100">
+    
+    
+    
+
+    <h1 class="display-5 fw-bold text-center">The Evolution of Transient-Execution Attacks</h1>
+
+
+    
+
+    
+
+
+
+
+
+    <p class="text-center text-secondary">
+        <time datetime="2023-01-29">January 29, 2023</time>
+    </p>
+
+
+</section>
+
+        
+
+        
+    
+
+    <section class="paige-content">
+        
+        
+            <h2 id="摘要">摘要<a aria-label="Link to this section" class="paige-header-link" href="#摘要">#</a></h2>
+<p>以往，研究人员有一个共识：处理器架构以下的信息是无法被观测到的。但是，缓存侧信道攻击的出现，表示微架构层次的部分数据可以被提取出来。</p>
+<p>随之而来，出现了利用推测执行机制和乱序执行的攻击方法，我们称它为瞬态攻击，因为这些攻击都利用了一个事实：处理器执行了一些操作之后，再将其<strong>撤销</strong>，仿佛这些操作没有执行过。但是，这里的“撤销”并不干净，微架构层次下，攻击者可以获得这些操作曾经执行过的一些痕迹。</p>
+<p>本文主要介绍瞬态执行攻击的发展历史，从系统的角度来分析这种攻击的过程，促进该类攻击的一些变种的发现。</p>
+<h2 id="1-引言">1 引言<a aria-label="Link to this section" class="paige-header-link" href="#1-引言">#</a></h2>
+<p>现代处理器，处于相同的架构，比如同一个定义好的interface，同一个指令集，方便同一个二进制程序能够在不同的处理器上运行。因此，处理器的制造者往往更关注，一个架构层次的行为，从底层的具体实现上如何优化，提高效率。这里介绍了两个优化机制：<strong>缓存</strong>、<strong>分支预测</strong>。</p>
+<p>从安全角度来看，很长一段时间，处理器架构以下的信息是无法被观测到的，处理器没有提供给用户一个interface来查看某部分是否处于缓存。Kocher提出，通过测试内存访问的延迟，可以获取cache的部分信息，相当于实现一个interface，可以让攻击者看到一些微架构层次的信息。不过这里的信息，主要是某部分处于缓存，某部分不在缓存中，这些meta-information。当时出现了一些有力的 crytographic 和 non-cryptographic 攻击，因此，安全人员认为应该合理设计代码，是的secret不会影响这些 meta-information。比如， no secret-dependent memory accesses。</p>
+<p>2018年，幽灵攻击和熔断攻击被提出来。当时，人们预计会发现更多的Spectre的变种，Meltdown则被认为是唯一的。</p>
+<p>但是，Foreshadow的出现表明类似Meltdown的漏洞依然存在。它扩展了 user-to-kernel 类型的攻击方法，能够从任意物理地址泄露信息。某种意义上，它预示着该领域的进一步发展，目前发现了许多不同的熔断型攻击。</p>
+<p>随着瞬态执行攻击方式的发展，相应的缓解措施也不断发展，在工业界得到了应用。</p>
+<p>本文介绍了瞬态执行攻击的发展历程，使用 6 个通用的阶段来标准化这种攻击。从微架构的错误预测角度，描述幽灵攻击的所有已知变种。针对现有的熔断类型攻击，本文从系统角度强调了它们之间的相似点。我们认为，基于本文从系统角度得出的观点，未来将会出现很多新的瞬态攻击变种。</p>
+<p><strong>Outline:</strong></p>
+<h2 id="2-背景">2 背景<a aria-label="Link to this section" class="paige-header-link" href="#2-背景">#</a></h2>
+<h3 id="21-推测执行和乱序执行">2.1 推测执行和乱序执行<a aria-label="Link to this section" class="paige-header-link" href="#21-推测执行和乱序执行">#</a></h3>
+<p>推测执行，就是对于暂时没法确定结果的branch，处理器猜测出一个值，先继续执行着</p>
+<p>乱序执行，就是遇到异常之后，异常代码之后的代码可能已经执行过了。</p>
+<h3 id="22-缓存攻击">2.2 缓存攻击<a aria-label="Link to this section" class="paige-header-link" href="#22-缓存攻击">#</a></h3>
+<p>缓存攻击逐渐成为瞬态执行攻击的一个必备模块，它关注直接访问内存和访问缓存中数据的时间差异。目前出现的方法有很多，比如：Flush+Reload, Prime+Probe, Flush+Flush, Evict+Time。总体来说，&lt; font color=&quot;#dd0000&quot;&gt;<strong>缓存攻击都包含以下三个阶段</strong></font>：</p>
+<ol>
+<li>攻击者将微架构<strong>初始化</strong>为一个预先定义好的状态。</li>
+<li>攻击者诱使victim执行一个操作。</li>
+<li>攻击者基于微架构状态的变化，推测出victim的行为信息。</li>
+</ol>
+<p>隐蔽信道构建，是缓存攻击的一个特殊情形，sender 和 receiver 都由攻击者掌握，主要是为了绕过一些架构层次的限制。</p>
+<h3 id="23-store-to-load-forwarding">2.3 Store-to-Load Forwarding<a aria-label="Link to this section" class="paige-header-link" href="#23-store-to-load-forwarding">#</a></h3>
+<p>针对分支预测单元中的memory disambiguation predictor，进行攻击。</p>
+<p>store buffer</p>
+<p>该过程就是，将存储在 store buffer，并且还没有被写回缓存的数据，直接传递到使用相同地址的 load操作。针对load操作的地址，可能出现四种情形：</p>
+<ul>
+<li>True positive match</li>
+<li>True negative match</li>
+<li>False negative match。</li>
+<li>False positive match。</li>
+</ul>
+<h2 id="3-瞬态执行的概述">3 瞬态执行的概述<a aria-label="Link to this section" class="paige-header-link" href="#3-瞬态执行的概述">#</a></h2>
+<p>对于瞬态执行攻击过程的一般化，前人也有一些工作，本文在这里提出，&lt; font color=&quot;#dd0000&quot;&gt;瞬态执行攻击的 6 个 阶段</font>：</p>
+<ol>
+<li>
+<p>攻击的<strong>准备阶段</strong>，包含两部分。</p>
+<ol>
+<li>准备微架构，确保一个<strong>瞬态执行的窗口</strong>，保证瞬态执行的第一条指令到最后一条指令都有足够的时间</li>
+<li>准备微架构传输通道，以便恢复数据</li>
+</ol>
+</li>
+<li>
+<p>使用触发指令，<strong>触发瞬态执行</strong>。</p>
+<ol>
+<li>幽灵攻击类型，可能是victim域内的任何分支</li>
+<li>熔断攻击类型，可能是attacker域内任何形式的中止指令</li>
+<li>LVI攻击类型，可能是victim域内任何形式的中止指令</li>
+</ol>
+</li>
+<li>
+<p><strong>瞬态指令执行</strong>，准备微架构传输通道传输的数据</p>
+</li>
+<li>
+<p>攻击者对先前准备的数据进行<strong>编码</strong>，比如存入缓存</p>
+</li>
+<li>
+<p>CPU意识到错误，<strong>回退</strong>，执行正确的指令。</p>
+</li>
+<li>
+<p><strong>恢复数据</strong>，攻击者将编码数据从微架构级别提取到架构级别。由于数据通常编码在缓存中，攻击者使用缓存侧通道，如Flush+Reload，来执行此任务。</p>
+</li>
+</ol>
+<h2 id="4-瞬态执行攻击">4 瞬态执行攻击<a aria-label="Link to this section" class="paige-header-link" href="#4-瞬态执行攻击">#</a></h2>
+<h3 id="41-spectre类型的攻击">4.1 Spectre类型的攻击<a aria-label="Link to this section" class="paige-header-link" href="#41-spectre类型的攻击">#</a></h3>
+<p>Spectre类型的攻击，主要依赖于错误预测下的瞬态执行。也就是，CPU按照以往的行为，预测出一个错误的执行路径。CPU中负责预测的元件是，Branch Predict Unit(BPU)，它包含多种预测器，分别用来预测不同类型的分支。Spectre类型的攻击，归根究底是利用gadget，攻击BPU器件的，并且因为攻击的具体预测器不同，可以分为不同类型。</p>
+<ul>
+<li>Pattern History Table(PHT)，猜测一下直接分支的结果，比如 if（该不该跳转）</li>
+<li>Branch Target Buffer(BTB)，猜测一下间接分支的target，（跳转到哪里）</li>
+<li>Return Stack Buffer(RSB)，函数调用会在栈顶存放返回地址，加快跳转</li>
+<li>memory disambiguator&mdash;&gt;store-to-load forward
+<ul>
+<li>This predictor tries to predict whether a load operation overlaps with a previous store operation</li>
+</ul>
+</li>
+</ul>
+<p><strong>Spectre-PHT.</strong></p>
+<p>pattern历史表，这种攻击通过<strong>不断地重复</strong>，对PHT<strong>错误训练</strong>，从而误导它暂时跳过边界检查，使得CPU走向一个错误的条件路径。Schwarz证明，这种攻击在网络环境中也是可以实现的。</p>
+<p>代表：Spectre V1</p>
+<p><strong>Spectre-BTB.</strong></p>
+<p>分支target缓存，在同一个程序里面，使用某个跳转地址，不断训练BTB，从而误导CPU，使其重定向到该程序虚拟地址空间内的任何位置。</p>
+<blockquote>
+<p>Similarly to return-oriented pro- gramming (ROP), the attacker can chain multiple jump targets together to achieve arbitrary transient execution as far as the tran- sient window allows</p>
+</blockquote>
+<p>代表：Spectre V2</p>
+<p><strong>Spectre-RSB.</strong></p>
+<p>返回栈Buffer，攻击者使用恶意构造的目标地址，污染RSB，误导其暂时返回到一个恶意地址。</p>
+<p><strong>Spectre-STL.</strong></p>
+<p>基于 store-to-load攻击</p>
+<h3 id="42-meltdown类型的攻击">4.2 Meltdown类型的攻击<a aria-label="Link to this section" class="paige-header-link" href="#42-meltdown类型的攻击">#</a></h3>
+<p>Canella 提出一个典型的Meltdown类型攻击的命名机制。主要分为两步：</p>
+<ol>
+<li>the <strong>type</strong> of the fault or the assist that causes transient execution</li>
+<li>different <strong>reason</strong>s for the fault or assist and from which buffer they leak from</li>
+</ol>
+<p>本文将Meltdown类型的攻击分为三组，重点介绍每一组中的共同点：</p>
+<p><strong>Deferred Permission Check.</strong>    推迟 Permission 检查</p>
+<blockquote>
+<p>this category show architecturally correct behavior but with a lack of permission checks,</p>
+</blockquote>
+<p>就是说它使用的攻击代码，单纯执行的话，普通用户无法执行，但是带权限用户可以顺利执行。而只要我们将权限检查稍微推迟，就可以获得一个短暂的瞬时执行的窗口。</p>
+<p>代表：Meltdown，Meltdown-PK，Meltdown-BND，Meltdown-MPX，Meltdown-GP</p>
+<p><strong>Incorrect Use of Intermediate Values.</strong>    利用中间值</p>
+<p>该种攻击利用 中间值 来恢复数据。具体的话，就是构造一些无效的、无意义的（和是否为特权用户无关）行为，然后截取一部分中间数据，重新翻译。</p>
+<p>在架构层面，处理器认为，不实际存在的页表条目可以包含任何位置的数据，如果程序尝试将此数据解释为物理地址，一般都是错误的。</p>
+<p>但是，我们可以将此数据中途拦截下来，进行翻译，得到 secret。</p>
+<p>代表：Foreshadow</p>
+<p><strong>Use-After-Free.</strong></p>
+<p>最近出现一些新的 meltdown 类型攻击，类似于软件漏洞中常用的 use-after-free 漏洞攻击手法，对一些失效的对象成功再次使用。</p>
+<p>代表：ZombieLoad, RIDL, Fallout</p>
+<p><img src="src/spectre-meltdown-foreshadow.png" alt="spectre-meltdown-type list"></p>
+<h3 id="43-lvi类型的攻击load-value-injection">4.3 LVI类型的攻击——Load Value Injection<a aria-label="Link to this section" class="paige-header-link" href="#43-lvi类型的攻击load-value-injection">#</a></h3>
+<p><a href="https://lviattack.eu/">lvi</a> 介绍说：</p>
+<blockquote>
+<p>LVI <strong>turns previous data extraction attacks around</strong>, like <a href="https://meltdownattack.com/">Meltdown</a>, <a href="https://foreshadowattack.eu/">Foreshadow</a>, <a href="https://zombieloadattack.com/">ZombieLoad</a>, <a href="https://mdsattacks.com/">RIDL and Fallout</a>, and <strong>defeats all existing mitigations.</strong></p>
+<p>Instead of directly leaking data from the victim to the attacker, we proceed in the opposite direction:</p>
+<p>we smuggle — &ldquo;inject&rdquo; — the attacker&rsquo;s data through <strong>hidden processor buffers</strong> into a victim program and hijack transient execution to acquire sensitive information, such as the victim’s fingerprints or passwords.</p>
+<p>Crucially, LVI is much <strong>harder to mitigate</strong> than previous attacks, as it can affect virtually any access to memory.</p>
+<p>Unlike all previous Meltdown-type attacks, LVI cannot be transparently mitigated in existing processors and necessitates expensive <strong>software patches</strong>, which may slow down Intel SGX enclave computations 2 up to 19 times.</p>
+</blockquote>
+<p><a href="https://www.intel.cn/content/www/cn/zh/developer/articles/technical/software-security-guidance/technical-documentation/load-value-injection.html">intel 对 LVI 的介绍</a></p>
+<p>Spectre，构造或者在 victim 程序中找到一些 gadget。</p>
+<p>Meltdown，使用攻击者程序引发异常，从缓冲区中窃取数据。</p>
+<p>LVI，更像是前两者的结合。</p>
+<blockquote>
+<p>we combine Spectre-style <strong>code gadgets</strong> in the victim application with Meltdown-type illegal data flow from faulting or assisted <strong>memory load instructions</strong> to bypass existing defenses and <strong>inject</strong> attacker-controlled data into a victim&rsquo;s transient execution.</p>
+</blockquote>
+<p>LVI的实现有四个步骤：</p>
+<ol>
+<li>用攻击者的 data 去<strong>污染</strong>一个隐藏的处理器<strong>缓冲区</strong></li>
+<li>在 victim 程序中引发故障或辅助负载</li>
+<li>攻击者的 data 在 victim 程序的错误、负载之后，被瞬时地注入到代码 gadget 中。</li>
+<li>在处理器检测到错误并回滚所有操作之前，侧通道可能会留下秘密相关的痕迹。</li>
+</ol>
+<p><img src="src/LVI.png" alt="The different LVI attacks relying on a deferred permission check and what event they require to enter transient execution"></p>
+<h2 id="5-结论">5 结论<a aria-label="Link to this section" class="paige-header-link" href="#5-结论">#</a></h2>
+<p>以往，人们认为这些很安全</p>
+<p>现在，侧信道攻击说明能泄露 meta-data</p>
+<p>瞬时执行攻击，说明能够泄露更多信息。</p>
+<p>本文展示了一下顺势执行攻击时如何发展的，希望能够促进新的瞬时执行攻击的发现。</p>
+<h2 id="6-相关材料">6 相关材料<a aria-label="Link to this section" class="paige-header-link" href="#6-相关材料">#</a></h2>
+<p>Meltdown:</p>
+<ul>
+<li><a href="https://meltdownattack.com/">MeltdownAttack</a></li>
+<li><a href="https://github.com/IAIK/meltdown">MeltdownGithub</a></li>
+</ul>
+<p>Spectre:</p>
+<ul>
+<li><a href="https://spectreattack.com/">SpectreAttack</a></li>
+<li><a href="https://gist.github.com/anonymous/99a72c9c1003f8ae0707b4927ec1bd8a">SpectreV1Github</a></li>
+<li><a href="https://github.com/speed47/spectre-meltdown-checker">Spectre-meltdown-checker</a></li>
+</ul>
+<p>LVI:</p>
+<ul>
+<li><a href="https://lviattack.eu/">LVIattack</a></li>
+<li><a href="https://www.intel.cn/content/www/cn/zh/developer/articles/technical/software-security-guidance/technical-documentation/load-value-injection.html">LVIintel</a></li>
+</ul>
+<p>Foreshadow:    <a href="https://foreshadowattack.eu/">ForeshadowAttack</a></p>
+<p>MDS:    <a href="https://mdsattacks.com/">Mds</a></p>
+<p>ZombieLoad:    <a href="https://zombieloadattack.com/">ZombieLoadAttack</a></p>
+
+        
+        
+    </section>
+
+
+    </div>
+</article>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        
+                    </main>
+                    
+
+
+
+
+
+    <footer>
+        
+        
+            <p class="text-center"><a class="link-secondary text-decoration-none" href="https://github.com/willfaught/paige">Paige Theme</a></p>
+        
+        
+    </footer>
+
+
+                </div>
+            </div>
+        </div>
+        <script>
+function paigeResize() {
+    var e = document.querySelector('section[class="paige-content"]');
+    if (!e) {
+        return;
+    }
+    var mw = getComputedStyle(e).maxWidth;
+    var w;
+    if (mw === "100%") {
+        var e = document.querySelector("body > div.container");
+        var s = getComputedStyle(e);
+        var px = parseFloat(s.paddingLeft) + parseFloat(s.paddingRight);
+        var bx = parseFloat(s.borderLeftWidth) + parseFloat(s.borderRightWidth);
+        w = e.offsetWidth - px - bx;
+    } else {
+        w = parseFloat(mw.substring(0, mw.length - 2));
+    }
+    var es = document.querySelectorAll('section[class="paige-content"] > div');
+    for (var i = 0; i < es.length; i++) {
+        var e = es[i];
+        var iframe = false;
+        for (var j = 0; j < e.children.length; j++) {
+            if (e.children.item(j).tagName.toLowerCase() === "iframe") {
+                iframe = true;
+                break;
+            }
+        }
+        if (iframe && e.style.width !== w) {
+            e.style.width = w + "px";
+        }
+    }
+}
+paigeResize();
+addEventListener("resize", paigeResize);
+
+var paigeQuery = matchMedia("(prefers-color-scheme: dark)");
+if (paigeQuery.matches) {
+    document.documentElement.setAttribute("data-bs-theme", "dark")
+}
+paigeQuery.addEventListener("change", function (e) {
+    if (e.matches) {
+        document.documentElement.setAttribute("data-bs-theme", "dark");
+    } else {
+        document.documentElement.removeAttribute("data-bs-theme");
+    }
+});
+
+</script>
+
+
+
+
+
+
+
+
+
+
+    
+    
+    
+
+
+<script  crossorigin="anonymous"   defer  integrity="sha256-yqyVgS/SWX6RGq388CazJ03XCi9wptdg&#43;EG8X0nYuIo="   referrerpolicy="no-referrer"  src="/bootstrap.bundle.min_16066188465625427804.min.caac95812fd2597e911aadfcf026b3274dd70a2f70a6d760f841bc5f49d8b88a.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<noscript></noscript>
+
+        
+    </body>
+</html>
+
+<!-- Paige theme from https://github.com/willfaught/paige -->
+

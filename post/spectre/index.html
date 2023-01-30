@@ -1,0 +1,704 @@
+<!doctype html>
+
+
+<html    lang="zh-cn" >
+    <head>
+    
+    <meta charset="utf-8">
+
+
+
+    <meta content="cpu_security" name="keywords">
+
+<meta content="#0d6efd" name="msapplication-TileColor">
+
+<meta content="#0d6efd" name="theme-color">
+<meta content="width=device-width, initial-scale=1" name="viewport">
+<meta property="og:title" content="Spectre" />
+<meta property="og:description" content="幽灵攻击：利用“推测执行” 摘要 当代处理器使用分支预测和推测执行来提高性能。例如，如果某个分支的目标取决于将要读取的某个内存中的值，处理器会猜" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/post/spectre/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2023-01-29T13:01:25+08:00" />
+<meta property="article:modified_time" content="2023-01-29T13:01:25+08:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Spectre"/>
+<meta name="twitter:description" content="幽灵攻击：利用“推测执行” 摘要 当代处理器使用分支预测和推测执行来提高性能。例如，如果某个分支的目标取决于将要读取的某个内存中的值，处理器会猜"/>
+
+
+    <title>Spectre · Cheese - A wonderful world for you</title>
+    <link href="/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180">
+<link href="/favicon-16x16.png" rel="icon" sizes="16x16" type="image/png">
+<link href="/favicon-32x32.png" rel="icon" sizes="32x32" type="image/png">
+
+<link href="/favicon.png" rel="icon" type="image/png">
+<link href="/favicon.svg" rel="icon" type="image/svg+xml">
+<link color="#0d6efd" href="/safari-pinned-tab.svg" rel="mask-icon">
+<link href="/site.webmanifest" rel="manifest">
+
+
+
+
+
+
+
+
+    
+
+
+<link  crossorigin="anonymous"  href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css" integrity=""  referrerpolicy="no-referrer"  rel="stylesheet">
+
+
+
+
+
+
+
+
+
+    
+    
+    
+
+
+<link  crossorigin="anonymous"  href="/bootstrap.min_11254274094227627370.min.9e0a1d275ddeb92360d4b48d8190962b9d8b1c347856c3931e15d54f308ecfcb.css" integrity="sha256-ngodJ13euSNg1LSNgZCWK52LHDR4VsOTHhXVTzCOz8s="  referrerpolicy="no-referrer"  rel="stylesheet">
+
+
+
+
+    <style>
+body, html {
+    height: 100%;
+}
+
+section[class="paige-content"] {
+    counter-reset: paige-figure;
+    max-width: 100%;
+}
+
+section[class="paige-content"] figure.paige-figure.paige-figure-numbered {
+    counter-increment: paige-figure;
+}
+
+section[class="paige-content"] figure.paige-figure.paige-figure-numbered figcaption:empty::before {
+    content: " " counter(paige-figure);
+}
+
+section[class="paige-content"] figure.paige-figure.paige-figure-numbered figcaption::before {
+    content: " " counter(paige-figure) ": ";
+}
+
+section[class="paige-content"] > blockquote {
+    padding: 0.5rem 1rem;
+    border-left: 0.25rem solid var(--bs-border-color);
+    padding-right: 0.25rem;
+}
+
+section[class="paige-content"] > blockquote p:last-of-type {
+    margin-bottom: 0;
+}
+
+
+
+
+
+.paige-figure .highlight .chroma pre,
+.paige-figure .highlight pre.chroma {
+    margin-bottom: 0;
+}
+
+.highlight .chroma .lnt,
+.highlight .chroma .hl {
+    display: flex;
+}
+
+.paige-figure > div > div[class="highlight"] > pre, .paige-figure > div > :last-child {
+    margin-bottom: 0;
+}
+
+.paige-header-link {
+    margin-left: 0.5ch;
+    opacity: 0;
+    position: absolute;
+    text-decoration: none;
+    transition: color 0.15s ease-in-out, opacity 0.15s ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .paige-header-link {
+        transition: none;
+    }
+}
+
+.paige-header-link:focus, .paige-header-link:hover, :hover > .paige-header-link, :target > .paige-header-link {
+    opacity: 1;
+}
+
+
+    @media (prefers-color-scheme: dark) {
+        /* Background */ .bg { color: #c9d1d9; background-color: var(--bs-body-bg); }
+/* PreWrapper */ .chroma { color: #c9d1d9; background-color: var(--bs-body-bg); }
+/* Other */ .chroma .x {  }
+/* Error */ .chroma .err { color: #f85149 }
+/* CodeLine */ .chroma .cl {  }
+/* LineLink */ .chroma .lnlinks { outline: none; text-decoration: none; color: inherit }
+/* LineTableTD */ .chroma .lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+/* LineTable */ .chroma .lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
+/* LineHighlight */ .chroma .hl { background-color: #ffffcc }
+/* LineNumbersTable */ .chroma .lnt { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #64686c }
+/* LineNumbers */ .chroma .ln { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #6e7681 }
+/* Line */ .chroma .line { display: flex; }
+/* Keyword */ .chroma .k { color: #ff7b72 }
+/* KeywordConstant */ .chroma .kc { color: #79c0ff }
+/* KeywordDeclaration */ .chroma .kd { color: #ff7b72 }
+/* KeywordNamespace */ .chroma .kn { color: #ff7b72 }
+/* KeywordPseudo */ .chroma .kp { color: #79c0ff }
+/* KeywordReserved */ .chroma .kr { color: #ff7b72 }
+/* KeywordType */ .chroma .kt { color: #ff7b72 }
+/* Name */ .chroma .n {  }
+/* NameAttribute */ .chroma .na {  }
+/* NameBuiltin */ .chroma .nb {  }
+/* NameBuiltinPseudo */ .chroma .bp {  }
+/* NameClass */ .chroma .nc { color: #f0883e; font-weight: bold }
+/* NameConstant */ .chroma .no { color: #79c0ff; font-weight: bold }
+/* NameDecorator */ .chroma .nd { color: #d2a8ff; font-weight: bold }
+/* NameEntity */ .chroma .ni { color: #ffa657 }
+/* NameException */ .chroma .ne { color: #f0883e; font-weight: bold }
+/* NameFunction */ .chroma .nf { color: #d2a8ff; font-weight: bold }
+/* NameFunctionMagic */ .chroma .fm {  }
+/* NameLabel */ .chroma .nl { color: #79c0ff; font-weight: bold }
+/* NameNamespace */ .chroma .nn { color: #ff7b72 }
+/* NameOther */ .chroma .nx {  }
+/* NameProperty */ .chroma .py { color: #79c0ff }
+/* NameTag */ .chroma .nt { color: #7ee787 }
+/* NameVariable */ .chroma .nv { color: #79c0ff }
+/* NameVariableClass */ .chroma .vc {  }
+/* NameVariableGlobal */ .chroma .vg {  }
+/* NameVariableInstance */ .chroma .vi {  }
+/* NameVariableMagic */ .chroma .vm {  }
+/* Literal */ .chroma .l { color: #a5d6ff }
+/* LiteralDate */ .chroma .ld { color: #79c0ff }
+/* LiteralString */ .chroma .s { color: #a5d6ff }
+/* LiteralStringAffix */ .chroma .sa { color: #79c0ff }
+/* LiteralStringBacktick */ .chroma .sb { color: #a5d6ff }
+/* LiteralStringChar */ .chroma .sc { color: #a5d6ff }
+/* LiteralStringDelimiter */ .chroma .dl { color: #79c0ff }
+/* LiteralStringDoc */ .chroma .sd { color: #a5d6ff }
+/* LiteralStringDouble */ .chroma .s2 { color: #a5d6ff }
+/* LiteralStringEscape */ .chroma .se { color: #79c0ff }
+/* LiteralStringHeredoc */ .chroma .sh { color: #79c0ff }
+/* LiteralStringInterpol */ .chroma .si { color: #a5d6ff }
+/* LiteralStringOther */ .chroma .sx { color: #a5d6ff }
+/* LiteralStringRegex */ .chroma .sr { color: #79c0ff }
+/* LiteralStringSingle */ .chroma .s1 { color: #a5d6ff }
+/* LiteralStringSymbol */ .chroma .ss { color: #a5d6ff }
+/* LiteralNumber */ .chroma .m { color: #a5d6ff }
+/* LiteralNumberBin */ .chroma .mb { color: #a5d6ff }
+/* LiteralNumberFloat */ .chroma .mf { color: #a5d6ff }
+/* LiteralNumberHex */ .chroma .mh { color: #a5d6ff }
+/* LiteralNumberInteger */ .chroma .mi { color: #a5d6ff }
+/* LiteralNumberIntegerLong */ .chroma .il { color: #a5d6ff }
+/* LiteralNumberOct */ .chroma .mo { color: #a5d6ff }
+/* Operator */ .chroma .o { color: #ff7b72; font-weight: bold }
+/* OperatorWord */ .chroma .ow { color: #ff7b72; font-weight: bold }
+/* Punctuation */ .chroma .p {  }
+/* Comment */ .chroma .c { color: #8b949e; font-style: italic }
+/* CommentHashbang */ .chroma .ch { color: #8b949e; font-style: italic }
+/* CommentMultiline */ .chroma .cm { color: #8b949e; font-style: italic }
+/* CommentSingle */ .chroma .c1 { color: #8b949e; font-style: italic }
+/* CommentSpecial */ .chroma .cs { color: #8b949e; font-weight: bold; font-style: italic }
+/* CommentPreproc */ .chroma .cp { color: #8b949e; font-weight: bold; font-style: italic }
+/* CommentPreprocFile */ .chroma .cpf { color: #8b949e; font-weight: bold; font-style: italic }
+/* Generic */ .chroma .g {  }
+/* GenericDeleted */ .chroma .gd { color: #ffa198; background-color: #490202 }
+/* GenericEmph */ .chroma .ge { font-style: italic }
+/* GenericError */ .chroma .gr { color: #ffa198 }
+/* GenericHeading */ .chroma .gh { color: #79c0ff; font-weight: bold }
+/* GenericInserted */ .chroma .gi { color: #56d364; background-color: #0f5323 }
+/* GenericOutput */ .chroma .go { color: #8b949e }
+/* GenericPrompt */ .chroma .gp { color: #8b949e }
+/* GenericStrong */ .chroma .gs { font-weight: bold }
+/* GenericSubheading */ .chroma .gu { color: #79c0ff }
+/* GenericTraceback */ .chroma .gt { color: #ff7b72 }
+/* GenericUnderline */ .chroma .gl { text-decoration: underline }
+/* TextWhitespace */ .chroma .w { color: #6e7681 }
+
+    }
+
+    @media (prefers-color-scheme: light) {
+        /* Background */ .bg { background-color: #ffffff; }
+/* PreWrapper */ .chroma { background-color: #ffffff; }
+/* Other */ .chroma .x {  }
+/* Error */ .chroma .err { color: #a61717; background-color: #e3d2d2 }
+/* CodeLine */ .chroma .cl {  }
+/* LineLink */ .chroma .lnlinks { outline: none; text-decoration: none; color: inherit }
+/* LineTableTD */ .chroma .lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+/* LineTable */ .chroma .lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
+/* LineHighlight */ .chroma .hl { background-color: #ffffcc }
+/* LineNumbersTable */ .chroma .lnt { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+/* LineNumbers */ .chroma .ln { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+/* Line */ .chroma .line { display: flex; }
+/* Keyword */ .chroma .k { color: #000000; font-weight: bold }
+/* KeywordConstant */ .chroma .kc { color: #000000; font-weight: bold }
+/* KeywordDeclaration */ .chroma .kd { color: #000000; font-weight: bold }
+/* KeywordNamespace */ .chroma .kn { color: #000000; font-weight: bold }
+/* KeywordPseudo */ .chroma .kp { color: #000000; font-weight: bold }
+/* KeywordReserved */ .chroma .kr { color: #000000; font-weight: bold }
+/* KeywordType */ .chroma .kt { color: #445588; font-weight: bold }
+/* Name */ .chroma .n {  }
+/* NameAttribute */ .chroma .na { color: #008080 }
+/* NameBuiltin */ .chroma .nb { color: #0086b3 }
+/* NameBuiltinPseudo */ .chroma .bp { color: #999999 }
+/* NameClass */ .chroma .nc { color: #445588; font-weight: bold }
+/* NameConstant */ .chroma .no { color: #008080 }
+/* NameDecorator */ .chroma .nd { color: #3c5d5d; font-weight: bold }
+/* NameEntity */ .chroma .ni { color: #800080 }
+/* NameException */ .chroma .ne { color: #990000; font-weight: bold }
+/* NameFunction */ .chroma .nf { color: #990000; font-weight: bold }
+/* NameFunctionMagic */ .chroma .fm {  }
+/* NameLabel */ .chroma .nl { color: #990000; font-weight: bold }
+/* NameNamespace */ .chroma .nn { color: #555555 }
+/* NameOther */ .chroma .nx {  }
+/* NameProperty */ .chroma .py {  }
+/* NameTag */ .chroma .nt { color: #000080 }
+/* NameVariable */ .chroma .nv { color: #008080 }
+/* NameVariableClass */ .chroma .vc { color: #008080 }
+/* NameVariableGlobal */ .chroma .vg { color: #008080 }
+/* NameVariableInstance */ .chroma .vi { color: #008080 }
+/* NameVariableMagic */ .chroma .vm {  }
+/* Literal */ .chroma .l {  }
+/* LiteralDate */ .chroma .ld {  }
+/* LiteralString */ .chroma .s { color: #dd1144 }
+/* LiteralStringAffix */ .chroma .sa { color: #dd1144 }
+/* LiteralStringBacktick */ .chroma .sb { color: #dd1144 }
+/* LiteralStringChar */ .chroma .sc { color: #dd1144 }
+/* LiteralStringDelimiter */ .chroma .dl { color: #dd1144 }
+/* LiteralStringDoc */ .chroma .sd { color: #dd1144 }
+/* LiteralStringDouble */ .chroma .s2 { color: #dd1144 }
+/* LiteralStringEscape */ .chroma .se { color: #dd1144 }
+/* LiteralStringHeredoc */ .chroma .sh { color: #dd1144 }
+/* LiteralStringInterpol */ .chroma .si { color: #dd1144 }
+/* LiteralStringOther */ .chroma .sx { color: #dd1144 }
+/* LiteralStringRegex */ .chroma .sr { color: #009926 }
+/* LiteralStringSingle */ .chroma .s1 { color: #dd1144 }
+/* LiteralStringSymbol */ .chroma .ss { color: #990073 }
+/* LiteralNumber */ .chroma .m { color: #009999 }
+/* LiteralNumberBin */ .chroma .mb { color: #009999 }
+/* LiteralNumberFloat */ .chroma .mf { color: #009999 }
+/* LiteralNumberHex */ .chroma .mh { color: #009999 }
+/* LiteralNumberInteger */ .chroma .mi { color: #009999 }
+/* LiteralNumberIntegerLong */ .chroma .il { color: #009999 }
+/* LiteralNumberOct */ .chroma .mo { color: #009999 }
+/* Operator */ .chroma .o { color: #000000; font-weight: bold }
+/* OperatorWord */ .chroma .ow { color: #000000; font-weight: bold }
+/* Punctuation */ .chroma .p {  }
+/* Comment */ .chroma .c { color: #999988; font-style: italic }
+/* CommentHashbang */ .chroma .ch { color: #999988; font-style: italic }
+/* CommentMultiline */ .chroma .cm { color: #999988; font-style: italic }
+/* CommentSingle */ .chroma .c1 { color: #999988; font-style: italic }
+/* CommentSpecial */ .chroma .cs { color: #999999; font-weight: bold; font-style: italic }
+/* CommentPreproc */ .chroma .cp { color: #999999; font-weight: bold; font-style: italic }
+/* CommentPreprocFile */ .chroma .cpf { color: #999999; font-weight: bold; font-style: italic }
+/* Generic */ .chroma .g {  }
+/* GenericDeleted */ .chroma .gd { color: #000000; background-color: #ffdddd }
+/* GenericEmph */ .chroma .ge { color: #000000; font-style: italic }
+/* GenericError */ .chroma .gr { color: #aa0000 }
+/* GenericHeading */ .chroma .gh { color: #999999 }
+/* GenericInserted */ .chroma .gi { color: #000000; background-color: #ddffdd }
+/* GenericOutput */ .chroma .go { color: #888888 }
+/* GenericPrompt */ .chroma .gp { color: #555555 }
+/* GenericStrong */ .chroma .gs { font-weight: bold }
+/* GenericSubheading */ .chroma .gu { color: #aaaaaa }
+/* GenericTraceback */ .chroma .gt { color: #aa0000 }
+/* GenericUnderline */ .chroma .gl { text-decoration: underline }
+/* TextWhitespace */ .chroma .w { color: #bbbbbb }
+
+    }
+
+</style>
+
+    
+</head>
+
+    <body class="d-flex flex-column">
+
+        
+        <div class="container flex-fill">
+            <div class="row">
+                <div class="col">
+                    
+
+
+
+
+    <header>
+        
+        
+            
+
+
+
+
+
+    
+
+
+
+    
+
+
+<nav class="justify-content-center my-3 navbar navbar-expand-sm">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#paige-menu-toggler" aria-controls="paige-menu-toggler" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse justify-content-center mt-3 mt-sm-0 navbar-collapse" id="paige-menu-toggler">
+        <div class="align-items-center flex-column flex-sm-row justify-content-center nav  nav-pills ">
+            
+                
+                
+                
+                <a  class=" nav-link" href="/">Home</a>
+            
+                
+                
+                
+                <a  aria-current="page"  class=" active   nav-link" href="/post/">Archives</a>
+            
+                
+                
+                
+                <a  class=" nav-link" href="/tags/">Tags</a>
+            
+                
+                
+                
+                <a  class=" nav-link" href="/categories/">Categories</a>
+            
+        </div>
+    </div>
+</nav>
+
+        
+        
+    </header>
+
+
+                    <main>
+                        
+                        
+<article>
+    <div class="align-items-center d-flex flex-column mb-0">
+        <section class="paige-metadata w-100">
+    
+    
+    
+
+    <h1 class="display-5 fw-bold text-center">Spectre</h1>
+
+
+    
+
+    
+
+
+
+
+
+    <p class="text-center text-secondary">
+        <time datetime="2023-01-29">January 29, 2023</time>
+    </p>
+
+
+</section>
+
+        
+
+        
+    
+
+    <section class="paige-content">
+        
+        
+            <p>幽灵攻击：利用“推测执行”</p>
+<h2 id="摘要">摘要<a aria-label="Link to this section" class="paige-header-link" href="#摘要">#</a></h2>
+<p>当代处理器使用分支预测和推测执行来提高性能。例如，如果某个分支的目标取决于将要读取的某个内存中的值，处理器会猜测这个值，尝试提前执行运算。内存中的实际值达到以后，处理器再决定是直接提交推测后执行的结果，还是把这个结果丢弃。推测逻辑，不为执行方式负责，因此可以被利用，来访问受害者的内存和寄存器，执行一些具有可掌控的副作用的操作。</p>
+<p>幽灵攻击，就是诱导受害者的处理器，推测性地执行正确的程序执行期间不会执行的操作，通过侧信道将受害者的机密信息泄露给攻击者。</p>
+<p>本文描述的实际攻击，结合了侧信道攻击、故障攻击和面向返回编程的攻击方法，从受害者的进程中读取任意内存。</p>
+<p>该论文表明，推测执行，严重违反了众多软件安全体制的安全假设，比如操作系统进程分离、容器化、即时编程、针对缓存&mdash;计时攻击的对策。</p>
+<p>合理的解决方案：</p>
+<h2 id="intro">Intro<a aria-label="Link to this section" class="paige-header-link" href="#intro">#</a></h2>
+<p>关于侧信道攻击，进行一些介绍。</p>
+<p>关于处理器的推测执行，进行一些介绍。</p>
+<h3 id="a-本论文的成果">A. 本论文的成果<a aria-label="Link to this section" class="paige-header-link" href="#a-本论文的成果">#</a></h3>
+<blockquote>
+<p>transient 指令：瞬态指令，暂时执行，但之后会被恢复，也就是根据实际结果再处理。</p>
+</blockquote>
+<p>分析了一下“推测执行”的安全性，提出一种“幽灵攻击”。通过影响推测执行的那些transient指令，攻击者能够从受害者的内存空间泄露信息。作者通过下面的两个例子，对幽灵攻击的危害，进行描述。</p>
+<h4 id="使用本地非特权代码攻击进程间的隔离边界">使用本地非特权代码，攻击进程间的隔离边界<a aria-label="Link to this section" class="paige-header-link" href="#使用本地非特权代码攻击进程间的隔离边界">#</a></h4>
+<p>POC中，作者准备了一个victim程序，包含一个secret数据在它的内存地址空间内。然后，在victim程序编译后的二进制序列和引用的共享库中，寻找一些<strong>满足特殊条件的指令</strong>。作者准备一个attacker程序，利用处理器“预测执行”的特征，将前面找到的<strong>特殊指令</strong>作为transient指令执行。具体如何利用这些特殊指令，实现对victim的非法内存访问，之后会讲解。</p>
+<h4 id="使用javascript和ebpf来攻击沙箱技术">使用JavaScript和eBPF来攻击沙箱技术<a aria-label="Link to this section" class="paige-header-link" href="#使用javascript和ebpf来攻击沙箱技术">#</a></h4>
+<p>通过可安装的JavaScript代码可以实现幽灵攻击。</p>
+<p>实验证明，我们提供的JavaScript程序能够读取运行它的浏览器进程地址空间的数据。同时，attack能够充分利用Linux的eBPF和JIT。</p>
+<h3 id="b-具体技术">B. 具体技术<a aria-label="Link to this section" class="paige-header-link" href="#b-具体技术">#</a></h3>
+<p>为了发起 Spectre 攻击，</p>
+<ol>
+<li>
+<p>攻击者首先在进程地址空间中<strong>定位或引入一系列指令</strong>，这些指令在执行时充当秘密通道发送器，泄漏受害者的内存或寄存器内容。</p>
+</li>
+<li>
+<p>然后，攻击者<strong>诱使 CPU 推测性地错误执行</strong>该指令序列，从而通过隐蔽通道泄露受害者的信息。</p>
+</li>
+<li>
+<p>最后，攻击者通过隐蔽通道<strong>接收</strong>到受害者的信息。</p>
+</li>
+</ol>
+<p>虽然由于这种错误的推测性执行而导致的标称 CPU 状态的更改最终会被恢复，但之前泄露的信息或对 CPU 的其他微体系结构状态（例如缓存内容）的更改可以在标称状态恢复后幸存下来。</p>
+<p>上面是，一些general的描述，具体来说，我们需要找到一种诱导错误推测执行的方法、一种微体系结构下的隐蔽通道。</p>
+<p><strong>关于隐蔽通道：</strong></p>
+<p>本文使用的是基于缓存的方式，Flush+Reload 和 Evict+Reload。</p>
+<h4 id="关于诱导错误执行的方法">关于诱导错误执行的方法<a aria-label="Link to this section" class="paige-header-link" href="#关于诱导错误执行的方法">#</a></h4>
+<p>在这里介绍两种：</p>
+<h5 id="v1-利用条件分支">v1: 利用条件分支<a aria-label="Link to this section" class="paige-header-link" href="#v1-利用条件分支">#</a></h5>
+<p>在这种幽灵攻击中，攻击者<strong>对CPU的分支预测单元进行误导训练，使得它错误预测分支的方向</strong>，从而执行原本不会执行的代码，导致CPU暂时违背程序的原始语义。在之后的展示中，幽灵攻击使得攻击者能够读取存储在程序地址空间中的秘密信息。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;</span> <span class="n">array1_size</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">y</span> <span class="o">=</span> <span class="n">array2</span><span class="p">[</span><span class="n">array1</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">*</span> <span class="mi">4096</span><span class="p">];</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>攻击者提供x的值，这里有一个 if 语句，判定 x 是否在数组array1的合法下标范围内。下面展示，攻击者怎么绕过这个 if 语句。</p>
+<p>首先，攻击者使用合法的x值，调用该指令，一次又一次地训练CPU的分支预测单元，让它倾向于认为这个 if 分支始终为真。</p>
+<p>然后，攻击者用一个超出合理范围的 x，调用该指令，CPU的分支预测单元猜测它为真，根据 x 获取 array1[x]的值，然后访问array2的对应位置的数据，将其保存在cache。</p>
+<p>边界检查的真正结果出来之后，CPU发现预测结果出错，将CPU的微架构状态回退到之前的状态，却不会进行cache的清除。</p>
+<p>那么，attacker就可以分析cache，得到 array1[x] 的值。</p>
+<h5 id="v2-利用间接分支">v2: 利用间接分支<a aria-label="Link to this section" class="paige-header-link" href="#v2-利用间接分支">#</a></h5>
+<p>基于ROP，攻击者选取victim地址空间内的一个gadget，影响victim去推测性地执行这个gadget。与纯粹的ROP不同，攻击者不依赖victim程序中的软件漏洞，而是对Branch Target Buffer（BTB）进行误导训练，使其对某一个<strong>间接分支指令</strong>错误地预测为gadget的地址，使得victim程序执行gadget。</p>
+<p>然后，CPU发现预测结果出错，将CPU的微架构状态回退到之前的状态，却不会进行cache的清除。那么，gadget就可以通过缓存侧信道泄露信息。</p>
+<p>除此以外，我们会展示如何通过精确的gadget选择，读取victim进程的任意内存。</p>
+<p><strong>关于如何误导训练BTB</strong></p>
+<p>当然，还有一些其他方法。</p>
+<h3 id="c-目标硬件和漏洞的现状">C. 目标硬件和漏洞的现状<a aria-label="Link to this section" class="paige-header-link" href="#c-目标硬件和漏洞的现状">#</a></h3>
+<p>目标硬件，范围很广</p>
+<p>目前已经在下列 intel 处理器上验证了幽灵攻击：Ivy Bridge、Haswell、Broadwell、Skylake、Kaby Lake</p>
+<p>以及AMD Ryzen 系列处理器，可以实现幽灵攻击</p>
+<p>关于ARM架构的Samsung处理器和Qualcomm处理器，也存在。</p>
+<p>目前幽灵攻击涉及的漏洞编号为：CVE-2017-5753 和 CVE-2017-5715</p>
+<h3 id="d-meltdown">D. Meltdown<a aria-label="Link to this section" class="paige-header-link" href="#d-meltdown">#</a></h3>
+<p>Meltdown是基于 out-of-order 执行的微架构攻击，可以用案例泄露 kernel 内存。</p>
+<p>Meltdown 和 Spectre 有两个主要的不同：</p>
+<ol>
+<li>Meltdown没有利用“分支预测”，而是一个 observation：当一条指令造成 trap时，接下来的指令会乱序执行，而不是立即停止整个程序。</li>
+<li>Meltdown利用许多Intel处理器和部分ARM处理器的一个特定的弱点，它们推测性地执行指令，从而绕过内存保护。</li>
+</ol>
+<p>Spectre 攻击适用于范围更广的处理器，包括大多数 AMD 和 ARM 处理器。此外，KAISER 机制已被广泛应用于缓解 Meltdown 攻击，但不能防止 Spectre</p>
+<h2 id="背景">背景<a aria-label="Link to this section" class="paige-header-link" href="#背景">#</a></h2>
+<h3 id="a-乱序执行">A. 乱序执行<a aria-label="Link to this section" class="paige-header-link" href="#a-乱序执行">#</a></h3>
+<p>对于当前指令后，那些不需要依赖前面运算结果的指令，会先被执行，然后保存运算结果到某个寄存器，或缓存。</p>
+<h3 id="b-推测执行">B. 推测执行<a aria-label="Link to this section" class="paige-header-link" href="#b-推测执行">#</a></h3>
+<p>乱序执行时，如果某个指令取决于尚未完成的前面的指令，处理器会先保存当前的寄存器状态，然后推测该指令的结果，按照推测结果进行指令运算。</p>
+<h3 id="c-分支预测">C. 分支预测<a aria-label="Link to this section" class="paige-header-link" href="#c-分支预测">#</a></h3>
+<p>现代处理有很多针对直接分支、间接分支的预测机制。其中，间接分支指令，能够跳转到任意的目标地址，比如，x86指令能够跳转到寄存器、内存地址、栈。</p>
+<p>相比于直接分支，间接跳转和调用采用了两种不同的预测机制来优化。</p>
+<p>Intel处理器对以下三种情况进行预测：</p>
+<ol>
+<li>直接调用和跳转。</li>
+<li>间接调用和跳转。</li>
+<li>条件分支。</li>
+</ol>
+<h3 id="d内存的层次结构">D.内存的层次结构<a aria-label="Link to this section" class="paige-header-link" href="#d内存的层次结构">#</a></h3>
+<h3 id="e微架构侧信道攻击">E.微架构侧信道攻击<a aria-label="Link to this section" class="paige-header-link" href="#e微架构侧信道攻击">#</a></h3>
+<p>Flush+Reload 和 Evict+Reload</p>
+<p>攻击者首先从与受害者共享的缓存中逐出缓存行。</p>
+<p>在受害者执行一段时间后，攻击者测量在与被逐出的缓存行对应的地址处执行内存读取所需的时间。</p>
+<p>如果受害者访问被监控的缓存行，数据会在缓存中，访问速度很快。否则，如果受害者没有访问该行，则读取会很慢。</p>
+<p>因此，通过测量访问时间，攻击者可以了解受害者是否在逐出和探测步骤之间访问了受监控的缓存行。</p>
+<h3 id="f-面向返回编程---rop">F. 面向“返回”编程&mdash;ROP<a aria-label="Link to this section" class="paige-header-link" href="#f-面向返回编程---rop">#</a></h3>
+<h2 id="攻击概述">攻击概述<a aria-label="Link to this section" class="paige-header-link" href="#攻击概述">#</a></h2>
+<ol>
+<li>
+<p>设置阶段，攻击者执行一些误导处理器的操作，以便它啥后做出可利用的错误预测。</p>
+</li>
+<li>
+<p>攻击</p>
+</li>
+<li>
+<p>恢复敏感数据。</p>
+</li>
+</ol>
+<h2 id="v1-利用条件分支的预测失误">v1: 利用条件分支的预测失误<a aria-label="Link to this section" class="paige-header-link" href="#v1-利用条件分支的预测失误">#</a></h2>
+<p>In this section, we demonstrate how conditional branch misprediction can be exploited by an attacker to read arbitrary memory from another context, e.g., another process.</p>
+<p>C语言示例，在https://gist.github.com/anonymous/99a72c9c1003f8ae0707b4927ec1bd8a</p>
+<p>x 是攻击者控制的，外界传入的（比如另一个进程）</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;</span> <span class="n">array1_size</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">y</span> <span class="o">=</span> <span class="n">array2</span><span class="p">[</span><span class="n">array1</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">*</span> <span class="mi">4096</span><span class="p">];</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如果没有第1行的边界检查，随意构造的 x 可能引发异常；也可能泄露特定信息，比如构造 x = (secret的地址) - （array1数组的基地址）</p>
+<p>因为，边界检查与推测执行的四种结果。所以，为了效率，处理器采用推测执行；同时也带来了漏洞。</p>
+<p>真正边界检查结果出来以前，处理器会推测性地执行之后的指令。</p>
+<p>边界检查的结果可能无法立即获知的原因有很多，比如：</p>
+<ol>
+<li>之前的缓存，未命中</li>
+<li>边界检查期间，必需的执行单元拥塞</li>
+<li>复杂的算术依赖</li>
+<li>嵌套的预测执行</li>
+</ol>
+<p>然后，代码2 可能先尝试性地执行</p>
+<h3 id="a-实验结果">A. 实验结果<a aria-label="Link to this section" class="paige-header-link" href="#a-实验结果">#</a></h3>
+<h3 id="b-c代码实现">B. C代码实现<a aria-label="Link to this section" class="paige-header-link" href="#b-c代码实现">#</a></h3>
+<h3 id="c-javascript实现">C. JavaScript实现<a aria-label="Link to this section" class="paige-header-link" href="#c-javascript实现">#</a></h3>
+<h3 id="d-利用ebpf的实现">D. 利用eBPF的实现<a aria-label="Link to this section" class="paige-header-link" href="#d-利用ebpf的实现">#</a></h3>
+<h3 id="e-恢复数据的准确度">E. 恢复数据的准确度<a aria-label="Link to this section" class="paige-header-link" href="#e-恢复数据的准确度">#</a></h3>
+<h2 id="v2-对间接分支下毒">v2: 对间接分支下毒<a aria-label="Link to this section" class="paige-header-link" href="#v2-对间接分支下毒">#</a></h2>
+<p>本节主要展示，间接分支是如何被攻击者下毒的，间接分支的错误预测结果是如何被另一个 context（比如另一个进程）利用来读取任意内存的。</p>
+<p>在几乎所有架构的程序中，间接分支都广泛存在。如果间接分支的目标地址没有及时取得（比如因为缓存未命中），处理器会根据之前执行的代码，推测一个位置，继续执行程序。</p>
+<p>变种2里，攻击者使用一个恶意目标地址，错误训练分支预测器，使得程序在一个攻击者选定的位置继续预测执行。如图2所示，分支预测器在一个context被错误训练，并基于此在另一个context进行预测。具体来说，攻击者能够误导程序在合法执行以外的位置预测执行。预测执行会留下一些可以度量的副产物，这对于攻击者是很有利的，本节介绍的就是一种不同于变种1的内存泄漏方法。</p>
+<p>这里，我们假定攻击者控制了涉及间接分支的两个寄存器，目的是读取 victim 的内存。这个条件在真实的二进制程序中很容易满足。</p>
+<h2 id="其它变种">其它变种<a aria-label="Link to this section" class="paige-header-link" href="#其它变种">#</a></h2>
+<h2 id="缓解方案">缓解方案<a aria-label="Link to this section" class="paige-header-link" href="#缓解方案">#</a></h2>
+<h3 id="避免推测执行">避免推测执行<a aria-label="Link to this section" class="paige-header-link" href="#避免推测执行">#</a></h3>
+<h3 id="避免机密数据的访问">避免机密数据的访问<a aria-label="Link to this section" class="paige-header-link" href="#避免机密数据的访问">#</a></h3>
+<h3 id="避免数据进入隐蔽信道">避免数据进入隐蔽信道<a aria-label="Link to this section" class="paige-header-link" href="#避免数据进入隐蔽信道">#</a></h3>
+<h3 id="限制从隐蔽信道提取的数据">限制从隐蔽信道提取的数据<a aria-label="Link to this section" class="paige-header-link" href="#限制从隐蔽信道提取的数据">#</a></h3>
+<h3 id="避免分支中毒">避免分支“中毒”<a aria-label="Link to this section" class="paige-header-link" href="#避免分支中毒">#</a></h3>
+<h2 id="结论">结论<a aria-label="Link to this section" class="paige-header-link" href="#结论">#</a></h2>
+<h2 id="附录a对intel-haswell分支预测结构的逆向工程">附录A：对Intel Haswell分支预测结构的逆向工程<a aria-label="Link to this section" class="paige-header-link" href="#附录a对intel-haswell分支预测结构的逆向工程">#</a></h2>
+<h2 id="附录bwindows下对间接分支下毒的poc">附录B：Windows下对间接分支下毒的PoC<a aria-label="Link to this section" class="paige-header-link" href="#附录bwindows下对间接分支下毒的poc">#</a></h2>
+<h2 id="附录c幽灵攻击的示例">附录C：幽灵攻击的示例<a aria-label="Link to this section" class="paige-header-link" href="#附录c幽灵攻击的示例">#</a></h2>
+
+        
+        
+    </section>
+
+
+    </div>
+</article>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        
+                    </main>
+                    
+
+
+
+
+
+    <footer>
+        
+        
+            <p class="text-center"><a class="link-secondary text-decoration-none" href="https://github.com/willfaught/paige">Paige Theme</a></p>
+        
+        
+    </footer>
+
+
+                </div>
+            </div>
+        </div>
+        <script>
+function paigeResize() {
+    var e = document.querySelector('section[class="paige-content"]');
+    if (!e) {
+        return;
+    }
+    var mw = getComputedStyle(e).maxWidth;
+    var w;
+    if (mw === "100%") {
+        var e = document.querySelector("body > div.container");
+        var s = getComputedStyle(e);
+        var px = parseFloat(s.paddingLeft) + parseFloat(s.paddingRight);
+        var bx = parseFloat(s.borderLeftWidth) + parseFloat(s.borderRightWidth);
+        w = e.offsetWidth - px - bx;
+    } else {
+        w = parseFloat(mw.substring(0, mw.length - 2));
+    }
+    var es = document.querySelectorAll('section[class="paige-content"] > div');
+    for (var i = 0; i < es.length; i++) {
+        var e = es[i];
+        var iframe = false;
+        for (var j = 0; j < e.children.length; j++) {
+            if (e.children.item(j).tagName.toLowerCase() === "iframe") {
+                iframe = true;
+                break;
+            }
+        }
+        if (iframe && e.style.width !== w) {
+            e.style.width = w + "px";
+        }
+    }
+}
+paigeResize();
+addEventListener("resize", paigeResize);
+
+var paigeQuery = matchMedia("(prefers-color-scheme: dark)");
+if (paigeQuery.matches) {
+    document.documentElement.setAttribute("data-bs-theme", "dark")
+}
+paigeQuery.addEventListener("change", function (e) {
+    if (e.matches) {
+        document.documentElement.setAttribute("data-bs-theme", "dark");
+    } else {
+        document.documentElement.removeAttribute("data-bs-theme");
+    }
+});
+
+</script>
+
+
+
+
+
+
+
+
+
+
+    
+    
+    
+
+
+<script  crossorigin="anonymous"   defer  integrity="sha256-yqyVgS/SWX6RGq388CazJ03XCi9wptdg&#43;EG8X0nYuIo="   referrerpolicy="no-referrer"  src="/bootstrap.bundle.min_16066188465625427804.min.caac95812fd2597e911aadfcf026b3274dd70a2f70a6d760f841bc5f49d8b88a.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<noscript></noscript>
+
+        
+    </body>
+</html>
+
+<!-- Paige theme from https://github.com/willfaught/paige -->
+
