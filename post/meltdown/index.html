@@ -1,436 +1,331 @@
-<!doctype html>
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article#">
+    <meta charset="UTF-8" />
 
+    <meta name="generator" content="Hugo 0.110.0"><meta name="theme-color" content="#fff" />
+    <meta name="color-scheme" content="light dark">
 
-<html    lang="zh-cn" >
-    <head>
     
-    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <meta name="format-detection" content="telephone=no, date=no, address=no, email=no" />
+    
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+
+    <title>Meltdown | Hugo 主题 MemE</title>
+
+    <link rel="stylesheet" href="/css/meme.min.af7af6b8a1ce00c9057fb6693870842e83396f68ec94d16848ede5707eaf4629.css"/>
+
+    
+    
+        <script src="/js/meme.min.e46abe484398824efc70edec3126437916974df592d7c395b44f8f60e0f57e9d.js"></script>
+
+    
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB&#43;Garamond:ital,wght@0,400;0,500;0,700;1,400;1,700&amp;family=Noto&#43;Serif&#43;SC:wght@400;500;700&amp;family=Source&#43;Code&#43;Pro:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" media="print" onload="this.media='all'" />
+        <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB&#43;Garamond:ital,wght@0,400;0,500;0,700;1,400;1,700&amp;family=Noto&#43;Serif&#43;SC:wght@400;500;700&amp;family=Source&#43;Code&#43;Pro:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" /></noscript>
+
+    <meta name="author" content="cheese" /><meta name="description" content="Meltdown: 试图从用户空间读取 kernel 的内存 CVE-2017-5754 摘要 计算机系统的安全性，根本上来说，依靠内存隔离。比如……" />
+
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#2a6df4" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Hugo 主题 MemE" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="Hugo 主题 MemE" />
+    <meta name="msapplication-starturl" content="../../" />
+    <meta name="msapplication-TileColor" content="#fff" />
+    <meta name="msapplication-TileImage" content="../../icons/mstile-150x150.png" />
+    <link rel="manifest" href="/manifest.json" />
+
+    
+    
+
+    
+    <link rel="canonical" href="https://example.com/post/meltdown/" />
+    
+
+<script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "datePublished": "2023-01-29T13:00:25+08:00",
+        "dateModified": "2023-01-29T23:31:04+08:00",
+        "url": "https://example.com/post/meltdown/",
+        "headline": "Meltdown",
+        "description": "Meltdown: 试图从用户空间读取 kernel 的内存 CVE-2017-5754 摘要 计算机系统的安全性，根本上来说，依靠内存隔离。比如……",
+        "inLanguage" : "zh-CN",
+        "articleSection": "post",
+        "wordCount":  6065 ,
+        "image": ["https://example.com/src/Meltdown%E6%94%BB%E5%87%BB%E6%A8%A1%E5%9D%97.png"],
+        "author": {
+            "@type": "Person",
+            "description": "Viva La Vida",
+            "email": "limourenzhou@163.com",
+            "image": "https://example.com/icons/apple-touch-icon.png",
+            "url": "https://io-oi.me/",
+            "name": "cheese"
+        },
+        "license": "[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)",
+        "publisher": {
+            "@type": "Organization",
+            "name": "Hugo 主题 MemE",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://example.com/icons/apple-touch-icon.png"
+            },
+            "url": "https://example.com/"
+        },
+        "mainEntityOfPage": {
+            "@type": "WebSite",
+            "@id": "https://example.com/"
+        }
+    }
+</script>
+
+    
+
+<meta name="twitter:card" content="summary_large_image" />
+
+
+<meta name="twitter:site" content="@reuixiy" />
+<meta name="twitter:creator" content="@reuixiy" />
+
+    
 
 
 
-    <meta content="cpu_security" name="keywords">
-
-<meta content="#0d6efd" name="msapplication-TileColor">
-
-<meta content="#0d6efd" name="theme-color">
-<meta content="width=device-width, initial-scale=1" name="viewport">
 <meta property="og:title" content="Meltdown" />
-<meta property="og:description" content="Meltdown: 试图从用户空间读取 kernel 的内存 CVE-2017-5754 摘要 计算机系统的安全性，根本上来说，依靠内存隔离。比如：kernel地址范围对用户来说，标记为不可访问。 本文提" />
+<meta property="og:description" content="Meltdown: 试图从用户空间读取 kernel 的内存 CVE-2017-5754 摘要 计算机系统的安全性，根本上来说，依靠内存隔离。比如……" />
+<meta property="og:url" content="https://example.com/post/meltdown/" />
+<meta property="og:site_name" content="Hugo 主题 MemE" />
+<meta property="og:locale" content="zh" /><meta property="og:image" content="https://example.com/src/Meltdown%E6%94%BB%E5%87%BB%E6%A8%A1%E5%9D%97.png" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="http://localhost:1313/post/meltdown/" /><meta property="article:section" content="post" />
-<meta property="article:published_time" content="2023-01-29T13:00:25+08:00" />
-<meta property="article:modified_time" content="2023-01-29T13:00:25+08:00" />
-
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Meltdown"/>
-<meta name="twitter:description" content="Meltdown: 试图从用户空间读取 kernel 的内存 CVE-2017-5754 摘要 计算机系统的安全性，根本上来说，依靠内存隔离。比如：kernel地址范围对用户来说，标记为不可访问。 本文提"/>
-
-
-    <title>Meltdown · Cheese - A wonderful world for you</title>
-    <link href="/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180">
-<link href="/favicon-16x16.png" rel="icon" sizes="16x16" type="image/png">
-<link href="/favicon-32x32.png" rel="icon" sizes="32x32" type="image/png">
-
-<link href="/favicon.png" rel="icon" type="image/png">
-<link href="/favicon.svg" rel="icon" type="image/svg+xml">
-<link color="#0d6efd" href="/safari-pinned-tab.svg" rel="mask-icon">
-<link href="/site.webmanifest" rel="manifest">
-
-
-
-
-
-
-
-
+    <meta property="article:published_time" content="2023-01-29T13:00:25&#43;08:00" />
+    <meta property="article:modified_time" content="2023-01-29T23:31:04&#43;08:00" />
     
-
-
-<link  crossorigin="anonymous"  href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css" integrity=""  referrerpolicy="no-referrer"  rel="stylesheet">
-
-
-
-
-
-
+    <meta property="article:section" content="post" />
 
 
 
     
     
-    
-
-
-<link  crossorigin="anonymous"  href="/bootstrap.min_11254274094227627370.min.9e0a1d275ddeb92360d4b48d8190962b9d8b1c347856c3931e15d54f308ecfcb.css" integrity="sha256-ngodJ13euSNg1LSNgZCWK52LHDR4VsOTHhXVTzCOz8s="  referrerpolicy="no-referrer"  rel="stylesheet">
-
-
-
-
-    <style>
-body, html {
-    height: 100%;
-}
-
-section[class="paige-content"] {
-    counter-reset: paige-figure;
-    max-width: 100%;
-}
-
-section[class="paige-content"] figure.paige-figure.paige-figure-numbered {
-    counter-increment: paige-figure;
-}
-
-section[class="paige-content"] figure.paige-figure.paige-figure-numbered figcaption:empty::before {
-    content: " " counter(paige-figure);
-}
-
-section[class="paige-content"] figure.paige-figure.paige-figure-numbered figcaption::before {
-    content: " " counter(paige-figure) ": ";
-}
-
-section[class="paige-content"] > blockquote {
-    padding: 0.5rem 1rem;
-    border-left: 0.25rem solid var(--bs-border-color);
-    padding-right: 0.25rem;
-}
-
-section[class="paige-content"] > blockquote p:last-of-type {
-    margin-bottom: 0;
-}
-
-
-
-
-
-.paige-figure .highlight .chroma pre,
-.paige-figure .highlight pre.chroma {
-    margin-bottom: 0;
-}
-
-.highlight .chroma .lnt,
-.highlight .chroma .hl {
-    display: flex;
-}
-
-.paige-figure > div > div[class="highlight"] > pre, .paige-figure > div > :last-child {
-    margin-bottom: 0;
-}
-
-.paige-header-link {
-    margin-left: 0.5ch;
-    opacity: 0;
-    position: absolute;
-    text-decoration: none;
-    transition: color 0.15s ease-in-out, opacity 0.15s ease-in-out;
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .paige-header-link {
-        transition: none;
-    }
-}
-
-.paige-header-link:focus, .paige-header-link:hover, :hover > .paige-header-link, :target > .paige-header-link {
-    opacity: 1;
-}
-
-
-    @media (prefers-color-scheme: dark) {
-        /* Background */ .bg { color: #c9d1d9; background-color: var(--bs-body-bg); }
-/* PreWrapper */ .chroma { color: #c9d1d9; background-color: var(--bs-body-bg); }
-/* Other */ .chroma .x {  }
-/* Error */ .chroma .err { color: #f85149 }
-/* CodeLine */ .chroma .cl {  }
-/* LineLink */ .chroma .lnlinks { outline: none; text-decoration: none; color: inherit }
-/* LineTableTD */ .chroma .lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
-/* LineTable */ .chroma .lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
-/* LineHighlight */ .chroma .hl { background-color: #ffffcc }
-/* LineNumbersTable */ .chroma .lnt { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #64686c }
-/* LineNumbers */ .chroma .ln { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #6e7681 }
-/* Line */ .chroma .line { display: flex; }
-/* Keyword */ .chroma .k { color: #ff7b72 }
-/* KeywordConstant */ .chroma .kc { color: #79c0ff }
-/* KeywordDeclaration */ .chroma .kd { color: #ff7b72 }
-/* KeywordNamespace */ .chroma .kn { color: #ff7b72 }
-/* KeywordPseudo */ .chroma .kp { color: #79c0ff }
-/* KeywordReserved */ .chroma .kr { color: #ff7b72 }
-/* KeywordType */ .chroma .kt { color: #ff7b72 }
-/* Name */ .chroma .n {  }
-/* NameAttribute */ .chroma .na {  }
-/* NameBuiltin */ .chroma .nb {  }
-/* NameBuiltinPseudo */ .chroma .bp {  }
-/* NameClass */ .chroma .nc { color: #f0883e; font-weight: bold }
-/* NameConstant */ .chroma .no { color: #79c0ff; font-weight: bold }
-/* NameDecorator */ .chroma .nd { color: #d2a8ff; font-weight: bold }
-/* NameEntity */ .chroma .ni { color: #ffa657 }
-/* NameException */ .chroma .ne { color: #f0883e; font-weight: bold }
-/* NameFunction */ .chroma .nf { color: #d2a8ff; font-weight: bold }
-/* NameFunctionMagic */ .chroma .fm {  }
-/* NameLabel */ .chroma .nl { color: #79c0ff; font-weight: bold }
-/* NameNamespace */ .chroma .nn { color: #ff7b72 }
-/* NameOther */ .chroma .nx {  }
-/* NameProperty */ .chroma .py { color: #79c0ff }
-/* NameTag */ .chroma .nt { color: #7ee787 }
-/* NameVariable */ .chroma .nv { color: #79c0ff }
-/* NameVariableClass */ .chroma .vc {  }
-/* NameVariableGlobal */ .chroma .vg {  }
-/* NameVariableInstance */ .chroma .vi {  }
-/* NameVariableMagic */ .chroma .vm {  }
-/* Literal */ .chroma .l { color: #a5d6ff }
-/* LiteralDate */ .chroma .ld { color: #79c0ff }
-/* LiteralString */ .chroma .s { color: #a5d6ff }
-/* LiteralStringAffix */ .chroma .sa { color: #79c0ff }
-/* LiteralStringBacktick */ .chroma .sb { color: #a5d6ff }
-/* LiteralStringChar */ .chroma .sc { color: #a5d6ff }
-/* LiteralStringDelimiter */ .chroma .dl { color: #79c0ff }
-/* LiteralStringDoc */ .chroma .sd { color: #a5d6ff }
-/* LiteralStringDouble */ .chroma .s2 { color: #a5d6ff }
-/* LiteralStringEscape */ .chroma .se { color: #79c0ff }
-/* LiteralStringHeredoc */ .chroma .sh { color: #79c0ff }
-/* LiteralStringInterpol */ .chroma .si { color: #a5d6ff }
-/* LiteralStringOther */ .chroma .sx { color: #a5d6ff }
-/* LiteralStringRegex */ .chroma .sr { color: #79c0ff }
-/* LiteralStringSingle */ .chroma .s1 { color: #a5d6ff }
-/* LiteralStringSymbol */ .chroma .ss { color: #a5d6ff }
-/* LiteralNumber */ .chroma .m { color: #a5d6ff }
-/* LiteralNumberBin */ .chroma .mb { color: #a5d6ff }
-/* LiteralNumberFloat */ .chroma .mf { color: #a5d6ff }
-/* LiteralNumberHex */ .chroma .mh { color: #a5d6ff }
-/* LiteralNumberInteger */ .chroma .mi { color: #a5d6ff }
-/* LiteralNumberIntegerLong */ .chroma .il { color: #a5d6ff }
-/* LiteralNumberOct */ .chroma .mo { color: #a5d6ff }
-/* Operator */ .chroma .o { color: #ff7b72; font-weight: bold }
-/* OperatorWord */ .chroma .ow { color: #ff7b72; font-weight: bold }
-/* Punctuation */ .chroma .p {  }
-/* Comment */ .chroma .c { color: #8b949e; font-style: italic }
-/* CommentHashbang */ .chroma .ch { color: #8b949e; font-style: italic }
-/* CommentMultiline */ .chroma .cm { color: #8b949e; font-style: italic }
-/* CommentSingle */ .chroma .c1 { color: #8b949e; font-style: italic }
-/* CommentSpecial */ .chroma .cs { color: #8b949e; font-weight: bold; font-style: italic }
-/* CommentPreproc */ .chroma .cp { color: #8b949e; font-weight: bold; font-style: italic }
-/* CommentPreprocFile */ .chroma .cpf { color: #8b949e; font-weight: bold; font-style: italic }
-/* Generic */ .chroma .g {  }
-/* GenericDeleted */ .chroma .gd { color: #ffa198; background-color: #490202 }
-/* GenericEmph */ .chroma .ge { font-style: italic }
-/* GenericError */ .chroma .gr { color: #ffa198 }
-/* GenericHeading */ .chroma .gh { color: #79c0ff; font-weight: bold }
-/* GenericInserted */ .chroma .gi { color: #56d364; background-color: #0f5323 }
-/* GenericOutput */ .chroma .go { color: #8b949e }
-/* GenericPrompt */ .chroma .gp { color: #8b949e }
-/* GenericStrong */ .chroma .gs { font-weight: bold }
-/* GenericSubheading */ .chroma .gu { color: #79c0ff }
-/* GenericTraceback */ .chroma .gt { color: #ff7b72 }
-/* GenericUnderline */ .chroma .gl { text-decoration: underline }
-/* TextWhitespace */ .chroma .w { color: #6e7681 }
-
-    }
-
-    @media (prefers-color-scheme: light) {
-        /* Background */ .bg { background-color: #ffffff; }
-/* PreWrapper */ .chroma { background-color: #ffffff; }
-/* Other */ .chroma .x {  }
-/* Error */ .chroma .err { color: #a61717; background-color: #e3d2d2 }
-/* CodeLine */ .chroma .cl {  }
-/* LineLink */ .chroma .lnlinks { outline: none; text-decoration: none; color: inherit }
-/* LineTableTD */ .chroma .lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
-/* LineTable */ .chroma .lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
-/* LineHighlight */ .chroma .hl { background-color: #ffffcc }
-/* LineNumbersTable */ .chroma .lnt { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
-/* LineNumbers */ .chroma .ln { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
-/* Line */ .chroma .line { display: flex; }
-/* Keyword */ .chroma .k { color: #000000; font-weight: bold }
-/* KeywordConstant */ .chroma .kc { color: #000000; font-weight: bold }
-/* KeywordDeclaration */ .chroma .kd { color: #000000; font-weight: bold }
-/* KeywordNamespace */ .chroma .kn { color: #000000; font-weight: bold }
-/* KeywordPseudo */ .chroma .kp { color: #000000; font-weight: bold }
-/* KeywordReserved */ .chroma .kr { color: #000000; font-weight: bold }
-/* KeywordType */ .chroma .kt { color: #445588; font-weight: bold }
-/* Name */ .chroma .n {  }
-/* NameAttribute */ .chroma .na { color: #008080 }
-/* NameBuiltin */ .chroma .nb { color: #0086b3 }
-/* NameBuiltinPseudo */ .chroma .bp { color: #999999 }
-/* NameClass */ .chroma .nc { color: #445588; font-weight: bold }
-/* NameConstant */ .chroma .no { color: #008080 }
-/* NameDecorator */ .chroma .nd { color: #3c5d5d; font-weight: bold }
-/* NameEntity */ .chroma .ni { color: #800080 }
-/* NameException */ .chroma .ne { color: #990000; font-weight: bold }
-/* NameFunction */ .chroma .nf { color: #990000; font-weight: bold }
-/* NameFunctionMagic */ .chroma .fm {  }
-/* NameLabel */ .chroma .nl { color: #990000; font-weight: bold }
-/* NameNamespace */ .chroma .nn { color: #555555 }
-/* NameOther */ .chroma .nx {  }
-/* NameProperty */ .chroma .py {  }
-/* NameTag */ .chroma .nt { color: #000080 }
-/* NameVariable */ .chroma .nv { color: #008080 }
-/* NameVariableClass */ .chroma .vc { color: #008080 }
-/* NameVariableGlobal */ .chroma .vg { color: #008080 }
-/* NameVariableInstance */ .chroma .vi { color: #008080 }
-/* NameVariableMagic */ .chroma .vm {  }
-/* Literal */ .chroma .l {  }
-/* LiteralDate */ .chroma .ld {  }
-/* LiteralString */ .chroma .s { color: #dd1144 }
-/* LiteralStringAffix */ .chroma .sa { color: #dd1144 }
-/* LiteralStringBacktick */ .chroma .sb { color: #dd1144 }
-/* LiteralStringChar */ .chroma .sc { color: #dd1144 }
-/* LiteralStringDelimiter */ .chroma .dl { color: #dd1144 }
-/* LiteralStringDoc */ .chroma .sd { color: #dd1144 }
-/* LiteralStringDouble */ .chroma .s2 { color: #dd1144 }
-/* LiteralStringEscape */ .chroma .se { color: #dd1144 }
-/* LiteralStringHeredoc */ .chroma .sh { color: #dd1144 }
-/* LiteralStringInterpol */ .chroma .si { color: #dd1144 }
-/* LiteralStringOther */ .chroma .sx { color: #dd1144 }
-/* LiteralStringRegex */ .chroma .sr { color: #009926 }
-/* LiteralStringSingle */ .chroma .s1 { color: #dd1144 }
-/* LiteralStringSymbol */ .chroma .ss { color: #990073 }
-/* LiteralNumber */ .chroma .m { color: #009999 }
-/* LiteralNumberBin */ .chroma .mb { color: #009999 }
-/* LiteralNumberFloat */ .chroma .mf { color: #009999 }
-/* LiteralNumberHex */ .chroma .mh { color: #009999 }
-/* LiteralNumberInteger */ .chroma .mi { color: #009999 }
-/* LiteralNumberIntegerLong */ .chroma .il { color: #009999 }
-/* LiteralNumberOct */ .chroma .mo { color: #009999 }
-/* Operator */ .chroma .o { color: #000000; font-weight: bold }
-/* OperatorWord */ .chroma .ow { color: #000000; font-weight: bold }
-/* Punctuation */ .chroma .p {  }
-/* Comment */ .chroma .c { color: #999988; font-style: italic }
-/* CommentHashbang */ .chroma .ch { color: #999988; font-style: italic }
-/* CommentMultiline */ .chroma .cm { color: #999988; font-style: italic }
-/* CommentSingle */ .chroma .c1 { color: #999988; font-style: italic }
-/* CommentSpecial */ .chroma .cs { color: #999999; font-weight: bold; font-style: italic }
-/* CommentPreproc */ .chroma .cp { color: #999999; font-weight: bold; font-style: italic }
-/* CommentPreprocFile */ .chroma .cpf { color: #999999; font-weight: bold; font-style: italic }
-/* Generic */ .chroma .g {  }
-/* GenericDeleted */ .chroma .gd { color: #000000; background-color: #ffdddd }
-/* GenericEmph */ .chroma .ge { color: #000000; font-style: italic }
-/* GenericError */ .chroma .gr { color: #aa0000 }
-/* GenericHeading */ .chroma .gh { color: #999999 }
-/* GenericInserted */ .chroma .gi { color: #000000; background-color: #ddffdd }
-/* GenericOutput */ .chroma .go { color: #888888 }
-/* GenericPrompt */ .chroma .gp { color: #555555 }
-/* GenericStrong */ .chroma .gs { font-weight: bold }
-/* GenericSubheading */ .chroma .gu { color: #aaaaaa }
-/* GenericTraceback */ .chroma .gt { color: #aa0000 }
-/* GenericUnderline */ .chroma .gl { text-decoration: underline }
-/* TextWhitespace */ .chroma .w { color: #bbbbbb }
-
-    }
-
-</style>
 
     
 </head>
 
-    <body class="d-flex flex-column">
-
+    <body>
+        <div class="container">
+            
+    <header class="header">
         
-        <div class="container flex-fill">
-            <div class="row">
-                <div class="col">
+            <div class="header-wrapper">
+                <div class="header-inner single">
                     
-
-
-
-
-    <header>
+    <div class="site-brand">
         
+            <a href="/" class="brand">Hugo 主题 MemE</a>
         
-            
-
-
-
-
-
-    
-
-
-
-    
-
-
-<nav class="justify-content-center my-3 navbar navbar-expand-sm">
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#paige-menu-toggler" aria-controls="paige-menu-toggler" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse justify-content-center mt-3 mt-sm-0 navbar-collapse" id="paige-menu-toggler">
-        <div class="align-items-center flex-column flex-sm-row justify-content-center nav  nav-pills ">
-            
-                
-                
-                
-                <a  class=" nav-link" href="/">Home</a>
-            
-                
-                
-                
-                <a  aria-current="page"  class=" active   nav-link" href="/post/">Archives</a>
-            
-                
-                
-                
-                <a  class=" nav-link" href="/tags/">Tags</a>
-            
-                
-                
-                
-                <a  class=" nav-link" href="/categories/">Categories</a>
-            
-        </div>
     </div>
+
+                    <nav class="nav">
+    <ul class="menu" id="menu">
+        
+            
+        
+        
+        
+        
+            
+                <li class="menu-item"><a href="/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" class="icon home"><path d="M280.37 148.26L96 300.11V464a16 16 0 0 0 16 16l112.06-.29a16 16 0 0 0 15.92-16V368a16 16 0 0 1 16-16h64a16 16 0 0 1 16 16v95.64a16 16 0 0 0 16 16.05L464 480a16 16 0 0 0 16-16V300L295.67 148.26a12.19 12.19 0 0 0-15.3 0zM571.6 251.47L488 182.56V44.05a12 12 0 0 0-12-12h-56a12 12 0 0 0-12 12v72.61L318.47 43a48 48 0 0 0-61 0L4.34 251.47a12 12 0 0 0-1.6 16.9l25.5 31A12 12 0 0 0 45.15 301l235.22-193.74a12.19 12.19 0 0 1 15.3 0L530.9 301a12 12 0 0 0 16.9-1.6l25.5-31a12 12 0 0 0-1.7-16.93z"/></svg><span class="menu-item-name">首页</span></a>
+                </li>
+            
+        
+            
+                <li class="menu-item"><a href=""><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon archive"><path d="M32 448c0 17.7 14.3 32 32 32h384c17.7 0 32-14.3 32-32V160H32v288zm160-212c0-6.6 5.4-12 12-12h104c6.6 0 12 5.4 12 12v8c0 6.6-5.4 12-12 12H204c-6.6 0-12-5.4-12-12v-8zM480 32H32C14.3 32 0 46.3 0 64v48c0 8.8 7.2 16 16 16h480c8.8 0 16-7.2 16-16V64c0-17.7-14.3-32-32-32z"/></svg><span class="menu-item-name">归档</span></a>
+                </li>
+            
+        
+            
+                <li class="menu-item"><a href="/categories/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon th"><path d="M149.333 56v80c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V56c0-13.255 10.745-24 24-24h101.333c13.255 0 24 10.745 24 24zm181.334 240v-80c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.256 0 24.001-10.745 24.001-24zm32-240v80c0 13.255 10.745 24 24 24H488c13.255 0 24-10.745 24-24V56c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24zm-32 80V56c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.256 0 24.001-10.745 24.001-24zm-205.334 56H24c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24zM0 376v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H24c-13.255 0-24 10.745-24 24zm386.667-56H488c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24zm0 160H488c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24zM181.333 376v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24z"/></svg><span class="menu-item-name">分类</span></a>
+                </li>
+            
+        
+            
+                <li class="menu-item"><a href="/tags/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" class="icon tags"><path d="M497.941 225.941L286.059 14.059A48 48 0 0 0 252.118 0H48C21.49 0 0 21.49 0 48v204.118a48 48 0 0 0 14.059 33.941l211.882 211.882c18.744 18.745 49.136 18.746 67.882 0l204.118-204.118c18.745-18.745 18.745-49.137 0-67.882zM112 160c-26.51 0-48-21.49-48-48s21.49-48 48-48 48 21.49 48 48-21.49 48-48 48zm513.941 133.823L421.823 497.941c-18.745 18.745-49.137 18.745-67.882 0l-.36-.36L527.64 323.522c16.999-16.999 26.36-39.6 26.36-63.64s-9.362-46.641-26.36-63.64L331.397 0h48.721a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882z"/></svg><span class="menu-item-name">标签</span></a>
+                </li>
+            
+        
+            
+                <li class="menu-item"><a href="/about/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" class="icon user-circle"><path d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 96c48.6 0 88 39.4 88 88s-39.4 88-88 88-88-39.4-88-88 39.4-88 88-88zm0 344c-58.7 0-111.3-26.6-146.5-68.2 18.8-35.4 55.6-59.8 98.5-59.8 2.4 0 4.8.4 7.1 1.1 13 4.2 26.6 6.9 40.9 6.9 14.3 0 28-2.7 40.9-6.9 2.3-.7 4.7-1.1 7.1-1.1 42.9 0 79.7 24.4 98.5 59.8C359.3 421.4 306.7 448 248 448z"/></svg><span class="menu-item-name">关于</span></a>
+                </li>
+            
+        
+            
+                
+                    
+                    
+                        <li class="menu-item">
+                            <a id="theme-switcher" href="#"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon theme-icon-light"><path d="M193.2 104.5l48.8-97.5a18 18 0 0128 0l48.8 97.5 103.4 -34.5a18 18 0 0119.8 19.8l-34.5 103.4l97.5 48.8a18 18 0 010 28l-97.5 48.8 34.5 103.4a18 18 0 01-19.8 19.8l-103.4-34.5-48.8 97.5a18 18 0 01-28 0l-48.8-97.5l-103.4 34.5a18 18 0 01-19.8-19.8l34.5-103.4-97.5-48.8a18 18 0 010-28l97.5-48.8-34.5-103.4a18 18 0 0119.8-19.8zM256 128a128 128 0 10.01 0M256 160a96 96 0 10.01 0"/></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon theme-icon-dark"><path d="M27 412a256 256 0 10154-407a11.5 11.5 0 00-5 20a201.5 201.5 0 01-134 374a11.5 11.5 0 00-15 13"/></svg></a>
+                        </li>
+                    
+                
+            
+        
+            
+                
+            
+        
+            
+                
+            
+        
+    </ul>
 </nav>
 
-        
+                    
+                </div>
+            </div>
+            
+    <input type="checkbox" id="nav-toggle" aria-hidden="true" />
+    <label for="nav-toggle" class="nav-toggle"></label>
+    <label for="nav-toggle" class="nav-curtain"></label>
+
+
         
     </header>
 
 
-                    <main>
-                        
-                        
-<article>
-    <div class="align-items-center d-flex flex-column mb-0">
-        <section class="paige-metadata w-100">
-    
-    
-    
-
-    <h1 class="display-5 fw-bold text-center">Meltdown</h1>
 
 
-    
-
-    
-
-
-
-
-
-    <p class="text-center text-secondary">
-        <time datetime="2023-01-29">January 29, 2023</time>
-    </p>
-
-
-</section>
+            
+            
+    <main class="main single" id="main">
+    <div class="main-inner">
 
         
 
+        <article class="content post h-entry" data-align="justify" data-type="post" data-toc-num="true">
+
+            <h1 class="post-title p-name">Meltdown</h1>
+
+            
+
+            
+                
+            
+
+            
+                
+
+<div class="post-meta">
+    
+        
+        <time datetime="2023-01-29T13:00:25&#43;08:00" class="post-meta-item published dt-published"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon post-meta-icon"><path d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"/></svg>&nbsp;2023.1.29</time>
+    
+    
+        
+        <time datetime="2023-01-29T23:31:04&#43;08:00" class="post-meta-item modified dt-updated"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon post-meta-icon"><path d="M400 64h-48V12c0-6.627-5.373-12-12-12h-40c-6.627 0-12 5.373-12 12v52H160V12c0-6.627-5.373-12-12-12h-40c-6.627 0-12 5.373-12 12v52H48C21.49 64 0 85.49 0 112v352c0 26.51 21.49 48 48 48h352c26.51 0 48-21.49 48-48V112c0-26.51-21.49-48-48-48zm-6 400H54a6 6 0 0 1-6-6V160h352v298a6 6 0 0 1-6 6zm-52.849-200.65L198.842 404.519c-4.705 4.667-12.303 4.637-16.971-.068l-75.091-75.699c-4.667-4.705-4.637-12.303.068-16.971l22.719-22.536c4.705-4.667 12.303-4.637 16.97.069l44.104 44.461 111.072-110.181c4.705-4.667 12.303-4.637 16.971.068l22.536 22.718c4.667 4.705 4.636 12.303-.069 16.97z"/></svg>&nbsp;2023.1.29</time>
+    
+    
+    
+        
+        
+        
+            
+                <span class="post-meta-item category"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon post-meta-icon"><path d="M464 128H272l-54.63-54.63c-6-6-14.14-9.37-22.63-9.37H48C21.49 64 0 85.49 0 112v288c0 26.51 21.49 48 48 48h416c26.51 0 48-21.49 48-48V176c0-26.51-21.49-48-48-48zm0 272H48V112h140.12l54.63 54.63c6 6 14.14 9.37 22.63 9.37H464v224z"/></svg>&nbsp;<a href="/categories/cpu_security/" class="category-link p-category">cpu_security</a></span>
+            
         
     
+    
+        
+        <span class="post-meta-item wordcount"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon post-meta-icon"><path d="M497.9 142.1l-46.1 46.1c-4.7 4.7-12.3 4.7-17 0l-111-111c-4.7-4.7-4.7-12.3 0-17l46.1-46.1c18.7-18.7 49.1-18.7 67.9 0l60.1 60.1c18.8 18.7 18.8 49.1 0 67.9zM284.2 99.8L21.6 362.4.4 483.9c-2.9 16.4 11.4 30.6 27.8 27.8l121.5-21.3 262.6-262.6c4.7-4.7 4.7-12.3 0-17l-111-111c-4.8-4.7-12.4-4.7-17.1 0zM124.1 339.9c-5.5-5.5-5.5-14.3 0-19.8l154-154c5.5-5.5 14.3-5.5 19.8 0s5.5 14.3 0 19.8l-154 154c-5.5 5.5-14.3 5.5-19.8 0zM88 424h48v36.3l-64.5 11.3-31.1-31.1L51.7 376H88v48z"/></svg>&nbsp;6065</span>
+    
+    
+        
+        <span class="post-meta-item reading-time"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon post-meta-icon"><path d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm0 448c-110.5 0-200-89.5-200-200S145.5 56 256 56s200 89.5 200 200-89.5 200-200 200zm61.8-104.4l-84.9-61.7c-3.1-2.3-4.9-5.9-4.9-9.7V116c0-6.6 5.4-12 12-12h32c6.6 0 12 5.4 12 12v141.7l66.8 48.6c5.4 3.9 6.5 11.4 2.6 16.8L334.6 349c-3.9 5.3-11.4 6.5-16.8 2.6z"/></svg>&nbsp;13&nbsp;分钟</span>
+    
+    
+    
+</div>
 
-    <section class="paige-content">
-        
-        
-            <p>Meltdown: 试图从用户空间读取 kernel 的内存</p>
+            
+
+            <nav class="contents">
+  <ol class="toc">
+    <li><a id="contents:摘要" href="#摘要">摘要</a>
+      <ol>
+        <li><a id="contents:q" href="#q">Q：</a></li>
+      </ol>
+    </li>
+    <li><a id="contents:intro" href="#intro">Intro</a></li>
+    <li><a id="contents:background" href="#background">Background</a>
+      <ol>
+        <li><a id="contents:无序执行" href="#无序执行">无序执行</a></li>
+        <li><a id="contents:地址空间" href="#地址空间">地址空间</a></li>
+        <li><a id="contents:缓存攻击" href="#缓存攻击">缓存攻击</a></li>
+      </ol>
+    </li>
+    <li><a id="contents:一个简易例子" href="#一个简易例子">一个简易例子</a></li>
+    <li><a id="contents:构建攻击模块" href="#构建攻击模块">构建攻击模块</a>
+      <ol>
+        <li><a id="contents:41-运行-transient-指令" href="#41-运行-transient-指令">4.1 运行 transient 指令</a></li>
+        <li><a id="contents:42-建立隐蔽信道" href="#42-建立隐蔽信道">4.2 建立隐蔽信道</a></li>
+      </ol>
+    </li>
+    <li><a id="contents:meltdown" href="#meltdown">Meltdown</a>
+      <ol>
+        <li>
+          <ol>
+            <li><a id="contents:攻击设置" href="#攻击设置">攻击设置</a></li>
+          </ol>
+        </li>
+        <li><a id="contents:51-攻击描述" href="#51-攻击描述">5.1 攻击描述</a>
+          <ol>
+            <li><a id="contents:步骤1读取秘密" href="#步骤1读取秘密">步骤1：读取秘密</a></li>
+            <li><a id="contents:步骤2传输秘密" href="#步骤2传输秘密">步骤2：传输秘密</a></li>
+            <li><a id="contents:步骤3接收秘密" href="#步骤3接收秘密">步骤3：接收秘密</a></li>
+            <li><a id="contents:dump出完整的物理内存" href="#dump出完整的物理内存">Dump出完整的物理内存</a></li>
+          </ol>
+        </li>
+        <li><a id="contents:52-优化和限制" href="#52-优化和限制">5.2 优化和限制</a>
+          <ol>
+            <li><a id="contents:对-0-的固有偏差" href="#对-0-的固有偏差">对 0 的固有偏差</a></li>
+            <li><a id="contents:对-0-误差的优化" href="#对-0-误差的优化">对 0 误差的优化</a></li>
+            <li><a id="contents:单比特传输" href="#单比特传输">单比特传输</a></li>
+            <li><a id="contents:使用intel-tsx的异常抑制" href="#使用intel-tsx的异常抑制">使用Intel TSX的异常抑制</a></li>
+            <li><a id="contents:突破kaslr" href="#突破kaslr">突破KASLR</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a id="contents:evaluation" href="#evaluation">Evaluation</a></li>
+    <li><a id="contents:对策" href="#对策">对策</a></li>
+    <li><a id="contents:讨论" href="#讨论">讨论</a></li>
+    <li><a id="contents:结论" href="#结论">结论</a></li>
+    <li><a id="contents:meltdown-in-practice" href="#meltdown-in-practice">Meltdown in Practice</a></li>
+    <li><a id="contents:real-world-meltdown-exploit" href="#real-world-meltdown-exploit">Real-world Meltdown Exploit</a></li>
+  </ol>
+</nav><div class="post-body e-content">
+                <p>Meltdown: 试图从用户空间读取 kernel 的内存</p>
 <p>CVE-2017-5754</p>
-<h2 id="摘要">摘要<a aria-label="Link to this section" class="paige-header-link" href="#摘要">#</a></h2>
+<h2 id="摘要"><a href="#摘要" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:摘要" class="headings">摘要</a></h2>
 <p>计算机系统的安全性，根本上来说，依靠<strong>内存隔离</strong>。比如：kernel地址范围对用户来说，标记为不可访问。</p>
 <p>本文提出了 Meltdown。它利用现代处理器的<strong>无序执行</strong>，读取内存中kernel的任意位置内容，包括个人数据和密码。</p>
 <p><strong>无序执行</strong>，是现代处理器的不可或缺的性能特征，广泛存在。</p>
 <p>Meltdown攻击，不依赖于某个操作系统，也不依赖于某个软件漏洞。它打破了<strong>地址空间隔离</strong>以及<strong>半虚拟化环境</strong>提供的所有安全保障，打破了在此基础上构建的所有安全机制。</p>
 <p>系统中，无需任何权限，Meltdown能够使攻击者随意读取云上其他进程和虚拟机的内存。影响广泛。</p>
 <p>研究表明，针对KASLR的KAISER防御机制，对Meldown攻击有着意料之外的防护作用。因此，我们建议大家部署KAISER，防御Meltdown攻击。</p>
-<h3 id="q">Q：<a aria-label="Link to this section" class="paige-header-link" href="#q">#</a></h3>
+<h3 id="q"><a href="#q" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:q" class="headings">Q：</a></h3>
 <p>什么是“无序执行”？什么是KASLR？什么是KAISER防御机制？为什么内核被映射到进程的虚拟地址空间？如何映射？</p>
-<h2 id="intro">Intro<a aria-label="Link to this section" class="paige-header-link" href="#intro">#</a></h2>
+<h2 id="intro"><a href="#intro" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:intro" class="headings">Intro</a></h2>
 <p>如今操作系统的一个核心安全特征就是，内存隔离。操作系统确保用户不能访问其他用户的内存和 kernel 内存。也是在这种内存隔离技术的基础上，我们才能够在个人设备上同时运行多个应用程序，在云上同时执行多个用户的进程。</p>
 <p>现代处理器中，kernel 对用户进程的隔离，由处理器的一个<strong>超级位</strong>来实现，该超级位定义内核的内存页是否可以访问。一般来说，这个位只能在输入内核代码时设置，在切换到用户进程时会清除。因为这一个硬件级别的特性，操作系统能够将<strong>kernel 映射</strong>到每个进程的<strong>内存地址空间</strong>。这样的话，如果需要临时从用户态转换为内核态，比如处理中断，内存的映射就可以不发生改变，直接执行相应的 kernel 代码。</p>
 <p>本文中，我们提出了 <strong>Meltdown</strong>。它是一种新型攻击方法，能够帮助任何用户进程以一种简单的方式访问其执行的机器的完整内核内存，甚至所有物理内存，无视内存隔离。它不依赖于任何软件漏洞，可以在所有主流操作系统上实现。它利用了<strong>大多数现代处理器的侧信道信息</strong>，例如自2010年以来的现代英特尔微体系结构，以及其他供应商的其他CPU上的潜在信息。</p>
@@ -448,15 +343,15 @@ section[class="paige-content"] > blockquote p:last-of-type {
 <li>将无序执行和异常处理程序（或TSX）结合，提出一种端到端攻击。在PC、笔记本、移动电话和云主机上无需特权读取任意物理内存。</li>
 <li>评估了Meltdown的性能，和KAISER的防御效果。</li>
 </ol>
-<h2 id="background">Background<a aria-label="Link to this section" class="paige-header-link" href="#background">#</a></h2>
-<h3 id="无序执行">无序执行<a aria-label="Link to this section" class="paige-header-link" href="#无序执行">#</a></h3>
+<h2 id="background"><a href="#background" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:background" class="headings">Background</a></h2>
+<h3 id="无序执行"><a href="#无序执行" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:无序执行" class="headings">无序执行</a></h3>
 <p>无序执行，本身是一种优化技术，用于提高处理器的利用率。处理器不是严格按照程序指令的顺序执行，如果当前指令要求的操作单元被占用了，就先运行其他的执行单元。一般来说，只要指令执行的结果符合架构上的定义，处理器就可以并行处理这些指令。</p>
 <p>实际上，支持无序执行功能的处理器，推测性地进行操作。也就是说，一定程度上，在处理器确认某个指令需要执行并且完整提交之前，支持无序执行的处理器会先执行该指令。关于“<strong>推测执行</strong>”，就是在原有指令顺序的基础上增加分支。</p>
 <p>1967年，Tomasulo开发了一个算法来实现指令的动态调度、无序执行。他提出一个统一的“保留站”的概念，使得处理器在计算出一个数据值后可以直接使用它，而不必将其存储到寄存器或内存，再次读取。保留站，通过重命名寄存器，<em><strong>从而？？？</strong></em>，最后得到的效果是解决了写后读、读后写、写后写危害。此外，保留站通过一条数据总线（CDB）连接所有执行单元。如果操作数未获得，保留站会侦听该数据总线（CDB），直到操作数到达，就可以直接执行指令。</p>
 <p>Intel架构中，<strong>流水线</strong>由前端、执行引擎（后端）和内存子系统组成，x86指令由前端从内存中获取，解码为微操作，然后传输给执行引擎。执行引擎中实现“无序执行”。Reorder buffer负责寄存器分配、寄存器重命名和丢弃，同时负责 move elimination和zero idioms的识别。Scheduler（统一的保留站）接收传来的微指令，重新排序，然后传递给Execution Units。Excution Units中的每一个执行单元执行不同的任务，比如ALU、AES、AGU和内存的加载、存储。其中，AGU和内存的加载、存储单元，和内存子系统直接连接。</p>
 <p>CPU通常不运行线性指令流，其中包含<strong>分支预测单元</strong>，对下一条指令是否应该执行生成预测。分支预测单元尝试在指令确定可以执行前，预测出结果。其中，分支上没有任何依赖关系的指令可以提前被执行，这样的话，一旦该指令确实应该被执行，处理器就可以直接使用其结果；否则，就通过清除Reorder buffer和初始化统一的保留站，来回滚到正常状态。</p>
 <p><strong>分支预测的实现，有很多种方法</strong>。比如静态分支预测，基于指令本身对结果进行预测；动态分支预测，在运行时收集统计数据，预测结果；一级分支预测，使用1位或2位的计数器来记录分支的最终结果；现代处理器通常使用两级自适应预测，保留最后n个结果，可以预测定期重复的一些模式；神经分支预测，也是最近被采纳的新方法。</p>
-<h3 id="地址空间">地址空间<a aria-label="Link to this section" class="paige-header-link" href="#地址空间">#</a></h3>
+<h3 id="地址空间"><a href="#地址空间" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:地址空间" class="headings">地址空间</a></h3>
 <p>虚拟地址空间的实现，是通过一个multi-level page translation table，它定义了虚拟地址到物理地址的映射，提供了一些特权检查的保护措施，包括的特权有：可读、可写、可执行、可访问的用户。当前使用的转化表保存在CPU的一个特殊的寄存器内。</p>
 <p>通过系统在table中的可访问权限设置，可以避免应用程序直接访问地址空间中的kernel部分。</p>
 <p>完整的物理内存会被映射到kernel中，不同的操作系统使用不同的映射方式：</p>
@@ -465,14 +360,14 @@ section[class="paige-content"] > blockquote p:last-of-type {
 <li>Windows中，设置了paged pools、non-pages pools和system cache。三者映射物理内存的不同部分。</li>
 </ul>
 <p>一般来说，利用内存错误的漏洞，都需要提前猜测到特定数据所在的地址。现有的ASLR、金丝雀，或者设置栈中不可执行的安全措施可以一定程度防范此类漏洞。但是，近些年也出现了一些对应的攻击手段，比如侧信道攻击、利用JavaScript使ASLR失效。</p>
-<h3 id="缓存攻击">缓存攻击<a aria-label="Link to this section" class="paige-header-link" href="#缓存攻击">#</a></h3>
+<h3 id="缓存攻击"><a href="#缓存攻击" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:缓存攻击" class="headings">缓存攻击</a></h3>
 <p>对于经常使用的数据，CPU和内存间设置了多级缓存，其中，地址空间转换表也会被缓存在这里。</p>
 <p>缓存攻击关注因为引入缓存机制造成的时间上的差异，有很多例子。比如Flush+Reload缓存攻击，通过clflush指令刷新目标内存位置，测量重新加载数据所需要的时间，<em>具体细节省略</em>。</p>
 <p>侧信道攻击的另一个特殊用例是隐蔽通道。</p>
-<h2 id="一个简易例子">一个简易例子<a aria-label="Link to this section" class="paige-header-link" href="#一个简易例子">#</a></h2>
+<h2 id="一个简易例子"><a href="#一个简易例子" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:一个简易例子" class="headings">一个简易例子</a></h2>
 <p>本节，介绍一个简单的代码片段，来说明无序执行改变微架构状态的行为会泄露信息。</p>
 <div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
+<div class="table-container"><table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
@@ -481,25 +376,25 @@ section[class="paige-content"] > blockquote p:last-of-type {
 <pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="n">raise_exception</span><span class="p">();</span>
 </span></span><span class="line"><span class="cl"><span class="c1">// the line below is never reached
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">access</span><span class="p">(</span><span class="n">probe_array</span><span class="p">[</span><span class="n">data</span> <span class="o">*</span> <span class="mi">4096</span><span class="p">]);</span>
-</span></span></code></pre></td></tr></table>
+</span></span></code></pre></td></tr></table></div>
 </div>
 </div><p>该代码，首先引发一个异常，再访问一个数组。</p>
 <p>关于操作系统对“异常”的处理，引发后，控制流不会继续执行异常后的代码，而是跳转到操作系统的异常处理程序。因此，理论上，该代码中的访问数组操作不会被执行。但是，因为处理器的无序执行特性，CPU可能已经执行了该指令，因为它不依赖于“触发异常”的那条指令。</p>
 <p>宏观来看，处理器的无序执行不会产生任何不好的影响，毕竟处理器会根据异常处理之后，再决定无序执行的指令的操作结果是否保留。但是，微架构层次来看，本代码中的数组已经被加载到了cache中。这样的话，我们就可以通过侧信道攻击获取缓冲中的信息，比如通过Flush+Reload来检测一个特定的内存是否被缓存了。并且，进一步展开攻击。</p>
 <p>具体来说，</p>
 <div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
+<div class="table-container"><table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">char</span> <span class="n">data</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="mh">0xFFFF8E19</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%c</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">data</span><span class="p">);</span>
-</span></span></code></pre></td></tr></table>
+</span></span></code></pre></td></tr></table></div>
 </div>
-</div><h2 id="构建攻击模块">构建攻击模块<a aria-label="Link to this section" class="paige-header-link" href="#构建攻击模块">#</a></h2>
+</div><h2 id="构建攻击模块"><a href="#构建攻击模块" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:构建攻击模块" class="headings">构建攻击模块</a></h2>
 <p><img src="src/Meltdown%E6%94%BB%E5%87%BB%E6%A8%A1%E5%9D%97.png" alt=""></p>
-<h3 id="41-运行-transient-指令">4.1 运行 transient 指令<a aria-label="Link to this section" class="paige-header-link" href="#41-运行-transient-指令">#</a></h3>
+<h3 id="41-运行-transient-指令"><a href="#41-运行-transient-指令" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:41-运行-transient-指令" class="headings">4.1 运行 transient 指令</a></h3>
 <p>上面提到的例子中，“异常”之后的指令，被称为 transient 指令。它具有两个特点：1. 无序执行，2. 处理器去处理“异常”了，因此对于 transient指令的副作用，攻击者可以处理并利用。</p>
 <p>transient指令，瞬态指令，因为它虽然暂时被执行了，但是处理器反应过来之后，回对其进行处理。</p>
 <p>访问用户不可访问的页面，会触发“异常”。攻击者对“异常”的处理，一般来说，有两种方案：</p>
@@ -507,74 +402,54 @@ section[class="paige-content"] > blockquote p:last-of-type {
 <li>异常处理</li>
 <li>异常抑制</li>
 </ul>
-<h3 id="42-建立隐蔽信道">4.2 建立隐蔽信道<a aria-label="Link to this section" class="paige-header-link" href="#42-建立隐蔽信道">#</a></h3>
+<h3 id="42-建立隐蔽信道"><a href="#42-建立隐蔽信道" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:42-建立隐蔽信道" class="headings">4.2 建立隐蔽信道</a></h3>
 <p>隐蔽信道，就是读取 transient 指令执行造成的处理器“微架构”状态改变，从状态中推断出秘密信息，然后传送出去。</p>
 <p>隐蔽信道的发送方，是上面的transient指令，它利用内存中的某个用户程序可访问的地址。该地址被缓存，就相当于发出“1”。隐蔽信道的接收方，试图访问这个位置，可以通过访问时间（Flush+Reload），确定此时该地址是否被缓存。如果发现其被“缓存”，则相当于接收到了“1”这个隐蔽信息。</p>
-<h2 id="meltdown">Meltdown<a aria-label="Link to this section" class="paige-header-link" href="#meltdown">#</a></h2>
+<h2 id="meltdown"><a href="#meltdown" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:meltdown" class="headings">Meltdown</a></h2>
 <p>首先，我们讨论攻击设置以强调这种攻击的广泛适用性。</p>
 <p>其次，我们提供了攻击概述，展示了 Meltdown 如何同时安装在个人计算机的 Windows 和 Linux 上、手机上的 Android 系统以及云中。</p>
 <p>最后，我们讨论了 Meltdown 的具体实现，允许以 3.2 KB/s 到 503 KB/s 的速度转储任意内核内存。</p>
-<h4 id="攻击设置">攻击设置<a aria-label="Link to this section" class="paige-header-link" href="#攻击设置">#</a></h4>
+<h4 id="攻击设置"><a href="#攻击设置" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:攻击设置" class="headings">攻击设置</a></h4>
 <p>攻击环境包括云上的个人计算机和虚拟机</p>
 <p>攻击者拥有普通用户权限，执行非特权代码</p>
 <p>假定系统具有现阶段所有最先进的防御措施，比如ASLR KALSR SMAP SMEP NX PXN</p>
 <p>假定系统没有任何bug，没有任何可利用的软件漏洞</p>
 <p>攻击者的目标是秘密用户数据</p>
-<h3 id="51-攻击描述">5.1 攻击描述<a aria-label="Link to this section" class="paige-header-link" href="#51-攻击描述">#</a></h3>
+<h3 id="51-攻击描述"><a href="#51-攻击描述" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:51-攻击描述" class="headings">5.1 攻击描述</a></h3>
 <p>Meltdown攻击的核心：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">;rcx = kernel address, rbx = probe array
-</span></span><span class="line"><span class="cl">xor rax rax
-</span></span><span class="line"><span class="cl">retry:
-</span></span><span class="line"><span class="cl">mov al, byte [rcx]
-</span></span><span class="line"><span class="cl">shl rax, 0xc
-</span></span><span class="line"><span class="cl">jz retry
-</span></span><span class="line"><span class="cl">mov rbx, qword [rbx + rax]
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>三个步骤</p>
+<pre tabindex="0"><code class="language-assembly" data-lang="assembly">;rcx = kernel address, rbx = probe array
+xor rax rax
+retry:
+mov al, byte [rcx]
+shl rax, 0xc
+jz retry
+mov rbx, qword [rbx + rax]
+</code></pre><p>三个步骤</p>
 <ol>
 <li>加载攻击者无法访问的内存位置的内容（秘密）到寄存器</li>
 <li>transient指令根据寄存器中加载的“秘密”，访问高速缓存，相当于发送“秘密”</li>
 <li>攻击者使用Flush+Reload来访问高速缓存，接收秘密信息</li>
 </ol>
-<h4 id="步骤1读取秘密">步骤1：读取秘密<a aria-label="Link to this section" class="paige-header-link" href="#步骤1读取秘密">#</a></h4>
+<h4 id="步骤1读取秘密"><a href="#步骤1读取秘密" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:步骤1读取秘密" class="headings">步骤1：读取秘密</a></h4>
 <p>为了从内存中的特权位置，读取秘密到寄存器，用户程序使用虚拟地址来引用内存中的数据。</p>
 <p>每一个kernel的虚拟地址，通过转换都会指向一个实际的物理地址。</p>
 <p>虚拟地址转换为物理地址的同时，处理器还会检查虚拟地址的权限位，确定该地址是用户可访问的，还是只有kernel能够访问。</p>
 <p>用户程序访问kernel地址空间，会引发异常。但是，Meltdown利用处理器的乱序执行，在非法内存访问和引发异常之间的小时间窗口内执行命令。</p>
-<h4 id="步骤2传输秘密">步骤2：传输秘密<a aria-label="Link to this section" class="paige-header-link" href="#步骤2传输秘密">#</a></h4>
+<h4 id="步骤2传输秘密"><a href="#步骤2传输秘密" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:步骤2传输秘密" class="headings">步骤2：传输秘密</a></h4>
 <p>在内存中分配一个<strong>探测数组</strong>，并确保该数组的任何部分都没有被缓存。</p>
 <p>为了传输秘密，transient指令序列对基于secret值计算的地址，进行间接地址访问。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">shl rax, 0xc
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>左移12位，也就是将secret值乘以4 KB(4096 B)，乘以页面大小。从而防止相邻的内存位置被加载时，影响结果。</p>
+<pre tabindex="0"><code class="language-assembly" data-lang="assembly">shl rax, 0xc
+</code></pre><p>左移12位，也就是将secret值乘以4 KB(4096 B)，乘以页面大小。从而防止相邻的内存位置被加载时，影响结果。</p>
 <p>在这里，我们一次读取一个字节，也就是0~255的数。因此，探测数组需要满足256 x 4096B的大小。</p>
 <p>对 0 的噪声优化。</p>
 <p>secret -&gt; L1 cache -&gt; L3 cache</p>
-<h4 id="步骤3接收秘密">步骤3：接收秘密<a aria-label="Link to this section" class="paige-header-link" href="#步骤3接收秘密">#</a></h4>
+<h4 id="步骤3接收秘密"><a href="#步骤3接收秘密" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:步骤3接收秘密" class="headings">步骤3：接收秘密</a></h4>
 <p>攻击者遍历探测数组的所有 256 页并测量每个第一个缓存行的访问时间（即偏移量) 页面上。包含在缓存的缓存行的<strong>页面编号直接对应于秘密值</strong>。</p>
-<h4 id="dump出完整的物理内存">Dump出完整的物理内存<a aria-label="Link to this section" class="paige-header-link" href="#dump出完整的物理内存">#</a></h4>
+<h4 id="dump出完整的物理内存"><a href="#dump出完整的物理内存" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:dump出完整的物理内存" class="headings">Dump出完整的物理内存</a></h4>
 <p>重复 Meltdown 的所有 3 个步骤，攻击者可以通过遍历所有地址来转储整个内存。</p>
 <p>由于所有主要操作系统通常也将整个物理内存映射到内核地址空间，因此，在每个用户进程中，Meltdown 还可以读取目标机器的整个物理内存</p>
-<h3 id="52-优化和限制">5.2 优化和限制<a aria-label="Link to this section" class="paige-header-link" href="#52-优化和限制">#</a></h3>
-<h4 id="对-0-的固有偏差">对 0 的固有偏差<a aria-label="Link to this section" class="paige-header-link" href="#对-0-的固有偏差">#</a></h4>
+<h3 id="52-优化和限制"><a href="#52-优化和限制" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:52-优化和限制" class="headings">5.2 优化和限制</a></h3>
+<h4 id="对-0-的固有偏差"><a href="#对-0-的固有偏差" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:对-0-的固有偏差" class="headings">对 0 的固有偏差</a></h4>
 <p>在无序执行的数据加载期间，如果值不可用，处理器可能会停止运作，但是也可能猜测出一个值，先继续执行着。</p>
 <p>我们观察到，Meltdown的非法内存加载，secert值经常返回0，原因有两个：</p>
 <ol>
@@ -582,144 +457,277 @@ section[class="paige-content"] > blockquote p:last-of-type {
 <li>处理器对权限检查的结果的猜测值，可能是1，也可能是0，而且从现有处理器的软硬件配置来说，0的可能性更高。也就是权限不允许。</li>
 </ol>
 <p>因此，在secret值为0的时候，我们的Meltdown攻击会执行一定次数的重复，避免上述两个原因导致的偏差。</p>
-<h4 id="对-0-误差的优化">对 0 误差的优化<a aria-label="Link to this section" class="paige-header-link" href="#对-0-误差的优化">#</a></h4>
-<h4 id="单比特传输">单比特传输<a aria-label="Link to this section" class="paige-header-link" href="#单比特传输">#</a></h4>
-<h4 id="使用intel-tsx的异常抑制">使用Intel TSX的异常抑制<a aria-label="Link to this section" class="paige-header-link" href="#使用intel-tsx的异常抑制">#</a></h4>
-<h4 id="突破kaslr">突破KASLR<a aria-label="Link to this section" class="paige-header-link" href="#突破kaslr">#</a></h4>
-<h2 id="evaluation">Evaluation<a aria-label="Link to this section" class="paige-header-link" href="#evaluation">#</a></h2>
-<h2 id="对策">对策<a aria-label="Link to this section" class="paige-header-link" href="#对策">#</a></h2>
-<h2 id="讨论">讨论<a aria-label="Link to this section" class="paige-header-link" href="#讨论">#</a></h2>
-<h2 id="结论">结论<a aria-label="Link to this section" class="paige-header-link" href="#结论">#</a></h2>
+<h4 id="对-0-误差的优化"><a href="#对-0-误差的优化" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:对-0-误差的优化" class="headings">对 0 误差的优化</a></h4>
+<h4 id="单比特传输"><a href="#单比特传输" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:单比特传输" class="headings">单比特传输</a></h4>
+<h4 id="使用intel-tsx的异常抑制"><a href="#使用intel-tsx的异常抑制" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:使用intel-tsx的异常抑制" class="headings">使用Intel TSX的异常抑制</a></h4>
+<h4 id="突破kaslr"><a href="#突破kaslr" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:突破kaslr" class="headings">突破KASLR</a></h4>
+<h2 id="evaluation"><a href="#evaluation" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:evaluation" class="headings">Evaluation</a></h2>
+<h2 id="对策"><a href="#对策" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:对策" class="headings">对策</a></h2>
+<h2 id="讨论"><a href="#讨论" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:讨论" class="headings">讨论</a></h2>
+<h2 id="结论"><a href="#结论" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:结论" class="headings">结论</a></h2>
 <p>本文介绍了Meltdown，一种新的基于软件的攻击方法。它利用现代处理器的<strong>无序执行</strong>和<strong>测信道</strong>，使得无特权的用户空间程序能够读取任意地址的 kernel 内存。</p>
 <p>Meltdown 不需要某种软件漏洞，也不依赖某种操作系统，能够帮助攻击者以高达 503 KB/s的速率读取云上其他进程和虚拟机中的敏感数据，影响数百万设备。</p>
 <p>我们发现，<strong>KAISER</strong>最初提出的<strong>对抗KASLR侧信道攻击</strong>的对策，无意中也阻碍了Meltdown。</p>
 <p>我们强调，KAISER需要部署在每个操作系统上，作为一种短期的解决方案，直到Meltdown在硬件上得到修复，以防止Meltdon攻击的大规模出现。</p>
-<h2 id="meltdown-in-practice">Meltdown in Practice<a aria-label="Link to this section" class="paige-header-link" href="#meltdown-in-practice">#</a></h2>
-<h2 id="real-world-meltdown-exploit">Real-world Meltdown Exploit<a aria-label="Link to this section" class="paige-header-link" href="#real-world-meltdown-exploit">#</a></h2>
+<h2 id="meltdown-in-practice"><a href="#meltdown-in-practice" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:meltdown-in-practice" class="headings">Meltdown in Practice</a></h2>
+<h2 id="real-world-meltdown-exploit"><a href="#real-world-meltdown-exploit" class="anchor-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon anchor-icon"><path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/></svg></a><a href="#contents:real-world-meltdown-exploit" class="headings">Real-world Meltdown Exploit</a></h2>
+
+            </div>
+
+            
+    
+    
+        <ul class="post-copyright">
+            <li class="copyright-item author"><span class="copyright-item-text">作者</span>：<a href="https://io-oi.me/" class="p-author h-card" target="_blank" rel="noopener">cheese</a></li>
+            
+                
+                
+                
+                
+                <li class="copyright-item link"><span class="copyright-item-text">链接</span>：<a href="/post/meltdown/" target="_blank" rel="noopener">https://example.com/post/meltdown/</a></li>
+            
+            <li class="copyright-item license"><span class="copyright-item-text">许可</span>：<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a></li>
+            
+        </ul>
+    
+
+
+
+        </article>
 
         
+
         
-    </section>
+    <div class="updated-badge-container">
+        <span title="Updated @ 2023-01-29 23:31:04 CST" style="cursor:help">
+
+<svg xmlns="http://www.w3.org/2000/svg" width="130" height="20" class="updated-badge"><linearGradient id="b" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><clipPath id="a"><rect width="130" height="20" rx="3" fill="#fff"/></clipPath><g clip-path="url(#a)"><path class="updated-badge-left" d="M0 0h55v20H0z"/><path class="updated-badge-right" d="M55 0h75v20H55z"/><path fill="url(#b)" d="M0 0h130v20H0z"/></g><g fill="#fff" text-anchor="middle" font-size="110"><text x="285" y="150" fill="#010101" fill-opacity=".3" textLength="450" transform="scale(.1)">updated</text><text x="285" y="140" textLength="450" transform="scale(.1)">updated</text><text x="915" y="150" fill="#010101" fill-opacity=".3" textLength="650" transform="scale(.1)">2023-01-29</text><text x="915" y="140" textLength="650" transform="scale(.1)">2023-01-29</text></g></svg>
+        </span></div>
+
+
+
+        
+
+
+        <div class="post-share">
+
+        
+
+        <div class="share-items">
+
+            
+                <div class="share-item twitter">
+                    
+                    <a href="https://twitter.com/share?url=https://example.com/post/meltdown/&amp;text=Meltdown&amp;hashtags=&amp;via=reuixiy" title="分享到「Twitter」" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon twitter-icon"><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg></a>
+                </div>
+            
+
+            
+                <div class="share-item facebook">
+                    
+                    <a href="https://www.facebook.com/sharer/sharer.php?u=https://example.com/post/meltdown/&amp;hashtag=%23" title="分享到「Facebook」" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon facebook-icon"><path d="M504 256C504 119 393 8 256 8S8 119 8 256c0 123.78 90.69 226.38 209.25 245V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.28c-30.8 0-40.41 19.12-40.41 38.73V256h68.78l-11 71.69h-57.78V501C413.31 482.38 504 379.78 504 256z"/></svg></a>
+                </div>
+            
+
+            
+                <div class="share-item linkedin">
+                    
+                    <a href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https://example.com/post/meltdown/&amp;title=Meltdown&amp;summary=Meltdown:%20%e8%af%95%e5%9b%be%e4%bb%8e%e7%94%a8%e6%88%b7%e7%a9%ba%e9%97%b4%e8%af%bb%e5%8f%96%20kernel%20%e7%9a%84%e5%86%85%e5%ad%98%20CVE-2017-5754%20%e6%91%98%e8%a6%81%20%e8%ae%a1%e7%ae%97%e6%9c%ba%e7%b3%bb%e7%bb%9f%e7%9a%84%e5%ae%89%e5%85%a8%e6%80%a7%ef%bc%8c%e6%a0%b9%e6%9c%ac%e4%b8%8a%e6%9d%a5%e8%af%b4%ef%bc%8c%e4%be%9d%e9%9d%a0%e5%86%85%e5%ad%98%e9%9a%94%e7%a6%bb%e3%80%82%e6%af%94%e5%a6%82%e2%80%a6%e2%80%a6&amp;source=Hugo%20%e4%b8%bb%e9%a2%98%20MemE" title="分享到「LinkedIn」" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon linkedin-icon"><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"/></svg></a>
+                </div>
+            
+
+            
+                <div class="share-item telegram">
+                    
+                    <a href="https://t.me/share/url?url=https://example.com/post/meltdown/&amp;text=Meltdown" title="分享到「Telegram」" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" class="icon telegram-icon"><path d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm121.8 169.9l-40.7 191.8c-3 13.6-11.1 16.9-22.4 10.5l-62-45.7-29.9 28.8c-3.3 3.3-6.1 6.1-12.5 6.1l4.4-63.1 114.9-103.8c5-4.4-1.1-6.9-7.7-2.5l-142 89.4-61.2-19.1c-13.3-4.2-13.6-13.3 2.8-19.7l239.1-92.2c11.1-4 20.8 2.7 17.2 19.5z"/></svg></a>
+                </div>
+            
+
+            
+                <div class="share-item weibo">
+                    
+                    <a href="https://service.weibo.com/share/share.php?&amp;url=https://example.com/post/meltdown/&amp;title=Meltdown&amp;pic=https://example.com/src/Meltdown%E6%94%BB%E5%87%BB%E6%A8%A1%E5%9D%97.png&amp;searchPic=false" title="分享到「新浪微博」" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon weibo-icon"><path d="M407 177.6c7.6-24-13.4-46.8-37.4-41.7-22 4.8-28.8-28.1-7.1-32.8 50.1-10.9 92.3 37.1 76.5 84.8-6.8 21.2-38.8 10.8-32-10.3zM214.8 446.7C108.5 446.7 0 395.3 0 310.4c0-44.3 28-95.4 76.3-143.7C176 67 279.5 65.8 249.9 161c-4 13.1 12.3 5.7 12.3 6 79.5-33.6 140.5-16.8 114 51.4-3.7 9.4 1.1 10.9 8.3 13.1 135.7 42.3 34.8 215.2-169.7 215.2zm143.7-146.3c-5.4-55.7-78.5-94-163.4-85.7-84.8 8.6-148.8 60.3-143.4 116s78.5 94 163.4 85.7c84.8-8.6 148.8-60.3 143.4-116zM347.9 35.1c-25.9 5.6-16.8 43.7 8.3 38.3 72.3-15.2 134.8 52.8 111.7 124-7.4 24.2 29.1 37 37.4 12 31.9-99.8-55.1-195.9-157.4-174.3zm-78.5 311c-17.1 38.8-66.8 60-109.1 46.3-40.8-13.1-58-53.4-40.3-89.7 17.7-35.4 63.1-55.4 103.4-45.1 42 10.8 63.1 50.2 46 88.5zm-86.3-30c-12.9-5.4-30 .3-38 12.9-8.3 12.9-4.3 28 8.6 34 13.1 6 30.8.3 39.1-12.9 8-13.1 3.7-28.3-9.7-34zm32.6-13.4c-5.1-1.7-11.4.6-14.3 5.4-2.9 5.1-1.4 10.6 3.7 12.9 5.1 2 11.7-.3 14.6-5.4 2.8-5.2 1.1-10.9-4-12.9z"/></svg></a>
+                </div>
+            
+
+            
+                <div class="share-item douban">
+                    
+                    <a href="https://www.douban.com/share/service?href=https://example.com/post/meltdown/&amp;name=Meltdown&amp;text=Meltdown:%20%e8%af%95%e5%9b%be%e4%bb%8e%e7%94%a8%e6%88%b7%e7%a9%ba%e9%97%b4%e8%af%bb%e5%8f%96%20kernel%20%e7%9a%84%e5%86%85%e5%ad%98%20CVE-2017-5754%20%e6%91%98%e8%a6%81%20%e8%ae%a1%e7%ae%97%e6%9c%ba%e7%b3%bb%e7%bb%9f%e7%9a%84%e5%ae%89%e5%85%a8%e6%80%a7%ef%bc%8c%e6%a0%b9%e6%9c%ac%e4%b8%8a%e6%9d%a5%e8%af%b4%ef%bc%8c%e4%be%9d%e9%9d%a0%e5%86%85%e5%ad%98%e9%9a%94%e7%a6%bb%e3%80%82%e6%af%94%e5%a6%82%e2%80%a6%e2%80%a6" title="分享到「豆瓣」" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="icon douban-icon"><path d="M.643.92v2.412h22.714V.92H.643zm1.974 4.926v9.42h18.764v-9.42H2.617zm2.72 2.408H18.69v4.605H5.338V8.254zm1.657 7.412l-2.512.938c1.037 1.461 1.87 2.825 2.512 4.091H0v2.385h24v-2.385h-6.678c.818-1.176 1.589-2.543 2.303-4.091l-2.73-.938a29.952 29.952 0 01-2.479 5.03h-4.75c-.786-1.962-1.677-3.641-2.672-5.03Z"/></svg></a>
+                </div>
+            
+
+            
+                <div class="share-item qq">
+                    
+                    <a href="https://connect.qq.com/widget/shareqq/index.html?url=https://example.com/post/meltdown/&amp;title=Meltdown&amp;summary=Meltdown:%20%e8%af%95%e5%9b%be%e4%bb%8e%e7%94%a8%e6%88%b7%e7%a9%ba%e9%97%b4%e8%af%bb%e5%8f%96%20kernel%20%e7%9a%84%e5%86%85%e5%ad%98%20CVE-2017-5754%20%e6%91%98%e8%a6%81%20%e8%ae%a1%e7%ae%97%e6%9c%ba%e7%b3%bb%e7%bb%9f%e7%9a%84%e5%ae%89%e5%85%a8%e6%80%a7%ef%bc%8c%e6%a0%b9%e6%9c%ac%e4%b8%8a%e6%9d%a5%e8%af%b4%ef%bc%8c%e4%be%9d%e9%9d%a0%e5%86%85%e5%ad%98%e9%9a%94%e7%a6%bb%e3%80%82%e6%af%94%e5%a6%82%e2%80%a6%e2%80%a6&amp;pics=https://example.com/src/Meltdown%E6%94%BB%E5%87%BB%E6%A8%A1%E5%9D%97.png&amp;site=Hugo%20%e4%b8%bb%e9%a2%98%20MemE" title="分享到「QQ」" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon qq-icon"><path d="M433.754 420.445c-11.526 1.393-44.86-52.741-44.86-52.741 0 31.345-16.136 72.247-51.051 101.786 16.842 5.192 54.843 19.167 45.803 34.421-7.316 12.343-125.51 7.881-159.632 4.037-34.122 3.844-152.316 8.306-159.632-4.037-9.045-15.25 28.918-29.214 45.783-34.415-34.92-29.539-51.059-70.445-51.059-101.792 0 0-33.334 54.134-44.859 52.741-5.37-.65-12.424-29.644 9.347-99.704 10.261-33.024 21.995-60.478 40.144-105.779C60.683 98.063 108.982.006 224 0c113.737.006 163.156 96.133 160.264 214.963 18.118 45.223 29.912 72.85 40.144 105.778 21.768 70.06 14.716 99.053 9.346 99.704z"/></svg></a>
+                </div>
+            
+
+            
+                <div class="share-item qzone">
+                    
+                    <a href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://example.com/post/meltdown/&amp;title=Meltdown&amp;summary=Meltdown:%20%e8%af%95%e5%9b%be%e4%bb%8e%e7%94%a8%e6%88%b7%e7%a9%ba%e9%97%b4%e8%af%bb%e5%8f%96%20kernel%20%e7%9a%84%e5%86%85%e5%ad%98%20CVE-2017-5754%20%e6%91%98%e8%a6%81%20%e8%ae%a1%e7%ae%97%e6%9c%ba%e7%b3%bb%e7%bb%9f%e7%9a%84%e5%ae%89%e5%85%a8%e6%80%a7%ef%bc%8c%e6%a0%b9%e6%9c%ac%e4%b8%8a%e6%9d%a5%e8%af%b4%ef%bc%8c%e4%be%9d%e9%9d%a0%e5%86%85%e5%ad%98%e9%9a%94%e7%a6%bb%e3%80%82%e6%af%94%e5%a6%82%e2%80%a6%e2%80%a6&amp;pics=https://example.com/src/Meltdown%E6%94%BB%E5%87%BB%E6%A8%A1%E5%9D%97.png&amp;site=Hugo%20%e4%b8%bb%e9%a2%98%20MemE" title="分享到「QQ 空间」" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="icon qzone-icon"><path d="M23.985 9.202c-.032-.099-.127-.223-.334-.258-.207-.036-7.351-1.406-7.351-1.406s-.105-.022-.198-.07c-.092-.047-.127-.167-.127-.167S12.447.956 12.349.77C12.25.583 12.104.532 12 .532c-.104 0-.251.051-.349.238-.098.186-3.626 6.531-3.626 6.531s-.035.12-.128.167c-.092.047-.197.07-.197.07S.556 8.908.348 8.943c-.208.036-.302.16-.333.258a.477.477 0 0 0 .125.449l5.362 5.49s.072.08.119.172c.016.104.005.21.005.21s-1.189 7.242-1.22 7.45.075.369.159.43c.083.062.233.106.421.013.189-.093 6.812-3.261 6.812-3.261s.098-.044.201-.061c.103-.017.201.061.201.061s6.623 3.168 6.812 3.261c.188.094.338.049.421-.013a.463.463 0 0 0 .159-.43c-.021-.14-.93-5.677-.93-5.677.876-.54 1.425-1.039 1.849-1.747-2.594.969-6.006 1.717-9.415 1.866-.915.041-2.41.097-3.473-.015-.678-.071-1.17-.144-1.243-.438-.053-.215.054-.46.545-.831a2640.5 2640.5 0 0 1 2.861-2.155c1.285-.968 3.559-2.47 3.559-2.731 0-.285-2.144-.781-4.037-.781-1.945 0-2.275.132-2.811.168-.488.034-.769.005-.804-.138-.06-.248.183-.389.588-.568.709-.314 1.86-.594 1.984-.626.194-.052 3.082-.805 5.618-.535 1.318.14 3.244.668 3.244 1.276 0 .342-1.721 1.494-3.225 2.597-1.149.843-2.217 1.561-2.217 1.688 0 .342 3.533 1.241 6.689 1.01l.003-.022c.048-.092.119-.172.119-.172l5.362-5.49a.477.477 0 0 0 .127-.449z"/></svg></a>
+                </div>
+            
+
+            
+                <div class="share-item qrcode">
+                    <div class="qrcode-container" title="通过「二维码」"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon qrcode-icon"><path d="M0 224h192V32H0v192zM64 96h64v64H64V96zm192-64v192h192V32H256zm128 128h-64V96h64v64zM0 480h192V288H0v192zm64-128h64v64H64v-64zm352-64h32v128h-96v-32h-32v96h-64V288h96v32h64v-32zm0 160h32v32h-32v-32zm-64 0h32v32h-32v-32z"/></svg><div id="qrcode-img"></div>
+                    </div>
+                    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+
+<script>
+    const typeNumber = 0;
+    const errorCorrectionLevel = 'L';
+    const qr = qrcode(typeNumber, errorCorrectionLevel);
+    qr.addData('https:\/\/example.com\/post\/meltdown\/');
+    qr.make();
+    document.getElementById('qrcode-img').innerHTML = qr.createImgTag();
+</script>
+
+                </div>
+            
+
+        </div>
+
+    </div>
+
+
+
+
+        
+    
+    
+        <div class="related-posts">
+            <h2 class="related-title">相关文章：<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon related-icon"><path d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm144 276c0 6.6-5.4 12-12 12h-92v92c0 6.6-5.4 12-12 12h-56c-6.6 0-12-5.4-12-12v-92h-92c-6.6 0-12-5.4-12-12v-56c0-6.6 5.4-12 12-12h92v-92c0-6.6 5.4-12 12-12h56c6.6 0 12 5.4 12 12v92h92c6.6 0 12 5.4 12 12v56z"/></svg></h2>
+            <ul class="related-list">
+                
+                    <li class="related-item">
+                        <a href="/post/transient-execution-attacks/" class="related-link">The Evolution of Transient-Execution Attacks</a>
+                    </li>
+                
+                    <li class="related-item">
+                        <a href="/post/spectre/" class="related-link">Spectre</a>
+                    </li>
+                
+                    <li class="related-item">
+                        <a href="/post/finding-and-exploiting-cpu-features-using-msr-templating/" class="related-link">MSR security</a>
+                    </li>
+                
+            </ul>
+        </div>
+    
+
+
+
+        
+    
+
+
+
+        
+
+
+        
+
+
+        
+    
+        
+        
+    
+    
+    
+    
+        <ul class="post-nav">
+            
+                <li class="post-nav-prev">
+                    <a href="/post/spectre/" rel="prev">&lt; Spectre</a>
+                </li>
+            
+            
+                <li class="post-nav-next">
+                    <a href="/post/finding-and-exploiting-cpu-features-using-msr-templating/" rel="next">MSR security &gt;</a>
+                </li>
+            
+        </ul>
+    
+
+
+
+        
 
 
     </div>
-</article>
+</main>
+
+
+            
+    <div id="back-to-top" class="back-to-top">
+        <a href="#"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon arrow-up"><path d="M34.9 289.5l-22.2-22.2c-9.4-9.4-9.4-24.6 0-33.9L207 39c9.4-9.4 24.6-9.4 33.9 0l194.3 194.3c9.4 9.4 9.4 24.6 0 33.9L413 289.4c-9.5 9.5-25 9.3-34.3-.4L264 168.6V456c0 13.3-10.7 24-24 24h-32c-13.3 0-24-10.7-24-24V168.6L69.2 289.1c-9.3 9.8-24.8 10-34.3.4z"/></svg></a>
+    </div>
+
+
+            
+    <footer id="footer" class="footer">
+        <div class="footer-inner">
+            <div class="site-info">©&nbsp;1969–2023&nbsp;<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon footer-icon"><path d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>&nbsp;cheese</div><div class="powered-by">Powered by <a href="https://github.com/gohugoio/hugo" target="_blank" rel="noopener">Hugo</a> | Theme is <a href="https://github.com/reuixiy/hugo-theme-meme" target="_blank" rel="noopener">MemE</a></div><div class="site-copyright"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a></div>
+
+            
+    
+        <ul class="socials"><li class="socials-item">
+                    <a href="/rss.xml" target="_blank" rel="external noopener" title="RSS"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="icon social-icon"><path d="M19.199 24C19.199 13.467 10.533 4.8 0 4.8V0c13.165 0 24 10.835 24 24h-4.801zM3.291 17.415c1.814 0 3.293 1.479 3.293 3.295 0 1.813-1.485 3.29-3.301 3.29C1.47 24 0 22.526 0 20.71s1.475-3.294 3.291-3.295zM15.909 24h-4.665c0-6.169-5.075-11.245-11.244-11.245V8.09c8.727 0 15.909 7.184 15.909 15.91z"/></svg></a>
+                </li><li class="socials-item">
+                    <a href="mailto:reuixiy@gmail.com" target="_blank" rel="external noopener" title="Email"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon social-icon"><path d="M464 64H48C21.49 64 0 85.49 0 112v288c0 26.51 21.49 48 48 48h416c26.51 0 48-21.49 48-48V112c0-26.51-21.49-48-48-48zm0 48v40.805c-22.422 18.259-58.168 46.651-134.587 106.49-16.841 13.247-50.201 45.072-73.413 44.701-23.208.375-56.579-31.459-73.413-44.701C106.18 199.465 70.425 171.067 48 152.805V112h416zM48 400V214.398c22.914 18.251 55.409 43.862 104.938 82.646 21.857 17.205 60.134 55.186 103.062 54.955 42.717.231 80.509-37.199 103.053-54.947 49.528-38.783 82.032-64.401 104.947-82.653V400H48z"/></svg></a>
+                </li><li class="socials-item">
+                    <a href="https://github.com/reuixiy" target="_blank" rel="external noopener" title="GitHub"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="icon social-icon"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
+                </li><li class="socials-item">
+                    <a href="https://twitter.com/reuixiy" target="_blank" rel="external noopener" title="Twitter"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon social-icon"><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg></a>
+                </li><li class="socials-item">
+                    <a href="https://t.me/yixiuer" target="_blank" rel="external noopener" title="Telegram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" class="icon social-icon"><path d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm121.8 169.9l-40.7 191.8c-3 13.6-11.1 16.9-22.4 10.5l-62-45.7-29.9 28.8c-3.3 3.3-6.1 6.1-12.5 6.1l4.4-63.1 114.9-103.8c5-4.4-1.1-6.9-7.7-2.5l-142 89.4-61.2-19.1c-13.3-4.2-13.6-13.3 2.8-19.7l239.1-92.2c11.1-4 20.8 2.7 17.2 19.5z"/></svg></a>
+                </li></ul>
+    
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-                        
-                    </main>
-                    
-
-
-
-
-
-    <footer>
-        
-        
-            <p class="text-center"><a class="link-secondary text-decoration-none" href="https://github.com/willfaught/paige">Paige Theme</a></p>
-        
-        
+            
+        </div>
     </footer>
 
 
-                </div>
-            </div>
         </div>
-        <script>
-function paigeResize() {
-    var e = document.querySelector('section[class="paige-content"]');
-    if (!e) {
-        return;
-    }
-    var mw = getComputedStyle(e).maxWidth;
-    var w;
-    if (mw === "100%") {
-        var e = document.querySelector("body > div.container");
-        var s = getComputedStyle(e);
-        var px = parseFloat(s.paddingLeft) + parseFloat(s.paddingRight);
-        var bx = parseFloat(s.borderLeftWidth) + parseFloat(s.borderRightWidth);
-        w = e.offsetWidth - px - bx;
-    } else {
-        w = parseFloat(mw.substring(0, mw.length - 2));
-    }
-    var es = document.querySelectorAll('section[class="paige-content"] > div');
-    for (var i = 0; i < es.length; i++) {
-        var e = es[i];
-        var iframe = false;
-        for (var j = 0; j < e.children.length; j++) {
-            if (e.children.item(j).tagName.toLowerCase() === "iframe") {
-                iframe = true;
-                break;
-            }
-        }
-        if (iframe && e.style.width !== w) {
-            e.style.width = w + "px";
-        }
-    }
-}
-paigeResize();
-addEventListener("resize", paigeResize);
+        
 
-var paigeQuery = matchMedia("(prefers-color-scheme: dark)");
-if (paigeQuery.matches) {
-    document.documentElement.setAttribute("data-bs-theme", "dark")
-}
-paigeQuery.addEventListener("change", function (e) {
-    if (e.matches) {
-        document.documentElement.setAttribute("data-bs-theme", "dark");
-    } else {
-        document.documentElement.removeAttribute("data-bs-theme");
-    }
-});
+        
 
+
+
+
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/medium-zoom@latest/dist/medium-zoom.min.js"></script>
+
+<script>
+    let imgNodes = document.querySelectorAll('div.post-body img');
+    imgNodes = Array.from(imgNodes).filter(node => node.parentNode.tagName !== "A");
+
+    mediumZoom(imgNodes, {
+        background: 'hsla(var(--color-bg-h), var(--color-bg-s), var(--color-bg-l), 0.95)'
+    })
 </script>
 
 
 
 
+    <script src="https://cdn.jsdelivr.net/npm/instant.page@5.1.0/instantpage.min.js" type="module" defer></script>
 
 
 
 
 
 
-    
-    
-    
-
-
-<script  crossorigin="anonymous"   defer  integrity="sha256-yqyVgS/SWX6RGq388CazJ03XCi9wptdg&#43;EG8X0nYuIo="   referrerpolicy="no-referrer"  src="/bootstrap.bundle.min_16066188465625427804.min.caac95812fd2597e911aadfcf026b3274dd70a2f70a6d760f841bc5f49d8b88a.js"></script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<noscript></noscript>
-
-        
     </body>
 </html>
-
-<!-- Paige theme from https://github.com/willfaught/paige -->
-
