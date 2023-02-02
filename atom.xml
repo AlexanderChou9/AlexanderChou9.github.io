@@ -2,9 +2,9 @@
 
 
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="zh-CN">
-    <title type="text">Hugo 主题 MemE</title>
+    <title type="text">Cheese Page</title>
     <subtitle type="html">MemE 是一个强大且可高度定制的 GoHugo 博客主题，专为个人博客设计。</subtitle>
-    <updated>2023-02-01T11:28:03&#43;08:00</updated>
+    <updated>2023-02-02T13:35:00&#43;08:00</updated>
     <id>https://example.com/</id>
     <link rel="alternate" type="text/html" href="https://example.com/" />
     <link rel="self" type="application/atom&#43;xml" href="https://example.com/atom.xml" />
@@ -448,31 +448,31 @@
             <title type="text">Meltdown</title>
             <link rel="alternate" type="text/html" href="https://example.com/post/meltdown/" />
             <id>https://example.com/post/meltdown/</id>
-            <updated>2023-01-29T23:31:04&#43;08:00</updated>
+            <updated>2023-02-02T13:16:39&#43;08:00</updated>
             <published>2023-01-29T13:00:25&#43;08:00</published>
             <author>
                     <name>cheese</name>
                     <uri>https://io-oi.me/</uri>
                     <email>limourenzhou@163.com</email>
                     </author>
-            <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</rights><summary type="html">Meltdown: 试图从用户空间读取 kernel 的内存 CVE-2017-5754 摘要 计算机系统的安全性，根本上来说，依靠内存隔离。比如……</summary>
+            <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh)</rights><summary type="html">&lt;p&gt;Meltdown漏洞，是一个处理器硬件级别的漏洞，谷歌的Zero Project团队、密歇根大学的Kocher在2018年的一篇顶会论文中介绍了这个漏洞。该漏洞被命名为“熔断”，有种高温岩浆熔断围墙的感觉，突破用户空间和内核空间的边界限制。它和Spectre系列漏洞有一定关系，也可以被称为Spectre V3，不过目前的学术界将两者清晰的划分为不同种类：乱序执行类、预测执行类。本文将从论文内容、漏洞利用过程两个方面进行介绍。&lt;/p&gt;……</summary>
             
-                <content type="html">&lt;p&gt;Meltdown: 试图从用户空间读取 kernel 的内存&lt;/p&gt;
-&lt;p&gt;CVE-2017-5754&lt;/p&gt;
-&lt;h2 id=&#34;摘要&#34;&gt;摘要&lt;/h2&gt;
-&lt;p&gt;计算机系统的安全性，根本上来说，依靠&lt;strong&gt;内存隔离&lt;/strong&gt;。比如：kernel地址范围对用户来说，标记为不可访问。&lt;/p&gt;
-&lt;p&gt;本文提出了 Meltdown。它利用现代处理器的&lt;strong&gt;无序执行&lt;/strong&gt;，读取内存中kernel的任意位置内容，包括个人数据和密码。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;无序执行&lt;/strong&gt;，是现代处理器的不可或缺的性能特征，广泛存在。&lt;/p&gt;
-&lt;p&gt;Meltdown攻击，不依赖于某个操作系统，也不依赖于某个软件漏洞。它打破了&lt;strong&gt;地址空间隔离&lt;/strong&gt;以及&lt;strong&gt;半虚拟化环境&lt;/strong&gt;提供的所有安全保障，打破了在此基础上构建的所有安全机制。&lt;/p&gt;
-&lt;p&gt;系统中，无需任何权限，Meltdown能够使攻击者随意读取云上其他进程和虚拟机的内存。影响广泛。&lt;/p&gt;
-&lt;p&gt;研究表明，针对KASLR的KAISER防御机制，对Meldown攻击有着意料之外的防护作用。因此，我们建议大家部署KAISER，防御Meltdown攻击。&lt;/p&gt;
-&lt;h3 id=&#34;q&#34;&gt;Q：&lt;/h3&gt;
-&lt;p&gt;什么是“无序执行”？什么是KASLR？什么是KAISER防御机制？为什么内核被映射到进程的虚拟地址空间？如何映射？&lt;/p&gt;
-&lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
-&lt;p&gt;如今操作系统的一个核心安全特征就是，内存隔离。操作系统确保用户不能访问其他用户的内存和 kernel 内存。也是在这种内存隔离技术的基础上，我们才能够在个人设备上同时运行多个应用程序，在云上同时执行多个用户的进程。&lt;/p&gt;
-&lt;p&gt;现代处理器中，kernel 对用户进程的隔离，由处理器的一个&lt;strong&gt;超级位&lt;/strong&gt;来实现，该超级位定义内核的内存页是否可以访问。一般来说，这个位只能在输入内核代码时设置，在切换到用户进程时会清除。因为这一个硬件级别的特性，操作系统能够将&lt;strong&gt;kernel 映射&lt;/strong&gt;到每个进程的&lt;strong&gt;内存地址空间&lt;/strong&gt;。这样的话，如果需要临时从用户态转换为内核态，比如处理中断，内存的映射就可以不发生改变，直接执行相应的 kernel 代码。&lt;/p&gt;
-&lt;p&gt;本文中，我们提出了 &lt;strong&gt;Meltdown&lt;/strong&gt;。它是一种新型攻击方法，能够帮助任何用户进程以一种简单的方式访问其执行的机器的完整内核内存，甚至所有物理内存，无视内存隔离。它不依赖于任何软件漏洞，可以在所有主流操作系统上实现。它利用了&lt;strong&gt;大多数现代处理器的侧信道信息&lt;/strong&gt;，例如自2010年以来的现代英特尔微体系结构，以及其他供应商的其他CPU上的潜在信息。&lt;/p&gt;
-&lt;p&gt;通常来说，侧信道攻击的实施，需要目标应用程序的特定知识，并且针对泄露的信息而定制。但是，Meltdown攻击仅仅要求，&lt;strong&gt;用户程序能够在处理器上运行代码&lt;/strong&gt;，即可获得&lt;strong&gt;完整 kernel 地址空间的一个dump&lt;/strong&gt;，其中包括完整的物理内存。该攻击的强大、便利，根源在于现代处理器的“无序执行”特性。&lt;/p&gt;
+                <content type="html">&lt;p&gt;Meltdown漏洞，是一个处理器硬件级别的漏洞，谷歌的Zero Project团队、密歇根大学的Kocher在2018年的一篇顶会论文中介绍了这个漏洞。该漏洞被命名为“熔断”，有种高温岩浆熔断围墙的感觉，突破用户空间和内核空间的边界限制。它和Spectre系列漏洞有一定关系，也可以被称为Spectre V3，不过目前的学术界将两者清晰的划分为不同种类：乱序执行类、预测执行类。本文将从论文内容、漏洞利用过程两个方面进行介绍。&lt;/p&gt;
+&lt;h2 id=&#34;论文内容介绍&#34;&gt;论文内容介绍&lt;/h2&gt;
+&lt;p&gt;论文的标题为：《Meltdown: Reading Kernel Memory from User Space》，&lt;a href=&#34;https://www.usenix.org/conference/usenixsecurity18/presentation/lipp&#34;&gt;获取链接&lt;/a&gt;，因为是会议论文，所以作者在youtube上也发布了一个&lt;a href=&#34;https://www.youtube.com/watch?v=WgAshgc9u6c&#34;&gt;讲说视频&lt;/a&gt;。论文的主要内容分布在&lt;strong&gt;Meltdown&lt;/strong&gt;章节，将漏洞利用过程分为3个环节，给出一些漏洞优化建议，分析现有防御措施的效果。&lt;/p&gt;
+&lt;h3 id=&#34;摘要&#34;&gt;摘要&lt;/h3&gt;
+&lt;p&gt;计算机系统的安全性建立在&lt;strong&gt;内存隔离&lt;/strong&gt;的基础上。比如：用户进程无法访问内核地址，用户进程A无法访问用户进程B的内存地址。&lt;/p&gt;
+&lt;p&gt;本文提出的Meltdown，利用现代处理器普遍具有的&lt;strong&gt;乱序执行&lt;/strong&gt;功能，读取内存的任意地址，可以轻松窃取个人数据和密码等隐私信息。&lt;/p&gt;
+&lt;p&gt;Meltdown要求攻击者具备攻击程序的执行权限，不依赖某个操作系统，也不依赖某个软件漏洞，打破了&lt;strong&gt;地址空间隔离&lt;/strong&gt;以及&lt;strong&gt;半虚拟化环境&lt;/strong&gt;提供的所有安全机制。&lt;/p&gt;
+&lt;p&gt;研究表明，针对KASLR的KAISER防御机制，对Meldown攻击有着防护作用。因此，我们建议大家部署KAISER，防御Meltdown攻击。&lt;/p&gt;
+&lt;p&gt;相信大家看到这里，会对以下名词产生好奇，不要慌，在&lt;strong&gt;Background&lt;/strong&gt;部分有相关介绍，比如什么是“乱序执行”？什么是KASLR？什么是KAISER防御机制？为什么内核被映射到进程的虚拟地址空间？如何映射？&lt;/p&gt;
+&lt;h3 id=&#34;intro&#34;&gt;Intro&lt;/h3&gt;
+&lt;p&gt;操作系统的核心安全特征是内存隔离，必须确保用户A不能访问其他用户的内存和操作系统内核部分。否则，很多强大的功能就会变得非常危险，比如：一台个人设备同时运行多个应用程序，云上同时执行多个用户的进程。&lt;/p&gt;
+&lt;p&gt;处理器使用一个&lt;strong&gt;超级位&lt;/strong&gt;来实现用户进程和内核进程的隔离，该超级位（CPU内部某个寄存器的某个比特位）告知处理器当前进程的权限信息，这也是“用户态”和“内核态”的区分。用户进程没有权限对超级位进行修改。&lt;/p&gt;
+&lt;p&gt;为了提高效率，操作系统将&lt;strong&gt;内核进程的地址空间&lt;/strong&gt;映射到&lt;strong&gt;用户进程的地址空间&lt;/strong&gt;。这样的话，如果需要临时从用户态转换为内核态（比如处理中断），处理器就可以不切换上下文，直接执行相应的内核代码。&lt;/p&gt;
+&lt;p&gt;本文提出的&lt;strong&gt;Meltdown&lt;/strong&gt;，能够帮助用户进程访问机器的内核地址，无视内存隔离。它不依赖于任何软件漏洞，可以在所有主流操作系统上实现，利用了&lt;strong&gt;大多数现代处理器的侧信道信息&lt;/strong&gt;，例如自2010年以来的现代英特尔微体系结构，以及其他供应商的其他CPU上的潜在信息。&lt;/p&gt;
+&lt;p&gt;通常来说，侧信道攻击的实施，需要攻击者对受害者程序的实现细节了如指掌，针对泄露的信息而定制。但是，Meltdown攻击较为简单，只要&lt;strong&gt;用户程序能够在处理器上运行代码&lt;/strong&gt;，即可dump出&lt;strong&gt;完整的 kernel 地址空间&lt;/strong&gt;，完整的物理内存。该攻击的强大、便利，根源在于现代处理器的“无序执行”特性。&lt;/p&gt;
+&lt;p&gt;注：linux等操作系统为了方便内核程序直接操作，将完整的物理内存也映射到了内核进程的地址空间。用户地址空间 包含 kernel地址空间，kernel地址空间 包含 完整的物理内存。这么说来，用户进程也有可能观察到完整的物理内存，ahahaha。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;无序执行&lt;/strong&gt;，是当前处理器的一个非常重要的特性，它可以减少繁忙执行单元（就是一直需要执行）的等待时间。比方说，当一个单元需要等待内存中的数据时，处理器没有和它一起停下来，等待数据从内存中传进来，而是将该后续操作安排到core 的空闲执行单元中。处理器继续执行下一个，也就是“向前看”，或者说无序执行。这提高了效率，但也带来了不好的地方，比如说，时序差可能会从顺序执行和无序执行中泄漏信息（&lt;strong&gt;计时攻击&lt;/strong&gt;）。&lt;/p&gt;
 &lt;p&gt;从安全的角度来看，这其中有一点很重要。处理器允许非特权进程（用户态程序）执行下列&lt;strong&gt;数据加载操作&lt;/strong&gt;：从特权地址（kernel地址或某个物理地址）到临时的CPU寄存器中，CPU基于该寄存器的值进行下一步计算（比如说，基于该寄存器的值访问某个数组）。如果之后，处理器发现这条指令本不应该被执行，那么，简单地丢弃查找出的某块内存的内容（通过&lt;strong&gt;修改该寄存器的状态&lt;/strong&gt;），就可以确保程序的正确执行。从架构的角度来看，这种方法没有任何安全问题。&lt;/p&gt;
 &lt;p&gt;但是，我们观察到无序的内存查找过程，会影响到 cache，通过&lt;strong&gt;cache侧信道&lt;/strong&gt;可以检测到这种影响。因此，通过无序执行流&lt;strong&gt;读取特权内存&lt;/strong&gt;，攻击者能够dump出完整的kernel内存，并且通过&lt;strong&gt;微架构隐蔽信道&lt;/strong&gt;（如Flush+Reload）将数据传输到外界。在隐蔽信道的接收端，攻击者能够恢复出该寄存器的值。因此，在微架构水平（也就是硬件实现），存在可利用的安全问题。&lt;/p&gt;
@@ -486,15 +486,15 @@
 &lt;li&gt;将无序执行和异常处理程序（或TSX）结合，提出一种端到端攻击。在PC、笔记本、移动电话和云主机上无需特权读取任意物理内存。&lt;/li&gt;
 &lt;li&gt;评估了Meltdown的性能，和KAISER的防御效果。&lt;/li&gt;
 &lt;/ol&gt;
-&lt;h2 id=&#34;background&#34;&gt;Background&lt;/h2&gt;
-&lt;h3 id=&#34;无序执行&#34;&gt;无序执行&lt;/h3&gt;
+&lt;h3 id=&#34;background&#34;&gt;Background&lt;/h3&gt;
+&lt;h4 id=&#34;无序执行&#34;&gt;无序执行&lt;/h4&gt;
 &lt;p&gt;无序执行，本身是一种优化技术，用于提高处理器的利用率。处理器不是严格按照程序指令的顺序执行，如果当前指令要求的操作单元被占用了，就先运行其他的执行单元。一般来说，只要指令执行的结果符合架构上的定义，处理器就可以并行处理这些指令。&lt;/p&gt;
 &lt;p&gt;实际上，支持无序执行功能的处理器，推测性地进行操作。也就是说，一定程度上，在处理器确认某个指令需要执行并且完整提交之前，支持无序执行的处理器会先执行该指令。关于“&lt;strong&gt;推测执行&lt;/strong&gt;”，就是在原有指令顺序的基础上增加分支。&lt;/p&gt;
 &lt;p&gt;1967年，Tomasulo开发了一个算法来实现指令的动态调度、无序执行。他提出一个统一的“保留站”的概念，使得处理器在计算出一个数据值后可以直接使用它，而不必将其存储到寄存器或内存，再次读取。保留站，通过重命名寄存器，&lt;em&gt;&lt;strong&gt;从而？？？&lt;/strong&gt;&lt;/em&gt;，最后得到的效果是解决了写后读、读后写、写后写危害。此外，保留站通过一条数据总线（CDB）连接所有执行单元。如果操作数未获得，保留站会侦听该数据总线（CDB），直到操作数到达，就可以直接执行指令。&lt;/p&gt;
 &lt;p&gt;Intel架构中，&lt;strong&gt;流水线&lt;/strong&gt;由前端、执行引擎（后端）和内存子系统组成，x86指令由前端从内存中获取，解码为微操作，然后传输给执行引擎。执行引擎中实现“无序执行”。Reorder buffer负责寄存器分配、寄存器重命名和丢弃，同时负责 move elimination和zero idioms的识别。Scheduler（统一的保留站）接收传来的微指令，重新排序，然后传递给Execution Units。Excution Units中的每一个执行单元执行不同的任务，比如ALU、AES、AGU和内存的加载、存储。其中，AGU和内存的加载、存储单元，和内存子系统直接连接。&lt;/p&gt;
 &lt;p&gt;CPU通常不运行线性指令流，其中包含&lt;strong&gt;分支预测单元&lt;/strong&gt;，对下一条指令是否应该执行生成预测。分支预测单元尝试在指令确定可以执行前，预测出结果。其中，分支上没有任何依赖关系的指令可以提前被执行，这样的话，一旦该指令确实应该被执行，处理器就可以直接使用其结果；否则，就通过清除Reorder buffer和初始化统一的保留站，来回滚到正常状态。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;分支预测的实现，有很多种方法&lt;/strong&gt;。比如静态分支预测，基于指令本身对结果进行预测；动态分支预测，在运行时收集统计数据，预测结果；一级分支预测，使用1位或2位的计数器来记录分支的最终结果；现代处理器通常使用两级自适应预测，保留最后n个结果，可以预测定期重复的一些模式；神经分支预测，也是最近被采纳的新方法。&lt;/p&gt;
-&lt;h3 id=&#34;地址空间&#34;&gt;地址空间&lt;/h3&gt;
+&lt;h4 id=&#34;地址空间&#34;&gt;地址空间&lt;/h4&gt;
 &lt;p&gt;虚拟地址空间的实现，是通过一个multi-level page translation table，它定义了虚拟地址到物理地址的映射，提供了一些特权检查的保护措施，包括的特权有：可读、可写、可执行、可访问的用户。当前使用的转化表保存在CPU的一个特殊的寄存器内。&lt;/p&gt;
 &lt;p&gt;通过系统在table中的可访问权限设置，可以避免应用程序直接访问地址空间中的kernel部分。&lt;/p&gt;
 &lt;p&gt;完整的物理内存会被映射到kernel中，不同的操作系统使用不同的映射方式：&lt;/p&gt;
@@ -503,11 +503,11 @@
 &lt;li&gt;Windows中，设置了paged pools、non-pages pools和system cache。三者映射物理内存的不同部分。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;一般来说，利用内存错误的漏洞，都需要提前猜测到特定数据所在的地址。现有的ASLR、金丝雀，或者设置栈中不可执行的安全措施可以一定程度防范此类漏洞。但是，近些年也出现了一些对应的攻击手段，比如侧信道攻击、利用JavaScript使ASLR失效。&lt;/p&gt;
-&lt;h3 id=&#34;缓存攻击&#34;&gt;缓存攻击&lt;/h3&gt;
+&lt;h4 id=&#34;缓存攻击&#34;&gt;缓存攻击&lt;/h4&gt;
 &lt;p&gt;对于经常使用的数据，CPU和内存间设置了多级缓存，其中，地址空间转换表也会被缓存在这里。&lt;/p&gt;
 &lt;p&gt;缓存攻击关注因为引入缓存机制造成的时间上的差异，有很多例子。比如Flush+Reload缓存攻击，通过clflush指令刷新目标内存位置，测量重新加载数据所需要的时间，&lt;em&gt;具体细节省略&lt;/em&gt;。&lt;/p&gt;
 &lt;p&gt;侧信道攻击的另一个特殊用例是隐蔽通道。&lt;/p&gt;
-&lt;h2 id=&#34;一个简易例子&#34;&gt;一个简易例子&lt;/h2&gt;
+&lt;h3 id=&#34;一个简易例子&#34;&gt;一个简易例子&lt;/h3&gt;
 &lt;p&gt;本节，介绍一个简单的代码片段，来说明无序执行改变微架构状态的行为会泄露信息。&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -535,9 +535,8 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;%c&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;h2 id=&#34;构建攻击模块&#34;&gt;构建攻击模块&lt;/h2&gt;
-&lt;p&gt;&lt;img src=&#34;src/Meltdown%E6%94%BB%E5%87%BB%E6%A8%A1%E5%9D%97.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;41-运行-transient-指令&#34;&gt;4.1 运行 transient 指令&lt;/h3&gt;
+&lt;/div&gt;&lt;h3 id=&#34;构建攻击模块&#34;&gt;构建攻击模块&lt;/h3&gt;
+&lt;h4 id=&#34;运行-transient-指令&#34;&gt;运行 transient 指令&lt;/h4&gt;
 &lt;p&gt;上面提到的例子中，“异常”之后的指令，被称为 transient 指令。它具有两个特点：1. 无序执行，2. 处理器去处理“异常”了，因此对于 transient指令的副作用，攻击者可以处理并利用。&lt;/p&gt;
 &lt;p&gt;transient指令，瞬态指令，因为它虽然暂时被执行了，但是处理器反应过来之后，回对其进行处理。&lt;/p&gt;
 &lt;p&gt;访问用户不可访问的页面，会触发“异常”。攻击者对“异常”的处理，一般来说，有两种方案：&lt;/p&gt;
@@ -545,20 +544,20 @@
 &lt;li&gt;异常处理&lt;/li&gt;
 &lt;li&gt;异常抑制&lt;/li&gt;
 &lt;/ul&gt;
-&lt;h3 id=&#34;42-建立隐蔽信道&#34;&gt;4.2 建立隐蔽信道&lt;/h3&gt;
+&lt;h4 id=&#34;建立隐蔽信道&#34;&gt;建立隐蔽信道&lt;/h4&gt;
 &lt;p&gt;隐蔽信道，就是读取 transient 指令执行造成的处理器“微架构”状态改变，从状态中推断出秘密信息，然后传送出去。&lt;/p&gt;
 &lt;p&gt;隐蔽信道的发送方，是上面的transient指令，它利用内存中的某个用户程序可访问的地址。该地址被缓存，就相当于发出“1”。隐蔽信道的接收方，试图访问这个位置，可以通过访问时间（Flush+Reload），确定此时该地址是否被缓存。如果发现其被“缓存”，则相当于接收到了“1”这个隐蔽信息。&lt;/p&gt;
-&lt;h2 id=&#34;meltdown&#34;&gt;Meltdown&lt;/h2&gt;
+&lt;h3 id=&#34;meltdown&#34;&gt;Meltdown&lt;/h3&gt;
 &lt;p&gt;首先，我们讨论攻击设置以强调这种攻击的广泛适用性。&lt;/p&gt;
 &lt;p&gt;其次，我们提供了攻击概述，展示了 Meltdown 如何同时安装在个人计算机的 Windows 和 Linux 上、手机上的 Android 系统以及云中。&lt;/p&gt;
 &lt;p&gt;最后，我们讨论了 Meltdown 的具体实现，允许以 3.2 KB/s 到 503 KB/s 的速度转储任意内核内存。&lt;/p&gt;
-&lt;h4 id=&#34;攻击设置&#34;&gt;攻击设置&lt;/h4&gt;
+&lt;p&gt;攻击设置&lt;/p&gt;
 &lt;p&gt;攻击环境包括云上的个人计算机和虚拟机&lt;/p&gt;
 &lt;p&gt;攻击者拥有普通用户权限，执行非特权代码&lt;/p&gt;
 &lt;p&gt;假定系统具有现阶段所有最先进的防御措施，比如ASLR KALSR SMAP SMEP NX PXN&lt;/p&gt;
 &lt;p&gt;假定系统没有任何bug，没有任何可利用的软件漏洞&lt;/p&gt;
 &lt;p&gt;攻击者的目标是秘密用户数据&lt;/p&gt;
-&lt;h3 id=&#34;51-攻击描述&#34;&gt;5.1 攻击描述&lt;/h3&gt;
+&lt;h4 id=&#34;攻击描述&#34;&gt;攻击描述&lt;/h4&gt;
 &lt;p&gt;Meltdown攻击的核心：&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code class=&#34;language-assembly&#34; data-lang=&#34;assembly&#34;&gt;;rcx = kernel address, rbx = probe array
 xor rax rax
@@ -573,12 +572,12 @@ mov rbx, qword [rbx + rax]
 &lt;li&gt;transient指令根据寄存器中加载的“秘密”，访问高速缓存，相当于发送“秘密”&lt;/li&gt;
 &lt;li&gt;攻击者使用Flush+Reload来访问高速缓存，接收秘密信息&lt;/li&gt;
 &lt;/ol&gt;
-&lt;h4 id=&#34;步骤1读取秘密&#34;&gt;步骤1：读取秘密&lt;/h4&gt;
+&lt;h5 id=&#34;步骤1读取秘密&#34;&gt;步骤1：读取秘密&lt;/h5&gt;
 &lt;p&gt;为了从内存中的特权位置，读取秘密到寄存器，用户程序使用虚拟地址来引用内存中的数据。&lt;/p&gt;
 &lt;p&gt;每一个kernel的虚拟地址，通过转换都会指向一个实际的物理地址。&lt;/p&gt;
 &lt;p&gt;虚拟地址转换为物理地址的同时，处理器还会检查虚拟地址的权限位，确定该地址是用户可访问的，还是只有kernel能够访问。&lt;/p&gt;
 &lt;p&gt;用户程序访问kernel地址空间，会引发异常。但是，Meltdown利用处理器的乱序执行，在非法内存访问和引发异常之间的小时间窗口内执行命令。&lt;/p&gt;
-&lt;h4 id=&#34;步骤2传输秘密&#34;&gt;步骤2：传输秘密&lt;/h4&gt;
+&lt;h5 id=&#34;步骤2传输秘密&#34;&gt;步骤2：传输秘密&lt;/h5&gt;
 &lt;p&gt;在内存中分配一个&lt;strong&gt;探测数组&lt;/strong&gt;，并确保该数组的任何部分都没有被缓存。&lt;/p&gt;
 &lt;p&gt;为了传输秘密，transient指令序列对基于secret值计算的地址，进行间接地址访问。&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code class=&#34;language-assembly&#34; data-lang=&#34;assembly&#34;&gt;shl rax, 0xc
@@ -586,13 +585,13 @@ mov rbx, qword [rbx + rax]
 &lt;p&gt;在这里，我们一次读取一个字节，也就是0~255的数。因此，探测数组需要满足256 x 4096B的大小。&lt;/p&gt;
 &lt;p&gt;对 0 的噪声优化。&lt;/p&gt;
 &lt;p&gt;secret -&amp;gt; L1 cache -&amp;gt; L3 cache&lt;/p&gt;
-&lt;h4 id=&#34;步骤3接收秘密&#34;&gt;步骤3：接收秘密&lt;/h4&gt;
+&lt;h5 id=&#34;步骤3接收秘密&#34;&gt;步骤3：接收秘密&lt;/h5&gt;
 &lt;p&gt;攻击者遍历探测数组的所有 256 页并测量每个第一个缓存行的访问时间（即偏移量) 页面上。包含在缓存的缓存行的&lt;strong&gt;页面编号直接对应于秘密值&lt;/strong&gt;。&lt;/p&gt;
-&lt;h4 id=&#34;dump出完整的物理内存&#34;&gt;Dump出完整的物理内存&lt;/h4&gt;
+&lt;h5 id=&#34;dump出完整的物理内存&#34;&gt;Dump出完整的物理内存&lt;/h5&gt;
 &lt;p&gt;重复 Meltdown 的所有 3 个步骤，攻击者可以通过遍历所有地址来转储整个内存。&lt;/p&gt;
 &lt;p&gt;由于所有主要操作系统通常也将整个物理内存映射到内核地址空间，因此，在每个用户进程中，Meltdown 还可以读取目标机器的整个物理内存&lt;/p&gt;
-&lt;h3 id=&#34;52-优化和限制&#34;&gt;5.2 优化和限制&lt;/h3&gt;
-&lt;h4 id=&#34;对-0-的固有偏差&#34;&gt;对 0 的固有偏差&lt;/h4&gt;
+&lt;h4 id=&#34;优化和限制&#34;&gt;优化和限制&lt;/h4&gt;
+&lt;h5 id=&#34;对-0-的固有偏差&#34;&gt;对 0 的固有偏差&lt;/h5&gt;
 &lt;p&gt;在无序执行的数据加载期间，如果值不可用，处理器可能会停止运作，但是也可能猜测出一个值，先继续执行着。&lt;/p&gt;
 &lt;p&gt;我们观察到，Meltdown的非法内存加载，secert值经常返回0，原因有两个：&lt;/p&gt;
 &lt;ol&gt;
@@ -600,21 +599,21 @@ mov rbx, qword [rbx + rax]
 &lt;li&gt;处理器对权限检查的结果的猜测值，可能是1，也可能是0，而且从现有处理器的软硬件配置来说，0的可能性更高。也就是权限不允许。&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;因此，在secret值为0的时候，我们的Meltdown攻击会执行一定次数的重复，避免上述两个原因导致的偏差。&lt;/p&gt;
-&lt;h4 id=&#34;对-0-误差的优化&#34;&gt;对 0 误差的优化&lt;/h4&gt;
-&lt;h4 id=&#34;单比特传输&#34;&gt;单比特传输&lt;/h4&gt;
-&lt;h4 id=&#34;使用intel-tsx的异常抑制&#34;&gt;使用Intel TSX的异常抑制&lt;/h4&gt;
-&lt;h4 id=&#34;突破kaslr&#34;&gt;突破KASLR&lt;/h4&gt;
-&lt;h2 id=&#34;evaluation&#34;&gt;Evaluation&lt;/h2&gt;
-&lt;h2 id=&#34;对策&#34;&gt;对策&lt;/h2&gt;
-&lt;h2 id=&#34;讨论&#34;&gt;讨论&lt;/h2&gt;
-&lt;h2 id=&#34;结论&#34;&gt;结论&lt;/h2&gt;
+&lt;h5 id=&#34;对-0-误差的优化&#34;&gt;对 0 误差的优化&lt;/h5&gt;
+&lt;h5 id=&#34;单比特传输&#34;&gt;单比特传输&lt;/h5&gt;
+&lt;h5 id=&#34;使用intel-tsx的异常抑制&#34;&gt;使用Intel TSX的异常抑制&lt;/h5&gt;
+&lt;h5 id=&#34;突破kaslr&#34;&gt;突破KASLR&lt;/h5&gt;
+&lt;h3 id=&#34;evaluation&#34;&gt;Evaluation&lt;/h3&gt;
+&lt;h3 id=&#34;对策&#34;&gt;对策&lt;/h3&gt;
+&lt;h3 id=&#34;讨论&#34;&gt;讨论&lt;/h3&gt;
+&lt;h4 id=&#34;结论&#34;&gt;结论&lt;/h4&gt;
 &lt;p&gt;本文介绍了Meltdown，一种新的基于软件的攻击方法。它利用现代处理器的&lt;strong&gt;无序执行&lt;/strong&gt;和&lt;strong&gt;测信道&lt;/strong&gt;，使得无特权的用户空间程序能够读取任意地址的 kernel 内存。&lt;/p&gt;
 &lt;p&gt;Meltdown 不需要某种软件漏洞，也不依赖某种操作系统，能够帮助攻击者以高达 503 KB/s的速率读取云上其他进程和虚拟机中的敏感数据，影响数百万设备。&lt;/p&gt;
 &lt;p&gt;我们发现，&lt;strong&gt;KAISER&lt;/strong&gt;最初提出的&lt;strong&gt;对抗KASLR侧信道攻击&lt;/strong&gt;的对策，无意中也阻碍了Meltdown。&lt;/p&gt;
 &lt;p&gt;我们强调，KAISER需要部署在每个操作系统上，作为一种短期的解决方案，直到Meltdown在硬件上得到修复，以防止Meltdon攻击的大规模出现。&lt;/p&gt;
-&lt;h2 id=&#34;meltdown-in-practice&#34;&gt;Meltdown in Practice&lt;/h2&gt;
-&lt;h2 id=&#34;real-world-meltdown-exploit&#34;&gt;Real-world Meltdown Exploit&lt;/h2&gt;
-</content>
+&lt;h3 id=&#34;meltdown-in-practice&#34;&gt;Meltdown in Practice&lt;/h3&gt;
+&lt;h3 id=&#34;real-world-meltdown-exploit&#34;&gt;Real-world Meltdown Exploit&lt;/h3&gt;
+&lt;h2 id=&#34;漏洞利用过程&#34;&gt;漏洞利用过程&lt;/h2&gt;</content>
             
             
             
